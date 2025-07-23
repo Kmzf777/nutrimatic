@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-16 lg:pt-20">
+    <section className="relative min-h-screen flex items-center overflow-hidden pt-20 lg:pt-20">
       {/* Background */}
       <div className="absolute inset-0 gradient-hero">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -16,7 +16,7 @@ export default function HeroSection() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/3 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
-      <div className="container relative z-10 pt-8 lg:pt-12">
+      <div className="container relative z-10 pt-12 lg:pt-12">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
           <motion.div
@@ -44,7 +44,7 @@ export default function HeroSection() {
               className="text-xl lg:text-2xl text-white/90 mb-8 leading-relaxed"
             >
               O tempo do nutricionista não se negocia — a{' '}
-              <span className="font-semibold text-white">Nutrimatic</span> resolve.
+              <span className="font-semibold text-white font-display">Nutrimatic</span> resolve.
             </motion.p>
 
             {/* Description */}
@@ -65,7 +65,7 @@ export default function HeroSection() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12"
             >
-              <Link href="#cta" className="btn btn-primary text-lg px-8 py-4">
+              <Link href="/register" className="btn btn-primary text-lg px-8 py-4">
                 <span>Teste grátis agora</span>
                 <ArrowRight className="w-5 h-5" />
               </Link>

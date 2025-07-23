@@ -201,7 +201,7 @@ export default function FeaturesSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="#cta" className="btn btn-primary text-lg px-8 py-4">
+              <Link href="/register" className="btn btn-primary text-lg px-8 py-4">
                 Começar agora
               </Link>
               <button className="btn btn-secondary text-lg px-8 py-4">

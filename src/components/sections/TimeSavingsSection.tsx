@@ -31,7 +31,7 @@ export default function TimeSavingsSection() {
             O que você <span className="text-gradient">economiza?</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Ganhe de volta até <span className="text-nutrimatic-600 font-bold text-2xl">10 horas por semana</span>
+            Ganhe de volta até <span className="text-nutrimatic-600 font-bold text-2xl font-display">10 horas por semana</span>
           </p>
         </motion.div>
 
@@ -166,7 +166,7 @@ export default function TimeSavingsSection() {
               Comece agora mesmo e veja a diferença em sua rotina
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="#cta" className="btn btn-primary text-lg px-8 py-4">
+              <Link href="/register" className="btn btn-primary text-lg px-8 py-4">
                 Quero economizar horas por semana
               </Link>
               <button className="btn btn-secondary text-lg px-8 py-4">
