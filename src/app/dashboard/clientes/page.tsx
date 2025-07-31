@@ -95,13 +95,13 @@ export default function ClientesPage() {
                 type="text"
                 placeholder="Buscar clientes..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
             <DashboardSelect 
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilterStatus(e.target.value)}
             >
               <option>Todos</option>
               <option>Ativos</option>

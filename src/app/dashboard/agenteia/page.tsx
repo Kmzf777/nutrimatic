@@ -146,7 +146,6 @@ export default function AgenteIA() {
         <ContentCard
           title="Configurações Básicas"
           subtitle="Defina as características fundamentais do seu agente"
-          icon={<Settings className="w-5 h-5" />}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -156,7 +155,7 @@ export default function AgenteIA() {
               <input
                 type="text"
                 value={config.name}
-                onChange={(e) => setConfig({ ...config, name: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, name: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nutrimatic-500 focus:border-transparent transition-all duration-300"
                 placeholder="Digite o nome do agente"
               />
@@ -168,7 +167,7 @@ export default function AgenteIA() {
               </label>
               <select
                 value={config.language}
-                onChange={(e) => setConfig({ ...config, language: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setConfig({ ...config, language: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nutrimatic-500 focus:border-transparent transition-all duration-300"
               >
                 <option value="Português">Português</option>
@@ -183,7 +182,6 @@ export default function AgenteIA() {
         <ContentCard
           title="Personalidade e Comportamento"
           subtitle="Configure como o agente se comunica e interage"
-          icon={<Brain className="w-5 h-5" />}
         >
           <div className="space-y-6">
             <div>
@@ -192,7 +190,7 @@ export default function AgenteIA() {
               </label>
               <textarea
                 value={config.personality}
-                onChange={(e) => setConfig({ ...config, personality: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setConfig({ ...config, personality: e.target.value })}
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nutrimatic-500 focus:border-transparent transition-all duration-300"
                 placeholder="Descreva a personalidade do agente..."
@@ -205,7 +203,7 @@ export default function AgenteIA() {
               </label>
               <textarea
                 value={config.expertise}
-                onChange={(e) => setConfig({ ...config, expertise: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setConfig({ ...config, expertise: e.target.value })}
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nutrimatic-500 focus:border-transparent transition-all duration-300"
                 placeholder="Descreva as áreas de conhecimento do agente..."
@@ -218,7 +216,7 @@ export default function AgenteIA() {
               </label>
               <select
                 value={config.tone}
-                onChange={(e) => setConfig({ ...config, tone: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setConfig({ ...config, tone: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nutrimatic-500 focus:border-transparent transition-all duration-300"
               >
                 <option value="Educativo e motivacional">Educativo e motivacional</option>
@@ -240,7 +238,7 @@ export default function AgenteIA() {
                       name="responseLength"
                       value={length}
                       checked={config.responseLength === length}
-                      onChange={(e) => setConfig({ ...config, responseLength: e.target.value as 'short' | 'medium' | 'long' })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, responseLength: e.target.value as 'short' | 'medium' | 'long' })}
                       className="w-4 h-4 text-nutrimatic-600 border-gray-300 focus:ring-nutrimatic-500"
                     />
                     <span className="ml-2 text-sm text-gray-700">
@@ -257,7 +255,6 @@ export default function AgenteIA() {
          <ContentCard
            title="Prompt Personalizado"
            subtitle="Crie instruções específicas para o comportamento do seu agente"
-           icon={<MessageSquare className="w-5 h-5" />}
          >
                        <div className="space-y-4">
               <div>
@@ -276,7 +273,7 @@ export default function AgenteIA() {
                 </div>
                <textarea
                  value={config.customPrompt}
-                 onChange={(e) => setConfig({ ...config, customPrompt: e.target.value })}
+                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setConfig({ ...config, customPrompt: e.target.value })}
                  rows={8}
                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nutrimatic-500 focus:border-transparent transition-all duration-300 font-mono text-sm"
                  placeholder="Digite as instruções personalizadas para o seu agente..."
@@ -314,7 +311,6 @@ export default function AgenteIA() {
         <ContentCard
           title="Recursos Avançados"
           subtitle="Configure funcionalidades avançadas do agente"
-          icon={<Zap className="w-5 h-5" />}
         >
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-gray-50/50 rounded-lg border border-gray-200/30">
@@ -329,7 +325,7 @@ export default function AgenteIA() {
                 <input
                   type="checkbox"
                   checked={config.enableMemory}
-                  onChange={(e) => setConfig({ ...config, enableMemory: e.target.checked })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, enableMemory: e.target.checked })}
                   className="sr-only peer"
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-nutrimatic-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-nutrimatic-600"></div>
@@ -348,7 +344,7 @@ export default function AgenteIA() {
                 <input
                   type="checkbox"
                   checked={config.enableLearning}
-                  onChange={(e) => setConfig({ ...config, enableLearning: e.target.checked })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, enableLearning: e.target.checked })}
                   className="sr-only peer"
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-nutrimatic-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-nutrimatic-600"></div>
@@ -361,7 +357,6 @@ export default function AgenteIA() {
         <ContentCard
           title="Preview do Agente"
           subtitle="Veja como seu agente se comportará"
-          icon={<Bot className="w-5 h-5" />}
         >
           <div className="bg-gradient-to-br from-nutrimatic-50 to-white p-6 rounded-xl border border-nutrimatic-200/50">
             <div className="flex items-center mb-4">

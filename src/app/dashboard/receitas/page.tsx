@@ -127,13 +127,13 @@ export default function ReceitasPage() {
                 type="text"
                 placeholder="Buscar receitas..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
             <DashboardSelect 
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilterStatus(e.target.value)}
             >
               <option>Todas</option>
               <option>Pendentes</option>
@@ -191,7 +191,7 @@ export default function ReceitasPage() {
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    {getStatusBadge(recipe.status)}
+                    {getStatusBadge(recipe.status || 'pending')}
                     <button 
                       className="p-2 text-gray-400 hover:text-nutrimatic-600 rounded-lg hover:bg-white transition-all duration-300"
                       onClick={(e) => {
