@@ -21,18 +21,18 @@ export default function UsoSistema() {
 
   // Dados de exemplo para receitas
   const exampleRecipes = [
-    { id: 'ex1', patient_name: 'Ana Paula Silva', status: 'pending', created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex2', patient_name: 'Carlos Eduardo Santos', status: 'approved', created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex3', patient_name: 'Mariana Costa Lima', status: 'approved', created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex4', patient_name: 'Roberto Almeida Ferreira', status: 'approved', created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex5', patient_name: 'Fernanda Oliveira Rodrigues', status: 'pending', created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex6', patient_name: 'Lucas Mendes Pereira', status: 'approved', created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex7', patient_name: 'Juliana Souza Barbosa', status: 'approved', created_at: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex8', patient_name: 'Pedro Henrique Nascimento', status: 'rejected', created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex9', patient_name: 'Amanda Costa Santos', status: 'approved', created_at: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex10', patient_name: 'Rafael Silva Oliveira', status: 'approved', created_at: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex11', patient_name: 'Carolina Mendes Lima', status: 'approved', created_at: new Date(Date.now() - 120 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex12', patient_name: 'Thiago Alves Costa', status: 'approved', created_at: new Date(Date.now() - 144 * 60 * 60 * 1000).toISOString() }
+    { id: 'ex1', nome: 'Ana Paula Silva', status: 'pending', created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex2', nome: 'Carlos Eduardo Santos', status: 'approved', created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex3', nome: 'Mariana Costa Lima', status: 'approved', created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex4', nome: 'Roberto Almeida Ferreira', status: 'approved', created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex5', nome: 'Fernanda Oliveira Rodrigues', status: 'pending', created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex6', nome: 'Lucas Mendes Pereira', status: 'approved', created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex7', nome: 'Juliana Souza Barbosa', status: 'approved', created_at: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex8', nome: 'Pedro Henrique Nascimento', status: 'rejected', created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex9', nome: 'Amanda Costa Santos', status: 'approved', created_at: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex10', nome: 'Rafael Silva Oliveira', status: 'approved', created_at: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex11', nome: 'Carolina Mendes Lima', status: 'approved', created_at: new Date(Date.now() - 120 * 60 * 60 * 1000).toISOString() },
+    { id: 'ex12', nome: 'Thiago Alves Costa', status: 'approved', created_at: new Date(Date.now() - 144 * 60 * 60 * 1000).toISOString() }
   ];
 
   // Usar dados de exemplo se não houver receitas reais
@@ -228,13 +228,13 @@ export default function UsoSistema() {
 
                 // Dados de exemplo se não houver receitas recentes
                 const exampleActivities = [
-                  { id: 'ex1', patient_name: 'Ana Paula Silva', status: 'pending' },
-                  { id: 'ex2', patient_name: 'Carlos Eduardo Santos', status: 'approved' },
-                  { id: 'ex3', patient_name: 'Mariana Costa Lima', status: 'approved' },
-                  { id: 'ex4', patient_name: 'Roberto Almeida Ferreira', status: 'approved' },
-                  { id: 'ex5', patient_name: 'Fernanda Oliveira Rodrigues', status: 'pending' },
-                  { id: 'ex6', patient_name: 'Lucas Mendes Pereira', status: 'approved' },
-                  { id: 'ex7', patient_name: 'Juliana Souza Barbosa', status: 'approved' }
+                  { id: 'ex1', nome: 'Ana Paula Silva', status: 'pending' },
+                  { id: 'ex2', nome: 'Carlos Eduardo Santos', status: 'approved' },
+                  { id: 'ex3', nome: 'Mariana Costa Lima', status: 'approved' },
+                  { id: 'ex4', nome: 'Roberto Almeida Ferreira', status: 'approved' },
+                  { id: 'ex5', nome: 'Fernanda Oliveira Rodrigues', status: 'pending' },
+                  { id: 'ex6', nome: 'Lucas Mendes Pereira', status: 'approved' },
+                  { id: 'ex7', nome: 'Juliana Souza Barbosa', status: 'approved' }
                 ];
 
                 const activitiesToShow = recentRecipes.length > 0 ? recentRecipes : exampleActivities;
@@ -268,11 +268,11 @@ export default function UsoSistema() {
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-nutrimatic-100 rounded-full flex items-center justify-center">
                         <span className="text-sm font-medium text-nutrimatic-600">
-                          {activity.patient_name ? activity.patient_name.charAt(0).toUpperCase() : 'P'}
+                          {activity.nome ? activity.nome.charAt(0).toUpperCase() : 'P'}
                         </span>
                       </div>
                       <span className="font-medium text-gray-900">
-                        {activity.patient_name || 'Paciente'}
+                        {activity.nome || 'Paciente'}
                       </span>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(activity.status || 'pending')}`}>
