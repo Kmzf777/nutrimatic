@@ -20,7 +20,7 @@ export default function BlogPage() {
           <div className="text-center text-gray-600">
             <p>Página em construção...</p>
             <p className="mt-4">
-              <Link href="/" className="text-blue-600 hover:underline">
+              <Link href="/" className="text-nutrimatic-600 hover:underline">
                 Voltar para a página inicial
               </Link>
             </p>

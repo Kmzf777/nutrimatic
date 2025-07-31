@@ -5,6 +5,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -95,8 +96,8 @@ const config: Config = {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
         'gradient-hero': 'linear-gradient(135deg, var(--gray-900) 0%, var(--nutrimatic-800) 50%, var(--nutrimatic-600) 100%)',
-        'gradient-primary': 'linear-gradient(135deg, var(--nutrimatic-500) 0%, var(--blue-500) 100%)',
-        'gradient-secondary': 'linear-gradient(135deg, var(--blue-500) 0%, var(--purple-500) 100%)',
+        'gradient-primary': 'linear-gradient(135deg, var(--nutrimatic-500) 0%, var(--nutrimatic-600) 100%)',
+        'gradient-secondary': 'linear-gradient(135deg, var(--nutrimatic-500) 0%, var(--purple-500) 100%)',
       },
     },
   },

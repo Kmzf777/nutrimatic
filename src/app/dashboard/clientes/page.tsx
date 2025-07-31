@@ -59,7 +59,7 @@ export default function ClientesPage() {
             title="Ativos"
             value={clientes.filter(c => c.status === 'ativo').length}
             icon={<CheckCircle className="w-6 h-6" />}
-            color="blue"
+            color="nutrimatic"
           />
           
           <StatsCard

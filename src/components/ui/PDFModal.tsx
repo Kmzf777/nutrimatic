@@ -72,10 +72,10 @@ export default function PDFModal({ isOpen, onClose, url, title }: PDFModalProps)
       {/* Modal com design moderno */}
       <div className="relative bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 w-full max-w-6xl mx-auto my-8 max-h-[90vh] flex flex-col">
         {/* Header com gradiente - fixo */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-2xl p-6 border-b border-gray-200/50 flex-shrink-0">
+        <div className="bg-gradient-to-r from-nutrimatic-50 to-green-50 rounded-t-2xl p-6 border-b border-gray-200/50 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-nutrimatic-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
                 <FileText className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1 min-w-0">
@@ -93,7 +93,7 @@ export default function PDFModal({ isOpen, onClose, url, title }: PDFModalProps)
               </button>
               <button
                 onClick={handleExternalView}
-                className="flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-colors"
+                className="flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-nutrimatic-500 to-nutrimatic-600 hover:from-nutrimatic-600 hover:to-nutrimatic-700 text-white rounded-lg transition-colors"
               >
                 <ExternalLink className="w-4 h-4" />
                 <span>Abrir</span>
@@ -114,7 +114,7 @@ export default function PDFModal({ isOpen, onClose, url, title }: PDFModalProps)
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100/50">
               <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-8 shadow-xl border border-gray-200/50">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-nutrimatic-500 to-green-600 rounded-xl flex items-center justify-center">
                     <Loader2 className="w-6 h-6 text-white animate-spin" />
                   </div>
                   <div>
@@ -161,7 +161,7 @@ export default function PDFModal({ isOpen, onClose, url, title }: PDFModalProps)
                     </button>
                     <button
                       onClick={handleExternalView}
-                      className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-colors"
+                      className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-nutrimatic-500 to-nutrimatic-600 hover:from-nutrimatic-600 hover:to-nutrimatic-700 text-white rounded-lg transition-colors"
                     >
                       <ExternalLink className="w-4 h-4" />
                       <span>Abrir em Nova Aba</span>

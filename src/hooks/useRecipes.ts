@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
 
 export interface Recipe {
@@ -16,7 +16,9 @@ export function useRecipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
   const supabase = createClient();
+  const hasInitialized = useRef(false);
 
   const fetchRecipes = async () => {
     try {
@@ -33,6 +35,10 @@ export function useRecipes() {
       }
 
       setRecipes(data || []);
+      if (!hasInitialized.current) {
+        hasInitialized.current = true;
+        setIsInitialized(true);
+      }
     } catch (err) {
       console.error('Erro ao buscar receitas:', err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
@@ -142,7 +148,9 @@ export function useRecipes() {
 
   // Real-time subscription
   useEffect(() => {
-    fetchRecipes();
+    if (!hasInitialized.current) {
+      fetchRecipes();
+    }
 
     // Configurar subscription para mudanças em tempo real
     const channel = supabase
@@ -235,6 +243,7 @@ export function useRecipes() {
     recipes,
     loading,
     error,
+    isInitialized,
     refetch: fetchRecipes,
     approveRecipe,
     rejectRecipe,

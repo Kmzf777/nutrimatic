@@ -26,7 +26,7 @@ const features = [
     icon: MessageCircle,
     title: "Atendimento Automatizado",
     description: "Atendimento automático 24/7 via redes sociais mais populares.",
-    color: "blue",
+    color: "nutrimatic",
     highlight: "24/7"
   },
   {
@@ -130,7 +130,6 @@ export default function FeaturesSection() {
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${
                     feature.color === 'nutrimatic' ? 'bg-nutrimatic-100' :
-                    feature.color === 'blue' ? 'bg-blue-100' :
                     feature.color === 'purple' ? 'bg-purple-100' :
                     feature.color === 'green' ? 'bg-green-100' :
                     feature.color === 'orange' ? 'bg-orange-100' :
@@ -139,7 +138,6 @@ export default function FeaturesSection() {
                 >
                   <feature.icon className={`w-8 h-8 ${
                     feature.color === 'nutrimatic' ? 'text-nutrimatic-600' :
-                    feature.color === 'blue' ? 'text-blue-600' :
                     feature.color === 'purple' ? 'text-purple-600' :
                     feature.color === 'green' ? 'text-green-600' :
                     feature.color === 'orange' ? 'text-orange-600' :

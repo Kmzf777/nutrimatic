@@ -47,9 +47,9 @@ export default function Notification({
       case 'warning':
         return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
       case 'info':
-        return <Info className="w-5 h-5 text-blue-600" />;
+        return <Info className="w-5 h-5 text-nutrimatic-600" />;
       default:
-        return <Info className="w-5 h-5 text-blue-600" />;
+        return <Info className="w-5 h-5 text-nutrimatic-600" />;
     }
   };
 
@@ -78,10 +78,10 @@ export default function Notification({
         };
       case 'info':
         return {
-          container: 'bg-blue-50 border-blue-200',
-          icon: 'bg-blue-100',
-          title: 'text-blue-900',
-          message: 'text-blue-700'
+          container: 'bg-nutrimatic-50 border-nutrimatic-200',
+          icon: 'bg-nutrimatic-100',
+          title: 'text-nutrimatic-900',
+          message: 'text-nutrimatic-700'
         };
       default:
         return {

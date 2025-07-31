@@ -56,16 +56,16 @@ export function StatsCard({
   title: string;
   value: string | number;
   icon: ReactNode;
-  color?: "nutrimatic" | "blue" | "yellow" | "red" | "purple";
+  color?: "nutrimatic" | "yellow" | "red" | "purple" | "green";
   trend?: { value: number; isPositive: boolean };
   className?: string;
 }) {
   const colorClasses = {
     nutrimatic: "bg-nutrimatic-100 text-nutrimatic-600",
-    blue: "bg-blue-100 text-blue-600",
     yellow: "bg-yellow-100 text-yellow-600",
     red: "bg-red-100 text-red-600",
-    purple: "bg-purple-100 text-purple-600"
+    purple: "bg-purple-100 text-purple-600",
+    green: "bg-green-100 text-green-600"
   };
 
   return (
@@ -215,7 +215,7 @@ export function StatusBadge({
     success: "bg-green-100 text-green-800",
     warning: "bg-yellow-100 text-yellow-800",
     error: "bg-red-100 text-red-800",
-    info: "bg-blue-100 text-blue-800",
+    info: "bg-nutrimatic-100 text-nutrimatic-800",
     pending: "bg-gray-100 text-gray-800"
   };
 

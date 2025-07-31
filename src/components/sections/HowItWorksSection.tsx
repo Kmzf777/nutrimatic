@@ -16,7 +16,7 @@ const steps = [
     icon: FileText,
     title: "Receba a prescrição pronta",
     description: "Dieta personalizada gerada em segundos com base no perfil do paciente.",
-    color: "blue",
+    color: "nutrimatic",
     step: "02"
   },
   {
@@ -82,13 +82,11 @@ export default function HowItWorksSection() {
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${
                     step.color === 'nutrimatic' ? 'bg-nutrimatic-100' :
-                    step.color === 'blue' ? 'bg-blue-100' :
                     'bg-purple-100'
                   }`}
                 >
                   <step.icon className={`w-8 h-8 ${
                     step.color === 'nutrimatic' ? 'text-nutrimatic-600' :
-                    step.color === 'blue' ? 'text-blue-600' :
                     'text-purple-600'
                   }`} />
                 </motion.div>

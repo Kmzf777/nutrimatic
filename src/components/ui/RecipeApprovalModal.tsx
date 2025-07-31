@@ -111,14 +111,14 @@ export default function RecipeApprovalModal({
         {/* Content - scrollável */}
         <div className="p-6 space-y-6 overflow-y-auto flex-1">
           {/* Seção 1: Visualizar PDF */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-200/50">
+          <div className="bg-gradient-to-r from-nutrimatic-50 to-green-50 rounded-xl p-5 border border-nutrimatic-200/50">
             <div className="flex items-start space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Eye className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 bg-nutrimatic-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Eye className="w-5 h-5 text-nutrimatic-600" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-blue-900 mb-2">Visualizar Receita</h3>
-                <p className="text-sm text-blue-700 mb-4">
+                <h3 className="font-semibold text-nutrimatic-900 mb-2">Visualizar Receita</h3>
+                <p className="text-sm text-nutrimatic-700 mb-4">
                   Abra o PDF da receita para avaliar o conteúdo antes de aprovar ou reprovar
                 </p>
                 <button
@@ -218,10 +218,10 @@ export default function RecipeApprovalModal({
 
           {/* Loading State */}
           {isSubmitting && (
-            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200/50">
+            <div className="bg-nutrimatic-50 rounded-xl p-4 border border-nutrimatic-200/50">
               <div className="flex items-center space-x-3">
-                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-sm text-blue-700 font-medium">
+                <div className="w-6 h-6 border-2 border-nutrimatic-600 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-sm text-nutrimatic-700 font-medium">
                   Processando sua avaliação e enviando notificações...
                 </span>
               </div>
