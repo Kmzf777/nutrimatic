@@ -31,8 +31,8 @@ export default function Header() {
       }`}>
         <div className="container">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            {/* Logo - Apenas o logo principal */}
-            <Link href="/" className="flex items-center group">
+            {/* Logo - Fixo à esquerda */}
+            <Link href="/" className="flex items-center group flex-shrink-0">
               <Image
                 src="/Nutrimatic Logo PNG.png"
                 alt="Nutrimatic"
@@ -117,30 +117,33 @@ export default function Header() {
       </header>
 
       {/* Mobile Navigation - Separado do header para evitar conflitos */}
-      <div className={`lg:hidden fixed inset-0 z-[60] transition-all duration-300 ease-in-out ${
+      <div className={`lg:hidden fixed inset-0 z-[60] transition-all duration-500 ease-in-out ${
         isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
       }`}>
         {/* Overlay */}
         <div 
-          className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
+          className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-500 ease-in-out ${
             isMenuOpen ? 'opacity-100' : 'opacity-0'
           }`}
           onClick={closeMenu}
         />
         
         {/* Menu Panel */}
-        <div className={`absolute inset-y-0 right-0 w-80 max-w-[85vw] bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
+        <div className={`absolute inset-y-0 right-0 w-80 max-w-[85vw] bg-white shadow-2xl transition-transform duration-500 ease-in-out ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}>
           {/* Header do menu */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <Image
-              src="/Nutrimatic Logo PNG.png"
-              alt="Nutrimatic"
-              width={120}
-              height={24}
-              className="h-6 w-auto"
-            />
+            <div className="flex items-center space-x-3">
+              <Image
+                src="/Nutrimatic Icon Vetor.png"
+                alt="Nutrimatic"
+                width={32}
+                height={32}
+                className="flex-shrink-0"
+              />
+              <span className="text-lg font-semibold text-nutrimatic-600 font-display">Nutrimatic</span>
+            </div>
             <button
               onClick={closeMenu}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"

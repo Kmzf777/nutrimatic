@@ -161,11 +161,9 @@ export default function Footer() {
             </div>
             
             <div className="flex items-center space-x-6">
-              {/* WhatsApp CTA */}
+              {/* Contact CTA */}
               <a
-                href="https://wa.me/5511999999999"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/contato"
                 className="flex items-center space-x-2 bg-nutrimatic-600 hover:bg-nutrimatic-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 <MessageCircle className="w-4 h-4" />

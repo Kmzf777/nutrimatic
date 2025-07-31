@@ -9,7 +9,7 @@ A **Nutrimatic** é uma plataforma inovadora que utiliza inteligência artificia
 ## ✨ Funcionalidades Principais
 
 - 🤖 **Prescrições Automáticas**: IA avançada que cria dietas personalizadas
-- 💬 **Chatbot 24/7**: Atendimento automático via WhatsApp e Instagram
+- 🤖 **Atendimento Automatizado**: Sistema inteligente para gestão de clientes
 - 📈 **Prospecção Automática**: Encontre e atraia novos pacientes automaticamente
 - 📊 **Relatórios Detalhados**: Dashboards completos para gestão do consultório
 - 🔄 **Integração Fácil**: Conecte com suas ferramentas favoritas em minutos
@@ -22,12 +22,14 @@ A **Nutrimatic** é uma plataforma inovadora que utiliza inteligência artificia
 - **Ícones**: Lucide React
 - **Deploy**: Vercel
 
+
 ## 📦 Instalação e Configuração
 
 ### Pré-requisitos
 
 - Node.js 18+ 
 - npm ou yarn
+
 
 ### Passos para Instalação
 
@@ -44,17 +46,51 @@ A **Nutrimatic** é uma plataforma inovadora que utiliza inteligência artificia
    yarn install
    ```
 
-3. **Execute o projeto em desenvolvimento**
+3. **Configure as variáveis de ambiente**
+   
+   Crie um arquivo `.env.local` na raiz do projeto:
+   ```env
+   
+   
+   # App Configuration
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   ```
+
+
+
+6. **Execute o projeto em desenvolvimento**
    ```bash
    npm run dev
    # ou
    yarn dev
    ```
 
-4. **Acesse o projeto**
+7. **Acesse o projeto**
    ```
    http://localhost:3000
    ```
+
+## 🔧 Correção de Problemas
+
+### Erro "Formato de resposta inválido ou QR Code não encontrado"
+
+Este erro foi corrigido nas seguintes versões:
+
+
+
+3. **Adicionado logs detalhados** para debug
+
+
+### Solução de Problemas Comuns
+
+
+
+2. **Variáveis de ambiente não configuradas**
+   - Verifique se o arquivo `.env.local` existe
+   - Confirme se as variáveis estão corretas
+   - Reinicie o servidor após alterações
+
+
 
 ## 🚀 Deploy na Vercel
 
@@ -87,58 +123,31 @@ nutrimatic/
 │   └── Nutrimatic Icon Vetor.png
 ├── src/
 │   ├── app/               # App Router (Next.js 13+)
+│   │   ├── api/           # API Routes
+│   
+│   │   │   └── n8n/       # n8n integration
 │   │   ├── globals.css    # Estilos globais
 │   │   ├── layout.tsx     # Layout principal
 │   │   └── page.tsx       # Página inicial
-│   └── components/        # Componentes React
-│       ├── sections/      # Seções da landing page
-│       └── ui/            # Componentes de UI
+│   ├── components/        # Componentes React
+│   │   ├── dashboard/     # Componentes do dashboard
+│   │   ├── sections/      # Seções da landing page
+│   │   └── ui/            # Componentes de UI
+│   ├── hooks/             # Custom hooks
+│   └── lib/               # Bibliotecas e configurações
 ├── tailwind.config.ts     # Configuração do Tailwind
 ├── next.config.ts         # Configuração do Next.js
+
+├── ENVIRONMENT_SETUP.md   # Documentação de configuração
 └── package.json           # Dependências e scripts
 ```
 
-## 🎨 Design System
+## 📚 Documentação Adicional
 
-### Cores Principais
-- **Nutrimatic Green**: `#10b981` (Primary)
-- **Dark Green**: `#065f46` (Secondary)
-- **Blue**: `#3b82f6` (Accent)
-- **Gray Scale**: `#111827` to `#f9fafb`
 
-### Tipografia
-- **Fonte Principal**: Inter (Google Fonts)
-- **Tamanhos**: Responsivos com clamp()
 
-## 📱 Responsividade
-
-O projeto é totalmente responsivo e otimizado para:
-- 📱 Mobile (320px+)
-- 📱 Tablet (768px+)
-- 💻 Desktop (1024px+)
-- 🖥️ Large Desktop (1280px+)
-
-## 🔧 Scripts Disponíveis
-
-```bash
-npm run dev          # Servidor de desenvolvimento
-npm run build        # Build de produção
-npm run start        # Servidor de produção
-npm run lint         # Verificação de código
-npm run type-check   # Verificação de tipos TypeScript
-```
-
-## 🌟 Características Técnicas
-
-- **Performance**: Otimizado com Next.js 15
-- **SEO**: Meta tags e Open Graph configurados
-- **Acessibilidade**: ARIA labels e navegação por teclado
-- **Animações**: Transições suaves com Framer Motion
-- **Loading**: Estados de carregamento otimizados
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+- `ENVIRONMENT_SETUP.md` - Configuração de variáveis de ambiente
+- `FONTE_MUSEOMODERNO.md` - Informações sobre a fonte utilizada
 
 ## 🤝 Contribuição
 
@@ -148,12 +157,10 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
-## 📞 Contato
+## 📄 Licença
 
-- **Website**: [nutrimatic.com](https://nutrimatic.com)
-- **Email**: contato@nutrimatic.com
-- **GitHub**: [@Kmzf777](https://github.com/Kmzf777)
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
----
+## 📞 Suporte
 
-Desenvolvido com ❤️ pela equipe Nutrimatic
+Para suporte, envie um email para suporte@nutrimatic.com ou abra uma issue no GitHub.

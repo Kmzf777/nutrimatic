@@ -24,7 +24,7 @@ const features = [
   },
   {
     icon: MessageCircle,
-    title: "Chatbot para WhatsApp/Instagram",
+    title: "Atendimento Automatizado",
     description: "Atendimento automático 24/7 via redes sociais mais populares.",
     color: "blue",
     highlight: "24/7"
@@ -53,7 +53,7 @@ const features = [
   {
     icon: Zap,
     title: "Integração fácil",
-    description: "Conecte com WhatsApp, Instagram, site e outras ferramentas em minutos.",
+    description: "Conecte com Instagram, site e outras ferramentas em minutos.",
     color: "pink",
     highlight: "Fácil"
   }

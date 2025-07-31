@@ -18,7 +18,7 @@ const testimonials = [
     name: "Dr. Carlos Mendes",
     role: "Nutricionista Clínico",
     avatar: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face",
-    content: "Aumentei minha base de clientes em 300% em apenas 3 meses. O chatbot funciona perfeitamente e os pacientes adoram!",
+    content: "Aumentei minha base de clientes em 300% em apenas 3 meses. O sistema funciona perfeitamente e os pacientes adoram!",
     rating: 5,
     clinic: "NutriClinic"
   },

@@ -113,11 +113,11 @@ export default function HeroSection() {
                       <div className="w-3 h-3 bg-nutrimatic-500 rounded-full"></div>
                     </div>
                     <div className="flex-1 text-center">
-                      <span className="text-sm text-gray-500">nutrimatic.com/chat</span>
+                      <span className="text-sm text-gray-500">nutrimatic.com/dashboard</span>
                     </div>
                   </div>
                   
-                  {/* Chat interface */}
+                                      {/* Dashboard interface */}
                   <div className="space-y-4">
                     <div className="flex items-start space-x-3">
                       <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">

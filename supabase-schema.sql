@@ -18,6 +18,17 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 );
 
 -- =====================================================
+-- TABELA DE TESTE PARA RECEITAS (N8N INTEGRATION)
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS public."Teste-Tabela" (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    nome TEXT NOT NULL,
+    url TEXT NOT NULL
+);
+
+-- =====================================================
 -- FUNÇÕES E TRIGGERS
 -- =====================================================
 
@@ -64,6 +75,13 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Users can insert own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- Habilitar RLS na tabela Teste-Tabela
+ALTER TABLE public."Teste-Tabela" ENABLE ROW LEVEL SECURITY;
+
+-- Políticas para Teste-Tabela (permitir leitura para usuários autenticados)
+CREATE POLICY "Users can view all recipes" ON public."Teste-Tabela" FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Users can insert recipes" ON public."Teste-Tabela" FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
 -- =====================================================
 -- FIM DO SCHEMA

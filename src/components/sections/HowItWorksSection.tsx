@@ -22,7 +22,7 @@ const steps = [
   {
     icon: TrendingUp,
     title: "Acompanhe, automatize e atraia mais clientes",
-    description: "Gestão completa com chatbot, prospecção automática e relatórios detalhados.",
+    description: "Gestão completa com atendimento automatizado, prospecção automática e relatórios detalhados.",
     color: "purple",
     step: "03"
   }

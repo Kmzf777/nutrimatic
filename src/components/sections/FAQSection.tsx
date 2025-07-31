@@ -7,15 +7,15 @@ import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 const faqs = [
   {
     question: "Quanto custa a Nutrimatic?",
-    answer: "A Nutrimatic oferece planos a partir de R$ 97/mês. Todos os planos incluem prescrições automáticas, chatbot 24/7, prospecção automática e suporte especializado. Não há taxa de setup ou cancelamento."
+    answer: "A Nutrimatic oferece planos a partir de R$ 97/mês. Todos os planos incluem prescrições automáticas, atendimento automatizado 24/7, prospecção automática e suporte especializado. Não há taxa de setup ou cancelamento."
   },
   {
     question: "É seguro usar IA para prescrições?",
     answer: "Sim! Nossa IA foi treinada com milhares de casos reais e segue rigorosos protocolos de segurança. Todas as prescrições são revisadas por nutricionistas e você mantém controle total sobre o conteúdo."
   },
   {
-    question: "Como funciona a integração com WhatsApp?",
-    answer: "É muito simples! Conectamos diretamente com sua conta do WhatsApp Business. O chatbot responde automaticamente 24/7, agenda consultas e tira dúvidas dos pacientes. Você pode personalizar todas as respostas."
+    question: "Como funciona a integração com redes sociais?",
+    answer: "É muito simples! Conectamos diretamente com suas redes sociais. O sistema responde automaticamente 24/7, agenda consultas e tira dúvidas dos pacientes. Você pode personalizar todas as respostas."
   },
   {
     question: "Preciso de conhecimento técnico?",
@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     question: "Vocês oferecem suporte técnico?",
-    answer: "Sim! Nossa equipe de suporte especializada está disponível de segunda a sexta, das 8h às 18h. Também oferecemos chat online e base de conhecimento completa."
+    answer: "Sim! Nossa equipe de suporte especializada está disponível de segunda a sexta, das 8h às 18h. Também oferecemos suporte online e base de conhecimento completa."
   }
 ];
 
@@ -151,12 +151,10 @@ export default function FAQSection() {
                 Fale conosco
               </a>
               <a 
-                href="https://wa.me/5511999999999" 
-                target="_blank" 
-                rel="noopener noreferrer"
+                href="/contato" 
                 className="btn btn-secondary text-lg px-8 py-4"
               >
-                WhatsApp
+                Contato
               </a>
             </div>
           </div>
