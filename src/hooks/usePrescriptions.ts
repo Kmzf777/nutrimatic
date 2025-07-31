@@ -21,11 +21,106 @@ export interface PrescriptionStats {
   monthlyLimit: number;
 }
 
+// Dados mockados para prescrições
+const mockPrescriptionUsage: PrescriptionUsage[] = [
+  {
+    id: 'prescription-mock-1',
+    recipe_id: 'mock-1',
+    prescriptions_consumed: 1,
+    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    recipe_name: 'Receita para Ana Paula Silva',
+    status: 'pending'
+  },
+  {
+    id: 'prescription-mock-2',
+    recipe_id: 'mock-2',
+    prescriptions_consumed: 1,
+    created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+    recipe_name: 'Receita para Carlos Eduardo Santos',
+    status: 'approved'
+  },
+  {
+    id: 'prescription-mock-3',
+    recipe_id: 'mock-3',
+    prescriptions_consumed: 1,
+    created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    recipe_name: 'Receita para Mariana Costa Lima',
+    status: 'approved'
+  },
+  {
+    id: 'prescription-mock-4',
+    recipe_id: 'mock-4',
+    prescriptions_consumed: 1,
+    created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+    recipe_name: 'Receita para Roberto Almeida Ferreira',
+    status: 'approved'
+  },
+  {
+    id: 'prescription-mock-5',
+    recipe_id: 'mock-5',
+    prescriptions_consumed: 1,
+    created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    recipe_name: 'Receita para Fernanda Oliveira Rodrigues',
+    status: 'pending'
+  },
+  {
+    id: 'prescription-mock-6',
+    recipe_id: 'mock-6',
+    prescriptions_consumed: 1,
+    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    recipe_name: 'Receita para Lucas Mendes Pereira',
+    status: 'approved'
+  },
+  {
+    id: 'prescription-mock-7',
+    recipe_id: 'mock-7',
+    prescriptions_consumed: 1,
+    created_at: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(),
+    recipe_name: 'Receita para Juliana Souza Barbosa',
+    status: 'approved'
+  },
+  {
+    id: 'prescription-mock-8',
+    recipe_id: 'mock-8',
+    prescriptions_consumed: 1,
+    created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+    recipe_name: 'Receita para Pedro Henrique Nascimento',
+    status: 'rejected'
+  },
+  {
+    id: 'prescription-mock-9',
+    recipe_id: 'mock-9',
+    prescriptions_consumed: 1,
+    created_at: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
+    recipe_name: 'Receita para Amanda Costa Santos',
+    status: 'approved'
+  },
+  {
+    id: 'prescription-mock-10',
+    recipe_id: 'mock-10',
+    prescriptions_consumed: 1,
+    created_at: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(),
+    recipe_name: 'Receita para Rafael Silva Oliveira',
+    status: 'approved'
+  }
+];
+
+// Estatísticas mockadas
+const mockPrescriptionStats: PrescriptionStats = {
+  totalPrescriptions: 342,
+  monthlyPrescriptions: 53,
+  weeklyPrescriptions: 18,
+  remainingPrescriptions: 47,
+  usagePercentage: 53,
+  monthlyLimit: 100
+};
+
 export function usePrescriptions() {
   const [prescriptionUsage, setPrescriptionUsage] = useState<PrescriptionUsage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [useMockData, setUseMockData] = useState(false);
   const supabase = createClient();
   const hasInitialized = useRef(false);
 
@@ -47,17 +142,25 @@ export function usePrescriptions() {
         throw recipesError;
       }
 
-      // Simular dados de uso de prescrições baseado nas receitas
-      const simulatedPrescriptionUsage: PrescriptionUsage[] = (recipes || []).map((recipe, index) => ({
-        id: `prescription-${recipe.id}`,
-        recipe_id: recipe.id,
-        prescriptions_consumed: 1, // 1 prescrição por receita
-        created_at: recipe.created_at,
-        recipe_name: recipe.nome,
-        status: recipe.status || 'pending'
-      }));
+      // Se não há dados reais, usar dados mockados
+      if (!recipes || recipes.length === 0) {
+        setPrescriptionUsage(mockPrescriptionUsage);
+        setUseMockData(true);
+      } else {
+        // Simular dados de uso de prescrições baseado nas receitas
+        const simulatedPrescriptionUsage: PrescriptionUsage[] = recipes.map((recipe, index) => ({
+          id: `prescription-${recipe.id}`,
+          recipe_id: recipe.id,
+          prescriptions_consumed: 1, // 1 prescrição por receita
+          created_at: recipe.created_at,
+          recipe_name: recipe.nome,
+          status: recipe.status || 'pending'
+        }));
 
-      setPrescriptionUsage(simulatedPrescriptionUsage);
+        setPrescriptionUsage(simulatedPrescriptionUsage);
+        setUseMockData(false);
+      }
+
       if (!hasInitialized.current) {
         hasInitialized.current = true;
         setIsInitialized(true);
@@ -65,12 +168,22 @@ export function usePrescriptions() {
     } catch (err) {
       console.error('Erro ao buscar uso de prescrições:', err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      
+      // Em caso de erro, usar dados mockados
+      setPrescriptionUsage(mockPrescriptionUsage);
+      setUseMockData(true);
+      setIsInitialized(true);
     } finally {
       setLoading(false);
     }
   };
 
   const getPrescriptionStats = (): PrescriptionStats => {
+    // Se estamos usando dados mockados, retornar estatísticas mockadas
+    if (useMockData) {
+      return mockPrescriptionStats;
+    }
+
     const totalPrescriptions = prescriptionUsage.reduce((sum, usage) => sum + usage.prescriptions_consumed, 0);
     
     // Calcular prescrições do mês atual

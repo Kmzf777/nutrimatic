@@ -12,11 +12,87 @@ export interface Recipe {
   rejection_observation?: string;
 }
 
+// Dados mockados para quando não há conexão com banco
+const mockRecipes: Recipe[] = [
+  {
+    id: 'mock-1',
+    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    nome: 'Receita para Ana Paula Silva',
+    url: 'https://example.com/recipe1.pdf',
+    status: 'pending'
+  },
+  {
+    id: 'mock-2',
+    created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+    nome: 'Receita para Carlos Eduardo Santos',
+    url: 'https://example.com/recipe2.pdf',
+    status: 'approved'
+  },
+  {
+    id: 'mock-3',
+    created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    nome: 'Receita para Mariana Costa Lima',
+    url: 'https://example.com/recipe3.pdf',
+    status: 'approved'
+  },
+  {
+    id: 'mock-4',
+    created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+    nome: 'Receita para Roberto Almeida Ferreira',
+    url: 'https://example.com/recipe4.pdf',
+    status: 'approved'
+  },
+  {
+    id: 'mock-5',
+    created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    nome: 'Receita para Fernanda Oliveira Rodrigues',
+    url: 'https://example.com/recipe5.pdf',
+    status: 'pending'
+  },
+  {
+    id: 'mock-6',
+    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    nome: 'Receita para Lucas Mendes Pereira',
+    url: 'https://example.com/recipe6.pdf',
+    status: 'approved'
+  },
+  {
+    id: 'mock-7',
+    created_at: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(),
+    nome: 'Receita para Juliana Souza Barbosa',
+    url: 'https://example.com/recipe7.pdf',
+    status: 'approved'
+  },
+  {
+    id: 'mock-8',
+    created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+    nome: 'Receita para Pedro Henrique Nascimento',
+    url: 'https://example.com/recipe8.pdf',
+    status: 'rejected',
+    rejection_observation: 'Informações nutricionais insuficientes'
+  },
+  {
+    id: 'mock-9',
+    created_at: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
+    nome: 'Receita para Amanda Costa Santos',
+    url: 'https://example.com/recipe9.pdf',
+    status: 'approved'
+  },
+  {
+    id: 'mock-10',
+    created_at: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(),
+    nome: 'Receita para Rafael Silva Oliveira',
+    url: 'https://example.com/recipe10.pdf',
+    status: 'approved'
+  }
+];
+
 export function useRecipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [useMockData, setUseMockData] = useState(false);
   const supabase = createClient();
   const hasInitialized = useRef(false);
 
@@ -34,7 +110,15 @@ export function useRecipes() {
         throw error;
       }
 
-      setRecipes(data || []);
+      // Se não há dados reais, usar dados mockados
+      if (!data || data.length === 0) {
+        setRecipes(mockRecipes);
+        setUseMockData(true);
+      } else {
+        setRecipes(data);
+        setUseMockData(false);
+      }
+
       if (!hasInitialized.current) {
         hasInitialized.current = true;
         setIsInitialized(true);
@@ -42,6 +126,11 @@ export function useRecipes() {
     } catch (err) {
       console.error('Erro ao buscar receitas:', err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      
+      // Em caso de erro, usar dados mockados
+      setRecipes(mockRecipes);
+      setUseMockData(true);
+      setIsInitialized(true);
     } finally {
       setLoading(false);
     }
