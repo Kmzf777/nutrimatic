@@ -137,8 +137,8 @@ export default function HowItWorksSection() {
               O setup leva apenas 5 minutos e você pode cancelar a qualquer momento
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register" className="btn btn-primary text-lg px-8 py-4">
-                Começar agora
+              <Link href="/dashboard" className="btn btn-primary text-lg px-8 py-4">
+                Acessar Dashboard
               </Link>
               <button className="btn btn-secondary text-lg px-8 py-4">
                 Ver demonstração

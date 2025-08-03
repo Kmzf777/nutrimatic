@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, memo } from 'react';
 
 interface DashboardPageLayoutProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface DashboardPageLayoutProps {
   className?: string;
 }
 
-export default function DashboardPageLayout({ 
+const DashboardPageLayout = memo(function DashboardPageLayout({ 
   children, 
   title, 
   subtitle, 
@@ -42,10 +42,12 @@ export default function DashboardPageLayout({
       </div>
     </div>
   );
-}
+});
+
+export default DashboardPageLayout;
 
 // Componente para cards de estatísticas
-export function StatsCard({ 
+export const StatsCard = memo(function StatsCard({ 
   title, 
   value, 
   icon, 
@@ -88,10 +90,10 @@ export function StatsCard({
       </div>
     </div>
   );
-}
+});
 
 // Componente para cards de conteúdo
-export function ContentCard({ 
+export const ContentCard = memo(function ContentCard({ 
   children, 
   title,
   subtitle,
@@ -126,10 +128,10 @@ export function ContentCard({
       </div>
     </div>
   );
-}
+});
 
 // Componente para botões consistentes
-export function DashboardButton({ 
+export const DashboardButton = memo(function DashboardButton({ 
   children, 
   variant = "primary",
   size = "md",
@@ -165,10 +167,10 @@ export function DashboardButton({
       {children}
     </button>
   );
-}
+});
 
 // Componente para inputs consistentes
-export function DashboardInput({ 
+export const DashboardInput = memo(function DashboardInput({ 
   className = "",
   ...props 
 }: {
@@ -181,10 +183,10 @@ export function DashboardInput({
       {...props}
     />
   );
-}
+});
 
 // Componente para selects consistentes
-export function DashboardSelect({ 
+export const DashboardSelect = memo(function DashboardSelect({ 
   children,
   className = "",
   ...props 
@@ -201,10 +203,10 @@ export function DashboardSelect({
       {children}
     </select>
   );
-}
+});
 
 // Componente para badges de status
-export function StatusBadge({ 
+export const StatusBadge = memo(function StatusBadge({ 
   status, 
   className = "" 
 }: {
@@ -232,4 +234,4 @@ export function StatusBadge({
       {statusText[status]}
     </span>
   );
-} 
+}); 

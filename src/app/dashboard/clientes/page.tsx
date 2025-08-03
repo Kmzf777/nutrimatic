@@ -2,6 +2,7 @@
 
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { StatsCard, ContentCard, DashboardButton, DashboardInput, DashboardSelect } from '@/components/dashboard/DashboardPageLayout';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useClientes } from '@/hooks/useClientes';
 import ConnectionStatus from '@/components/ui/ConnectionStatus';
 import { useState } from 'react';
@@ -30,8 +31,9 @@ export default function ClientesPage() {
   };
 
   return (
-    <DashboardLayout>
-      <DashboardPageLayout
+    <ProtectedRoute>
+      <DashboardLayout>
+        <DashboardPageLayout
         title="Clientes"
         subtitle="Gerencie todos os seus clientes e prospectos"
         actions={
@@ -206,5 +208,6 @@ export default function ClientesPage() {
         </ContentCard>
       </DashboardPageLayout>
     </DashboardLayout>
+    </ProtectedRoute>
   );
 } 

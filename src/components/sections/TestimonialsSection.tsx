@@ -189,8 +189,8 @@ export default function TestimonialsSection() {
               Comece hoje mesmo e veja a diferença em sua rotina profissional
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register" className="btn btn-primary text-lg px-8 py-4">
-                Começar agora
+              <Link href="/dashboard" className="btn btn-primary text-lg px-8 py-4">
+                Acessar Dashboard
               </Link>
               <button className="btn btn-secondary text-lg px-8 py-4">
                 Ver demonstração

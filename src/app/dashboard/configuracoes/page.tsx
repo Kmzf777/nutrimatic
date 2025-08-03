@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { ContentCard, DashboardButton, DashboardInput, DashboardSelect } from '@/components/dashboard/DashboardPageLayout';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { User, Settings, Bell, Shield, Link, Save, X } from 'lucide-react';
 
 export default function ConfiguracoesPage() {
@@ -326,8 +327,9 @@ export default function ConfiguracoesPage() {
   };
 
   return (
-    <DashboardLayout>
-      <DashboardPageLayout
+    <ProtectedRoute>
+      <DashboardLayout>
+        <DashboardPageLayout
         title="Configurações"
         subtitle="Gerencie suas preferências e configurações da conta"
       >
@@ -373,5 +375,6 @@ export default function ConfiguracoesPage() {
         </div>
       </DashboardPageLayout>
     </DashboardLayout>
+    </ProtectedRoute>
   );
 } 

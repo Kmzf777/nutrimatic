@@ -5,19 +5,25 @@ import { useState, useEffect } from 'react';
 export function useMenuState() {
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(true); // Começar como mobile para evitar flash
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 1024);
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      
+      // Se mudou para desktop, resetar estados
+      if (!mobile) {
+        setIsMenuExpanded(false);
+      }
     };
 
+    // Inicializar imediatamente
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    setIsInitialized(true);
     
-    // Garantir que o estado seja inicializado após a montagem
-    setTimeout(() => setIsInitialized(true), 100);
+    window.addEventListener('resize', checkScreenSize);
     
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
@@ -28,23 +34,19 @@ export function useMenuState() {
   };
 
   const handleMouseEnter = () => {
-    if (!isMobile && isInitialized) {
-      console.log('Mouse enter - setting hover to true');
+    if (!isMobile) {
       setIsHovering(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (!isMobile && isInitialized) {
-      console.log('Mouse leave - setting hover to false');
+    if (!isMobile) {
       setIsHovering(false);
     }
   };
 
   // Menu visível quando expandido OU quando hover (apenas desktop)
   const isMenuVisible = isMenuExpanded || (isHovering && !isMobile);
-  
-  console.log('Menu state:', { isMenuExpanded, isHovering, isMobile, isMenuVisible, isInitialized });
 
   return {
     isMenuExpanded,

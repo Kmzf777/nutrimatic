@@ -2,57 +2,52 @@
 
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { StatsCard, ContentCard, DashboardButton } from '@/components/dashboard/DashboardPageLayout';
-import { useRecipes } from '@/hooks/useRecipes';
-import { usePrescriptions } from '@/hooks/usePrescriptions';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
+import { usePrescricoes } from '@/hooks/usePrescricoes';
 import { useState } from 'react';
 import { BarChart3, TrendingUp, Calendar, Clock, Activity, FileText, CheckCircle, XCircle, ClipboardList, Zap, AlertTriangle } from 'lucide-react';
 
 export default function UsoSistema() {
-  const { recipes, loading: recipesLoading, error: recipesError, refetch: refetchRecipes } = useRecipes();
-  const { prescriptionUsage, loading: prescriptionsLoading, error: prescriptionsError, refetch: refetchPrescriptions, getPrescriptionStats } = usePrescriptions();
+  const { nutricionista, loading: authLoading } = useAuth();
+  const { prescricoes, loading: prescricoesLoading, error: prescricoesError, refetch: refetchPrescricoes } = usePrescricoes();
   const [selectedPeriod, setSelectedPeriod] = useState('week');
 
-  const loading = recipesLoading || prescriptionsLoading;
-  const error = recipesError || prescriptionsError;
+  const loading = authLoading || prescricoesLoading;
+  const error = prescricoesError;
 
-  // Obter estatísticas de prescrições
-  const prescriptionStats = getPrescriptionStats();
-  const { totalPrescriptions, monthlyPrescriptions, weeklyPrescriptions, remainingPrescriptions, usagePercentage, monthlyLimit } = prescriptionStats;
-
-  // Dados de exemplo para receitas
-  const exampleRecipes = [
-    { id: 'ex1', nome: 'Ana Paula Silva', status: 'pending', created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex2', nome: 'Carlos Eduardo Santos', status: 'approved', created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex3', nome: 'Mariana Costa Lima', status: 'approved', created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex4', nome: 'Roberto Almeida Ferreira', status: 'approved', created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex5', nome: 'Fernanda Oliveira Rodrigues', status: 'pending', created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex6', nome: 'Lucas Mendes Pereira', status: 'approved', created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex7', nome: 'Juliana Souza Barbosa', status: 'approved', created_at: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex8', nome: 'Pedro Henrique Nascimento', status: 'rejected', created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex9', nome: 'Amanda Costa Santos', status: 'approved', created_at: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex10', nome: 'Rafael Silva Oliveira', status: 'approved', created_at: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex11', nome: 'Carolina Mendes Lima', status: 'approved', created_at: new Date(Date.now() - 120 * 60 * 60 * 1000).toISOString() },
-    { id: 'ex12', nome: 'Thiago Alves Costa', status: 'approved', created_at: new Date(Date.now() - 144 * 60 * 60 * 1000).toISOString() }
-  ];
-
-  // Usar dados de exemplo se não houver receitas reais
-  const finalRecipes = recipes.length > 0 ? recipes : exampleRecipes;
+  // Dados do usuário logado
+  const prescricoesGeradas = nutricionista?.presc_geradas || 0;
+  const prescricoesMax = nutricionista?.presc_max || 0;
+  const totalPrescriptions = prescricoes.length;
   
-  // Dados de exemplo para receitas semanais e mensais
-  const exampleWeeklyRecipes = exampleRecipes.slice(0, 5); // 5 receitas na semana
-  const exampleMonthlyRecipes = exampleRecipes.slice(0, 8); // 8 receitas no mês
-  
-  const finalWeeklyRecipes = recipes.length > 0 ? recipes.slice(0, 5) : exampleWeeklyRecipes;
-  const finalMonthlyRecipes = recipes.length > 0 ? recipes.slice(0, 8) : exampleMonthlyRecipes;
+  // Calcular prescrições do mês atual
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const monthlyPrescriptions = prescricoes.filter(prescricao => {
+    const prescricaoDate = new Date(prescricao.data);
+    return prescricaoDate.getMonth() === currentMonth && prescricaoDate.getFullYear() === currentYear;
+  }).length;
+
+  // Calcular prescrições da semana atual
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const weeklyPrescriptions = prescricoes.filter(prescricao => {
+    const prescricaoDate = new Date(prescricao.data);
+    return prescricaoDate >= oneWeekAgo;
+  }).length;
+
+  const remainingPrescriptions = Math.max(0, prescricoesMax - prescricoesGeradas);
+  const usagePercentage = prescricoesMax > 0 ? (prescricoesGeradas / prescricoesMax) * 100 : 0;
 
   const refetch = () => {
-    refetchRecipes();
-    refetchPrescriptions();
+    refetchPrescricoes();
   };
 
   return (
-    <DashboardLayout>
-      <DashboardPageLayout
+    <ProtectedRoute>
+      <DashboardLayout>
+        <DashboardPageLayout
         title="Uso do Sistema"
         subtitle="Estatísticas e métricas de utilização da plataforma"
         actions={
@@ -81,7 +76,7 @@ export default function UsoSistema() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <ContentCard
             title="Sistema de Prescrições"
-            subtitle={`Controle de consumo de prescrições mensal ${recipes.length > 0 ? '' : '(Dados de exemplo)'}`}
+            subtitle="Controle de consumo de prescrições mensal"
           >
             <div className="space-y-6">
               {/* Status das Prescrições */}
@@ -92,12 +87,12 @@ export default function UsoSistema() {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">Prescrições Restantes</p>
-                    <p className="text-sm text-gray-500">Limite mensal: {monthlyLimit}</p>
+                    <p className="text-sm text-gray-500">Limite mensal: {prescricoesMax}</p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-3xl font-bold text-nutrimatic-600">{remainingPrescriptions}</p>
-                  <p className="text-sm text-gray-500">de {monthlyLimit}</p>
+                  <p className="text-sm text-gray-500">de {prescricoesMax}</p>
                 </div>
               </div>
 
@@ -106,7 +101,7 @@ export default function UsoSistema() {
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700">Consumo de Prescrições</span>
                   <span className="text-sm font-bold text-gray-900">
-                    {monthlyPrescriptions} / {monthlyLimit}
+                    {prescricoesGeradas} / {prescricoesMax}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
@@ -189,7 +184,7 @@ export default function UsoSistema() {
                     <Zap className="w-5 h-5 text-purple-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Total histórico</p>
+                    <p className="font-medium text-gray-900">Total gerado</p>
                     <p className="text-sm text-gray-500">{totalPrescriptions} prescrições</p>
                   </div>
                 </div>
@@ -206,77 +201,63 @@ export default function UsoSistema() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <ContentCard
             title="Atividade Recente"
-            subtitle={`Últimas atividades registradas no sistema ${recipes.length > 0 ? '' : '(Dados de exemplo)'}`}
+            subtitle="Últimas prescrições registradas no sistema"
           >
             <div className="space-y-3">
               {/* Cabeçalho da tabela */}
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
-                <span className="font-medium text-gray-700">Nome</span>
-                <span className="font-medium text-gray-700">Ação</span>
+                <span className="font-medium text-gray-700">Cliente</span>
+                <span className="font-medium text-gray-700">Status</span>
               </div>
 
               {/* Lista de atividades recentes */}
               {(() => {
-                const recentRecipes = finalRecipes
-                  .filter(recipe => {
-                    const recipeDate = new Date(recipe.created_at);
-                    const yesterday = new Date();
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    return recipeDate >= yesterday;
+                const recentPrescricoes = prescricoes
+                  .filter(prescricao => {
+                    const prescricaoDate = new Date(prescricao.data);
+                    const oneWeekAgo = new Date();
+                    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                    return prescricaoDate >= oneWeekAgo;
                   })
-                  .slice(0, 5);
-
-                // Dados de exemplo se não houver receitas recentes
-                const exampleActivities = [
-                  { id: 'ex1', nome: 'Ana Paula Silva', status: 'pending' },
-                  { id: 'ex2', nome: 'Carlos Eduardo Santos', status: 'approved' },
-                  { id: 'ex3', nome: 'Mariana Costa Lima', status: 'approved' },
-                  { id: 'ex4', nome: 'Roberto Almeida Ferreira', status: 'approved' },
-                  { id: 'ex5', nome: 'Fernanda Oliveira Rodrigues', status: 'pending' },
-                  { id: 'ex6', nome: 'Lucas Mendes Pereira', status: 'approved' },
-                  { id: 'ex7', nome: 'Juliana Souza Barbosa', status: 'approved' }
-                ];
-
-                const activitiesToShow = recentRecipes.length > 0 ? recentRecipes : exampleActivities;
+                  .slice(0, 7)
+                  .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
 
                 const getStatusColor = (status: string) => {
-                  switch (status) {
-                    case 'approved':
+                  switch (status.toLowerCase()) {
+                    case 'aprovada':
                       return 'text-green-600 bg-green-50 border-green-200';
-                    case 'rejected':
+                    case 'refazendo':
                       return 'text-red-600 bg-red-50 border-red-200';
-                    case 'pending':
+                    case 'pendente':
                     default:
                       return 'text-yellow-600 bg-yellow-50 border-yellow-200';
                   }
                 };
 
-                const getStatusText = (status: string) => {
-                  switch (status) {
-                    case 'approved':
-                      return 'Aprovada';
-                    case 'rejected':
-                      return 'Reprovada';
-                    case 'pending':
-                    default:
-                      return 'Pendente';
-                  }
-                };
+                if (recentPrescricoes.length === 0) {
+                  return (
+                    <div className="text-center py-8">
+                      <ClipboardList className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">Nenhuma prescrição recente encontrada</p>
+                      <p className="text-sm text-gray-500 mt-2">Prescrições aparecerão aqui conforme forem criadas</p>
+                    </div>
+                  );
+                }
 
-                return activitiesToShow.map((activity, index) => (
-                  <div key={activity.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                return recentPrescricoes.map((prescricao) => (
+                  <div key={prescricao.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-nutrimatic-100 rounded-full flex items-center justify-center">
                         <span className="text-sm font-medium text-nutrimatic-600">
-                          {activity.nome ? activity.nome.charAt(0).toUpperCase() : 'P'}
+                          {prescricao.nome_cliente ? prescricao.nome_cliente.charAt(0).toUpperCase() : 'P'}
                         </span>
                       </div>
                       <span className="font-medium text-gray-900">
-                        {activity.nome || 'Paciente'}
+                        {prescricao.nome_cliente || 'Cliente'}
                       </span>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(activity.status || 'pending')}`}>
-                      {getStatusText(activity.status || 'pending')}
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(prescricao.status || 'Pendente')}`}>
+                      {prescricao.status || 'Pendente'}
                     </span>
                   </div>
                 ));
@@ -286,37 +267,37 @@ export default function UsoSistema() {
 
           <ContentCard
             title="Taxa de Aprovação"
-            subtitle={`Percentual de receitas aprovadas vs rejeitadas ${recipes.length > 0 ? '' : '(Dados de exemplo)'}`}
+            subtitle="Percentual de prescrições aprovadas vs rejeitadas"
           >
             <div className="space-y-6">
-              {finalRecipes.length > 0 ? (
+              {prescricoes.length > 0 ? (
                 <>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-gray-700">Aprovadas</span>
                       <span className="text-sm font-bold text-green-600">
-                        {((finalRecipes.filter(recipe => recipe.status === 'approved').length / finalRecipes.length) * 100).toFixed(1)}%
+                        {((prescricoes.filter(prescricao => prescricao.status?.toLowerCase() === 'aprovada').length / prescricoes.length) * 100).toFixed(1)}%
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
                         className="bg-green-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${(finalRecipes.filter(recipe => recipe.status === 'approved').length / finalRecipes.length) * 100}%` }}
+                        style={{ width: `${(prescricoes.filter(prescricao => prescricao.status?.toLowerCase() === 'aprovada').length / prescricoes.length) * 100}%` }}
                       ></div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Rejeitadas</span>
+                      <span className="text-sm font-medium text-gray-700">Refazendo</span>
                       <span className="text-sm font-bold text-red-600">
-                        {((finalRecipes.filter(recipe => recipe.status === 'rejected').length / finalRecipes.length) * 100).toFixed(1)}%
+                        {((prescricoes.filter(prescricao => prescricao.status?.toLowerCase() === 'refazendo').length / prescricoes.length) * 100).toFixed(1)}%
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
                         className="bg-red-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${(finalRecipes.filter(recipe => recipe.status === 'rejected').length / finalRecipes.length) * 100}%` }}
+                        style={{ width: `${(prescricoes.filter(prescricao => prescricao.status?.toLowerCase() === 'refazendo').length / prescricoes.length) * 100}%` }}
                       ></div>
                     </div>
                   </div>
@@ -325,7 +306,7 @@ export default function UsoSistema() {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-gray-700">Pendentes</span>
                       <span className="text-sm font-bold text-yellow-600">
-                        {finalRecipes.filter(recipe => !recipe.status || recipe.status === 'pending').length}
+                        {prescricoes.filter(prescricao => !prescricao.status || prescricao.status.toLowerCase() === 'pendente').length}
                       </span>
                     </div>
                   </div>
@@ -333,7 +314,8 @@ export default function UsoSistema() {
               ) : (
                 <div className="text-center py-8">
                   <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Nenhuma receita para calcular estatísticas</p>
+                  <p className="text-gray-600">Nenhuma prescrição para calcular estatísticas</p>
+                  <p className="text-sm text-gray-500 mt-2">Estatísticas aparecerão aqui conforme prescrições forem criadas</p>
                 </div>
               )}
             </div>
@@ -341,5 +323,6 @@ export default function UsoSistema() {
         </div>
       </DashboardPageLayout>
     </DashboardLayout>
+    </ProtectedRoute>
   );
 } 

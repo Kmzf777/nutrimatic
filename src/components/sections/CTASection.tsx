@@ -74,8 +74,8 @@ export default function CTASection() {
           viewport={{ once: true }}
           className="flex flex-col sm:flex-row gap-4 justify-center mb-16 lg:mb-20"
         >
-          <Link href="/register" className="btn btn-primary text-lg px-8 py-4">
-            <span>Teste grátis agora</span>
+          <Link href="/dashboard" className="btn btn-primary text-lg px-8 py-4">
+            <span>Acessar Dashboard</span>
             <ArrowRight className="w-5 h-5" />
           </Link>
           

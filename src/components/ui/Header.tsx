@@ -4,10 +4,15 @@ import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+
+  // Detectar se estamos em páginas que precisam de background sólido
+  const isAuthPage = pathname === '/login' || pathname === '/register';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,9 +21,15 @@ export default function Header() {
       setIsScrolled(window.scrollY > heroHeight * 0.8);
     };
 
+    // Se for página de auth, sempre considerar como "scrolled" para ter background sólido
+    if (isAuthPage) {
+      setIsScrolled(true);
+      return;
+    }
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isAuthPage]);
 
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -81,20 +92,22 @@ export default function Header() {
             </nav>
 
             {/* Desktop Buttons - Direita */}
-            <div className="hidden lg:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-3">
               <Link 
                 href="/login" 
-                className={`font-medium transition-colors duration-200 ${
-                  isScrolled ? 'text-gray-700 hover:text-nutrimatic-600' : 'text-white hover:text-nutrimatic-300'
+                className={`px-6 py-2 font-medium rounded-lg border transition-all duration-200 ${
+                  isScrolled 
+                    ? 'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400' 
+                    : 'border-white/20 text-white hover:bg-white/10 hover:border-white/40'
                 }`}
               >
-                Log in
+                Entrar
               </Link>
               <Link 
                 href="/register" 
                 className="btn btn-primary"
               >
-                Comece Já
+                Começar Grátis
               </Link>
             </div>
 
@@ -189,17 +202,17 @@ export default function Header() {
               <div className="pt-4 border-t border-gray-200 space-y-3">
                 <Link 
                   href="/login" 
-                  className="text-gray-700 hover:text-nutrimatic-600 font-medium py-2 transition-colors block"
+                  className="w-full px-6 py-3 font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-center"
                   onClick={closeMenu}
                 >
-                  Log in
+                  Entrar
                 </Link>
                 <Link 
                   href="/register" 
                   className="btn btn-primary w-full justify-center"
                   onClick={closeMenu}
                 >
-                  Comece Já
+                  Começar Grátis
                 </Link>
               </div>
             </nav>

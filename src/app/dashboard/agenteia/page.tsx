@@ -2,6 +2,7 @@
 
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { ContentCard, DashboardButton } from '@/components/dashboard/DashboardPageLayout';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useState } from 'react';
 import { Bot, Save, RefreshCw, Settings, MessageSquare, Brain, Zap, FileText } from 'lucide-react';
 
@@ -115,8 +116,9 @@ export default function AgenteIA() {
   };
 
   return (
-    <DashboardLayout>
-      <DashboardPageLayout
+    <ProtectedRoute>
+      <DashboardLayout>
+        <DashboardPageLayout
         title="Agente IA"
         subtitle="Personalize o comportamento e características do seu assistente virtual"
         actions={
@@ -444,5 +446,6 @@ export default function AgenteIA() {
          </div>
        )}
      </DashboardLayout>
+     </ProtectedRoute>
    );
  } 

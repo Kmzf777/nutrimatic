@@ -1,308 +1,323 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
-export interface PrescriptionUsage {
+export interface Prescription {
   id: string;
-  recipe_id: string;
-  prescriptions_consumed: number;
+  identificacao: string;
   created_at: string;
-  recipe_name: string;
-  status: 'pending' | 'approved' | 'rejected';
+  nome_cliente: string;
+  data: string;
+  json: any;
+  url?: string;
+  status: string;
 }
 
-export interface PrescriptionStats {
-  totalPrescriptions: number;
-  monthlyPrescriptions: number;
-  weeklyPrescriptions: number;
-  remainingPrescriptions: number;
-  usagePercentage: number;
-  monthlyLimit: number;
+export interface CreatePrescriptionData {
+  nome_cliente: string;
+  json: any;
+  status?: string;
+  url?: string;
 }
-
-// Dados mockados para prescrições
-const mockPrescriptionUsage: PrescriptionUsage[] = [
-  {
-    id: 'prescription-mock-1',
-    recipe_id: 'mock-1',
-    prescriptions_consumed: 1,
-    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    recipe_name: 'Receita para Ana Paula Silva',
-    status: 'pending'
-  },
-  {
-    id: 'prescription-mock-2',
-    recipe_id: 'mock-2',
-    prescriptions_consumed: 1,
-    created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-    recipe_name: 'Receita para Carlos Eduardo Santos',
-    status: 'approved'
-  },
-  {
-    id: 'prescription-mock-3',
-    recipe_id: 'mock-3',
-    prescriptions_consumed: 1,
-    created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-    recipe_name: 'Receita para Mariana Costa Lima',
-    status: 'approved'
-  },
-  {
-    id: 'prescription-mock-4',
-    recipe_id: 'mock-4',
-    prescriptions_consumed: 1,
-    created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-    recipe_name: 'Receita para Roberto Almeida Ferreira',
-    status: 'approved'
-  },
-  {
-    id: 'prescription-mock-5',
-    recipe_id: 'mock-5',
-    prescriptions_consumed: 1,
-    created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-    recipe_name: 'Receita para Fernanda Oliveira Rodrigues',
-    status: 'pending'
-  },
-  {
-    id: 'prescription-mock-6',
-    recipe_id: 'mock-6',
-    prescriptions_consumed: 1,
-    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    recipe_name: 'Receita para Lucas Mendes Pereira',
-    status: 'approved'
-  },
-  {
-    id: 'prescription-mock-7',
-    recipe_id: 'mock-7',
-    prescriptions_consumed: 1,
-    created_at: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(),
-    recipe_name: 'Receita para Juliana Souza Barbosa',
-    status: 'approved'
-  },
-  {
-    id: 'prescription-mock-8',
-    recipe_id: 'mock-8',
-    prescriptions_consumed: 1,
-    created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-    recipe_name: 'Receita para Pedro Henrique Nascimento',
-    status: 'rejected'
-  },
-  {
-    id: 'prescription-mock-9',
-    recipe_id: 'mock-9',
-    prescriptions_consumed: 1,
-    created_at: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
-    recipe_name: 'Receita para Amanda Costa Santos',
-    status: 'approved'
-  },
-  {
-    id: 'prescription-mock-10',
-    recipe_id: 'mock-10',
-    prescriptions_consumed: 1,
-    created_at: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(),
-    recipe_name: 'Receita para Rafael Silva Oliveira',
-    status: 'approved'
-  }
-];
-
-// Estatísticas mockadas
-const mockPrescriptionStats: PrescriptionStats = {
-  totalPrescriptions: 342,
-  monthlyPrescriptions: 53,
-  weeklyPrescriptions: 18,
-  remainingPrescriptions: 47,
-  usagePercentage: 53,
-  monthlyLimit: 100
-};
 
 export function usePrescriptions() {
-  const [prescriptionUsage, setPrescriptionUsage] = useState<PrescriptionUsage[]>([]);
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [useMockData, setUseMockData] = useState(false);
+  const { user } = useAuth();
   const supabase = createClient();
-  const hasInitialized = useRef(false);
+  
+  // Use apenas o ID do usuário como dependência estável
+  const userId = user?.id;
+  
+  // Cache local para evitar perda de dados
+  const cacheKey = `prescriptions_${userId}`;
 
-  const monthlyPrescriptionLimit = 100; // Limite mensal de prescrições
 
-  const fetchPrescriptionUsage = async () => {
+
+  const createPrescription = async (prescriptionData: CreatePrescriptionData) => {
+    if (!user) {
+      throw new Error('Usuário não autenticado');
+    }
+
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
+      const { data, error } = await supabase
+        .from('prescricoes')
+        .insert({
+          identificacao: user.id,
+          nome_cliente: prescriptionData.nome_cliente,
+          json: prescriptionData.json,
+          status: prescriptionData.status || 'Pendente',
+          url: prescriptionData.url
+        })
+        .select()
+        .single();
 
-      // Por enquanto, vamos simular o uso de prescrições baseado nas receitas
-      // Em uma implementação real, você teria uma tabela separada para prescrições
-      const { data: recipes, error: recipesError } = await supabase
-        .from('Teste-Tabela')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (recipesError) {
-        throw recipesError;
-      }
-
-      // Se não há dados reais, usar dados mockados
-      if (!recipes || recipes.length === 0) {
-        setPrescriptionUsage(mockPrescriptionUsage);
-        setUseMockData(true);
-      } else {
-        // Simular dados de uso de prescrições baseado nas receitas
-        const simulatedPrescriptionUsage: PrescriptionUsage[] = recipes.map((recipe, index) => ({
-          id: `prescription-${recipe.id}`,
-          recipe_id: recipe.id,
-          prescriptions_consumed: 1, // 1 prescrição por receita
-          created_at: recipe.created_at,
-          recipe_name: recipe.nome,
-          status: recipe.status || 'pending'
-        }));
-
-        setPrescriptionUsage(simulatedPrescriptionUsage);
-        setUseMockData(false);
-      }
-
-      if (!hasInitialized.current) {
-        hasInitialized.current = true;
-        setIsInitialized(true);
-      }
-    } catch (err) {
-      console.error('Erro ao buscar uso de prescrições:', err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      if (error) throw error;
       
-      // Em caso de erro, usar dados mockados
-      setPrescriptionUsage(mockPrescriptionUsage);
-      setUseMockData(true);
-      setIsInitialized(true);
+      // Recarregar prescrições após criar
+      const { data: updatedData } = await supabase
+        .from('prescricoes')
+        .select('*')
+        .eq('identificacao', user.id)
+        .order('data', { ascending: false });
+      const prescriptionsData = updatedData || [];
+      setPrescriptions(prescriptionsData);
+      
+      // Atualizar cache
+      if (typeof window !== 'undefined') {
+        try {
+          const cacheData = {
+            data: prescriptionsData,
+            timestamp: Date.now()
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        } catch (err) {
+          console.warn('Erro ao salvar cache:', err);
+        }
+      }
+      
+      return data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao criar prescrição');
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  const getPrescriptionStats = (): PrescriptionStats => {
-    // Se estamos usando dados mockados, retornar estatísticas mockadas
-    if (useMockData) {
-      return mockPrescriptionStats;
-    }
-
-    const totalPrescriptions = prescriptionUsage.reduce((sum, usage) => sum + usage.prescriptions_consumed, 0);
+  // Atualizar prescrição
+  const updatePrescription = async (id: string, updates: Partial<Prescription>) => {
+    setLoading(true);
+    setError(null);
     
-    // Calcular prescrições do mês atual
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthlyPrescriptions = prescriptionUsage.filter(usage => 
-      new Date(usage.created_at) >= startOfMonth
-    ).reduce((sum, usage) => sum + usage.prescriptions_consumed, 0);
-
-    // Calcular prescrições da semana atual
-    const startOfWeek = new Date(now.getTime() - (now.getDay() * 24 * 60 * 60 * 1000));
-    const weeklyPrescriptions = prescriptionUsage.filter(usage => 
-      new Date(usage.created_at) >= startOfWeek
-    ).reduce((sum, usage) => sum + usage.prescriptions_consumed, 0);
-
-    const remainingPrescriptions = Math.max(0, monthlyPrescriptionLimit - monthlyPrescriptions);
-    const usagePercentage = (monthlyPrescriptions / monthlyPrescriptionLimit) * 100;
-
-    return {
-      totalPrescriptions,
-      monthlyPrescriptions,
-      weeklyPrescriptions,
-      remainingPrescriptions,
-      usagePercentage,
-      monthlyLimit: monthlyPrescriptionLimit
-    };
-  };
-
-  const getPrescriptionsByPeriod = (days: number) => {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - days);
-    return prescriptionUsage.filter(usage => new Date(usage.created_at) >= cutoffDate);
-  };
-
-  const addPrescriptionUsage = async (recipeId: string, recipeName: string, prescriptions: number = 1) => {
     try {
-      const newUsage: PrescriptionUsage = {
-        id: `prescription-${Date.now()}`,
-        recipe_id: recipeId,
-        prescriptions_consumed: prescriptions,
-        created_at: new Date().toISOString(),
-        recipe_name: recipeName,
-        status: 'pending'
-      };
+      const { data, error } = await supabase
+        .from('prescricoes')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
 
-      setPrescriptionUsage(prev => [newUsage, ...prev]);
+      if (error) throw error;
       
-      // Em uma implementação real, você salvaria no banco de dados
-      console.log('Prescription usage added:', newUsage);
+      // Recarregar prescrições após atualizar
+      const { data: updatedData } = await supabase
+        .from('prescricoes')
+        .select('*')
+        .eq('identificacao', userId)
+        .order('data', { ascending: false });
+      const prescriptionsData = updatedData || [];
+      setPrescriptions(prescriptionsData);
       
-      return { success: true };
+      // Atualizar cache
+      if (typeof window !== 'undefined') {
+        try {
+          const cacheData = {
+            data: prescriptionsData,
+            timestamp: Date.now()
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        } catch (err) {
+          console.warn('Erro ao salvar cache:', err);
+        }
+      }
+      
+      return data;
     } catch (err) {
-      console.error('Erro ao adicionar uso de prescrição:', err);
-      return { 
-        success: false, 
-        error: err instanceof Error ? err.message : 'Erro desconhecido' 
-      };
+      setError(err instanceof Error ? err.message : 'Erro ao atualizar prescrição');
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Real-time subscription para mudanças nas receitas (que afetam prescrições)
+  // Deletar prescrição
+  const deletePrescription = async (id: string) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const { error } = await supabase
+        .from('prescricoes')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      // Recarregar prescrições após deletar
+      const { data: updatedData } = await supabase
+        .from('prescricoes')
+        .select('*')
+        .eq('identificacao', userId)
+        .order('data', { ascending: false });
+      const prescriptionsData = updatedData || [];
+      setPrescriptions(prescriptionsData);
+      
+      // Atualizar cache
+      if (typeof window !== 'undefined') {
+        try {
+          const cacheData = {
+            data: prescriptionsData,
+            timestamp: Date.now()
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        } catch (err) {
+          console.warn('Erro ao salvar cache:', err);
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao deletar prescrição');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Buscar prescrição por ID
+  const getPrescriptionById = async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('prescricoes')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      
+      return data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao buscar prescrição');
+      return null;
+    }
+  };
+
+  // Buscar prescrições por status
+  const getPrescriptionsByStatus = async (status: string) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase
+        .from('prescricoes')
+        .select('*')
+        .eq('status', status)
+        .order('data', { ascending: false });
+
+      if (error) throw error;
+      
+      return data || [];
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao buscar prescrições por status');
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (!hasInitialized.current) {
-      fetchPrescriptionUsage();
+    if (!userId) {
+      setPrescriptions([]);
+      setLoading(false);
+      return;
     }
 
-    const channel = supabase
-      .channel('prescription-usage-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'Teste-Tabela'
-        },
-        (payload) => {
-          console.log('Mudança detectada nas receitas (afetando prescrições):', payload);
-          
-          if (payload.eventType === 'INSERT') {
-            const newRecipe = payload.new as any;
-            const newPrescriptionUsage: PrescriptionUsage = {
-              id: `prescription-${newRecipe.id}`,
-              recipe_id: newRecipe.id,
-              prescriptions_consumed: 1,
-              created_at: newRecipe.created_at,
-              recipe_name: newRecipe.nome,
-              status: newRecipe.status || 'pending'
-            };
-            
-            setPrescriptionUsage(prev => [newPrescriptionUsage, ...prev]);
-            
-            // Mostrar notificação de prescrição consumida
-            if ((window as any).showNotification) {
-              (window as any).showNotification({
-                type: 'info',
-                title: 'Prescrição consumida!',
-                message: `1 prescrição foi consumida para gerar a receita "${newRecipe.nome}".`,
-                duration: 4000
-              });
+    let isCancelled = false;
+
+    const loadPrescriptions = async () => {
+      // Primeiro, tentar carregar do cache para resposta rápida
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem(cacheKey);
+          if (cached) {
+            const parsedData = JSON.parse(cached);
+            // Verificar se o cache não está muito antigo (5 minutos)
+            const cacheTime = parsedData.timestamp;
+            const now = Date.now();
+            if (now - cacheTime < 5 * 60 * 1000) {
+              console.log('📦 Carregando prescrições do cache local');
+              if (!isCancelled) {
+                setPrescriptions(parsedData.data || []);
+                setLoading(false);
+                return; // Use cache se recente
+              }
             }
           }
+        } catch (err) {
+          console.warn('Erro ao carregar cache:', err);
         }
-      )
-      .subscribe();
+      }
+      
+      if (isCancelled) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        console.log('🚀 Buscando prescrições para usuário:', userId);
+
+        const { data, error: prescriptionsError } = await supabase
+          .from('prescricoes')
+          .select('*')
+          .eq('identificacao', userId)
+          .order('data', { ascending: false });
+
+        if (isCancelled) return;
+
+        if (prescriptionsError) {
+          console.error('❌ Erro ao buscar prescrições:', prescriptionsError);
+          setError(prescriptionsError.message);
+          return;
+        }
+
+        console.log('✅ Prescrições encontradas:', data?.length || 0);
+        const prescriptionsData = data || [];
+        setPrescriptions(prescriptionsData);
+        
+        // Salvar no cache
+        if (typeof window !== 'undefined') {
+          try {
+            const cacheData = {
+              data: prescriptionsData,
+              timestamp: Date.now()
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+          } catch (err) {
+            console.warn('Erro ao salvar cache:', err);
+          }
+        }
+
+      } catch (err) {
+        if (isCancelled) return;
+        console.error('💥 Erro inesperado:', err);
+        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadPrescriptions();
 
     return () => {
-      supabase.removeChannel(channel);
+      isCancelled = true;
     };
-  }, []);
+  }, [userId, cacheKey]);
 
   return {
-    prescriptionUsage,
+    prescriptions,
     loading,
     error,
-    isInitialized,
-    refetch: fetchPrescriptionUsage,
-    getPrescriptionStats,
-    getPrescriptionsByPeriod,
-    addPrescriptionUsage,
-    monthlyPrescriptionLimit
+    createPrescription,
+    updatePrescription,
+    deletePrescription,
+    getPrescriptionById,
+    getPrescriptionsByStatus
   };
 } 

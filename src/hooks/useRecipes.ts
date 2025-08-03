@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface Recipe {
   id: string;
@@ -10,224 +11,88 @@ export interface Recipe {
   url: string;
   status?: 'pending' | 'approved' | 'rejected';
   rejection_observation?: string;
+  identificacao?: string;
 }
-
-// Dados mockados para quando não há conexão com banco
-const mockRecipes: Recipe[] = [
-  {
-    id: 'mock-1',
-    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    nome: 'Receita para Ana Paula Silva',
-    url: 'https://example.com/recipe1.pdf',
-    status: 'pending'
-  },
-  {
-    id: 'mock-2',
-    created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-    nome: 'Receita para Carlos Eduardo Santos',
-    url: 'https://example.com/recipe2.pdf',
-    status: 'approved'
-  },
-  {
-    id: 'mock-3',
-    created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-    nome: 'Receita para Mariana Costa Lima',
-    url: 'https://example.com/recipe3.pdf',
-    status: 'approved'
-  },
-  {
-    id: 'mock-4',
-    created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-    nome: 'Receita para Roberto Almeida Ferreira',
-    url: 'https://example.com/recipe4.pdf',
-    status: 'approved'
-  },
-  {
-    id: 'mock-5',
-    created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-    nome: 'Receita para Fernanda Oliveira Rodrigues',
-    url: 'https://example.com/recipe5.pdf',
-    status: 'pending'
-  },
-  {
-    id: 'mock-6',
-    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    nome: 'Receita para Lucas Mendes Pereira',
-    url: 'https://example.com/recipe6.pdf',
-    status: 'approved'
-  },
-  {
-    id: 'mock-7',
-    created_at: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(),
-    nome: 'Receita para Juliana Souza Barbosa',
-    url: 'https://example.com/recipe7.pdf',
-    status: 'approved'
-  },
-  {
-    id: 'mock-8',
-    created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-    nome: 'Receita para Pedro Henrique Nascimento',
-    url: 'https://example.com/recipe8.pdf',
-    status: 'rejected',
-    rejection_observation: 'Informações nutricionais insuficientes'
-  },
-  {
-    id: 'mock-9',
-    created_at: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
-    nome: 'Receita para Amanda Costa Santos',
-    url: 'https://example.com/recipe9.pdf',
-    status: 'approved'
-  },
-  {
-    id: 'mock-10',
-    created_at: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(),
-    nome: 'Receita para Rafael Silva Oliveira',
-    url: 'https://example.com/recipe10.pdf',
-    status: 'approved'
-  }
-];
 
 export function useRecipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [useMockData, setUseMockData] = useState(false);
+  const { user } = useAuth();
   const supabase = createClient();
-  const hasInitialized = useRef(false);
-
-  const fetchRecipes = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const { data, error } = await supabase
-        .from('Teste-Tabela')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        throw error;
-      }
-
-      // Se não há dados reais, usar dados mockados
-      if (!data || data.length === 0) {
-        setRecipes(mockRecipes);
-        setUseMockData(true);
-      } else {
-        setRecipes(data);
-        setUseMockData(false);
-      }
-
-      if (!hasInitialized.current) {
-        hasInitialized.current = true;
-        setIsInitialized(true);
-      }
-    } catch (err) {
-      console.error('Erro ao buscar receitas:', err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-      
-      // Em caso de erro, usar dados mockados
-      setRecipes(mockRecipes);
-      setUseMockData(true);
-      setIsInitialized(true);
-    } finally {
-      setLoading(false);
-    }
-  };
+  
+  // Use apenas o ID do usuário como dependência estável
+  const userId = user?.id;
 
   const approveRecipe = async (recipeId: string) => {
-    let recipeData: any = null;
-    
-    try {
-      // Buscar os dados da receita
-      const { data, error: fetchError } = await supabase
-        .from('Teste-Tabela')
-        .select('id, nome, url')
-        .eq('id', recipeId)
-        .single();
+    if (!user) {
+      return { success: false, error: 'Usuário não autenticado' };
+    }
 
-      if (fetchError) {
-        throw fetchError;
+    try {
+      // Atualizar status da receita para approved
+      const { error: updateError } = await supabase
+        .from('Teste-Tabela')
+        .update({ status: 'approved' })
+        .eq('id', recipeId)
+        .eq('identificacao', user.id);
+
+      if (updateError) {
+        throw updateError;
       }
 
-      recipeData = data;
+      // Recarregar receitas após aprovar
+      const { data: updatedData } = await supabase
+        .from('Teste-Tabela')
+        .select('*')
+        .eq('identificacao', user.id)
+        .order('created_at', { ascending: false });
+      
+      setRecipes(updatedData || []);
 
-      // Por enquanto, não atualizar status no banco
-      // Apenas retornar sucesso para disparar os webhooks
       return { success: true };
     } catch (err) {
-      console.error('Erro ao buscar dados da receita:', err);
+      console.error('Erro ao aprovar receita:', err);
       return { 
         success: false, 
         error: err instanceof Error ? err.message : 'Erro desconhecido' 
       };
-    } finally {
-      // Disparar os webhooks sempre que possível
-      if (recipeData) {
-        const webhookData = {
-          id: recipeData.id,
-          url: recipeData.url,
-          nome: recipeData.nome
-        };
-
-        // Webhook 1 - Disparado via API route local (evita CORS)
-        fetch('/api/webhooks', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            webhookType: 'test',
-            data: webhookData
-          })
-        })
-        .then(response => response.json())
-        .then(result => {
-          if (result.success) {
-            console.log('✅ Webhook 1 disparado com sucesso - Status:', result.status);
-          } else {
-            console.warn('⚠️ Webhook 1 falhou:', result.message);
-          }
-        })
-        .catch(error => {
-          console.error('❌ Erro ao disparar webhook 1:', error);
-        });
-
-        // Webhook 2 - Disparado via API route local (evita CORS)
-        fetch('/api/webhooks', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            webhookType: 'production',
-            data: webhookData
-          })
-        })
-        .then(response => response.json())
-        .then(result => {
-          if (result.success) {
-            console.log('✅ Webhook 2 disparado com sucesso - Status:', result.status);
-          } else {
-            console.warn('⚠️ Webhook 2 falhou:', result.message);
-          }
-        })
-        .catch(error => {
-          console.error('❌ Erro ao disparar webhook 2:', error);
-        });
-      }
     }
   };
 
   const rejectRecipe = async (recipeId: string, observation: string) => {
+    if (!user) {
+      return { success: false, error: 'Usuário não autenticado' };
+    }
+
     try {
-      // Por enquanto, não atualizar status no banco
-      // Apenas retornar sucesso
-      console.log('Reprovando receita:', recipeId, 'com observação:', observation);
+      // Atualizar status da receita para rejected com observação
+      const { error: updateError } = await supabase
+        .from('Teste-Tabela')
+        .update({ 
+          status: 'rejected',
+          rejection_observation: observation
+        })
+        .eq('id', recipeId)
+        .eq('identificacao', user.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Recarregar receitas após rejeitar
+      const { data: updatedData } = await supabase
+        .from('Teste-Tabela')
+        .select('*')
+        .eq('identificacao', user.id)
+        .order('created_at', { ascending: false });
+      
+      setRecipes(updatedData || []);
+
       return { success: true };
     } catch (err) {
-      console.error('Erro ao reprovar receita:', err);
+      console.error('Erro ao rejeitar receita:', err);
       return { 
         success: false, 
         error: err instanceof Error ? err.message : 'Erro desconhecido' 
@@ -235,65 +100,47 @@ export function useRecipes() {
     }
   };
 
-  // Real-time subscription
   useEffect(() => {
-    if (!hasInitialized.current) {
-      fetchRecipes();
-    }
+    const loadRecipes = async () => {
+      if (!userId) {
+        setRecipes([]);
+        setLoading(false);
+        return;
+      }
 
-    // Configurar subscription para mudanças em tempo real
-    const channel = supabase
-      .channel('recipes-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'Teste-Tabela'
-        },
-        (payload) => {
-          console.log('Mudança detectada:', payload);
-          
-          // Atualizar a lista baseado no tipo de evento
-          if (payload.eventType === 'INSERT') {
-            const newRecipe = payload.new as Recipe;
-            setRecipes(prev => [newRecipe, ...prev]);
-            
-            // Mostrar notificação
-            if ((window as any).showNotification) {
-              (window as any).showNotification({
-                type: 'success',
-                title: 'Nova receita gerada!',
-                message: `Receita "${newRecipe.nome}" foi criada automaticamente.`,
-                duration: 4000
-              });
-            }
-          } else if (payload.eventType === 'UPDATE') {
-            setRecipes(prev => 
-              prev.map(recipe => 
-                recipe.id === payload.new.id ? payload.new as Recipe : recipe
-              )
-            );
-          } else if (payload.eventType === 'DELETE') {
-            setRecipes(prev => 
-              prev.filter(recipe => recipe.id !== payload.old.id)
-            );
-          }
-        }
-      )
-      .subscribe((status) => {
-        console.log('Status da subscription:', status);
-        if (status === 'SUBSCRIBED') {
-          console.log('✅ Real-time subscription ativa para receitas');
-        }
-      });
+      setLoading(true);
+      setError(null);
+      
+      try {
+        console.log('🚀 Buscando receitas para usuário:', userId);
 
-    // Cleanup function
-    return () => {
-      console.log('🔌 Desconectando real-time subscription');
-      supabase.removeChannel(channel);
+        // Buscar receitas da tabela Teste-Tabela filtradas por usuário
+        const { data, error: recipesError } = await supabase
+          .from('Teste-Tabela')
+          .select('*')
+          .eq('identificacao', userId)
+          .order('created_at', { ascending: false });
+
+        if (recipesError) {
+          console.error('❌ Erro ao buscar receitas:', recipesError);
+          setError(recipesError.message);
+          return;
+        }
+
+        console.log('✅ Receitas encontradas:', data?.length || 0);
+        setRecipes(data || []);
+        setIsInitialized(true);
+
+      } catch (err) {
+        console.error('💥 Erro inesperado:', err);
+        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      } finally {
+        setLoading(false);
+      }
     };
-  }, []);
+
+    loadRecipes();
+  }, [userId]);
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -328,64 +175,40 @@ export function useRecipes() {
     return `Há ${diffInMonths} ${diffInMonths === 1 ? 'mês' : 'meses'}`;
   };
 
+  const refetch = async () => {
+    if (!userId) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error: recipesError } = await supabase
+        .from('Teste-Tabela')
+        .select('*')
+        .eq('identificacao', userId)
+        .order('created_at', { ascending: false });
+
+      if (recipesError) {
+        setError(recipesError.message);
+        return;
+      }
+
+      setRecipes(data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     recipes,
     loading,
     error,
     isInitialized,
-    refetch: fetchRecipes,
+    refetch,
     approveRecipe,
     rejectRecipe,
-    formatTimeAgo,
-    // Função de teste para webhooks (pode ser chamada no console)
-    testWebhooks: (testData = { id: 'test-123', url: 'https://example.com/test.pdf', nome: 'Receita de Teste' }) => {
-      console.log('🧪 Testando webhooks com dados:', testData);
-      
-      // Webhook 1 - Disparado via API route local
-      fetch('/api/webhooks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          webhookType: 'test',
-          data: testData
-        })
-      })
-      .then(response => response.json())
-      .then(result => {
-        if (result.success) {
-          console.log('✅ Webhook 1 - Status:', result.status, 'Message:', result.message);
-        } else {
-          console.warn('⚠️ Webhook 1 falhou:', result.message);
-        }
-      })
-      .catch(error => {
-        console.error('❌ Erro no webhook 1:', error);
-      });
-
-      // Webhook 2 - Disparado via API route local
-      fetch('/api/webhooks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          webhookType: 'production',
-          data: testData
-        })
-      })
-      .then(response => response.json())
-      .then(result => {
-        if (result.success) {
-          console.log('✅ Webhook 2 - Status:', result.status, 'Message:', result.message);
-        } else {
-          console.warn('⚠️ Webhook 2 falhou:', result.message);
-        }
-      })
-      .catch(error => {
-        console.error('❌ Erro no webhook 2:', error);
-      });
-    }
+    formatTimeAgo
   };
 } 

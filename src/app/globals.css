@@ -390,177 +390,54 @@ p {
   }
 }
 
-/* Sidebar Menu Animations */
-.sidebar-transition {
-  transition: all 700ms cubic-bezier(0.4, 0, 0.2, 1);
+/* Sidebar Menu Animations - Floating Menu */
+.sidebar-menu {
+  will-change: transform, width;
+  overflow-x: hidden;
+  transform: translateZ(0); /* GPU acceleration */
 }
 
-.sidebar-width-expanded {
-  width: 18rem; /* 288px */
+.sidebar-menu * {
+  will-change: width, opacity, transform;
+  transform: translateZ(0); /* GPU acceleration */
 }
 
-.sidebar-width-collapsed {
-  width: 5rem; /* 80px */
+/* Force smooth transitions on all transition elements */
+.transition-all {
+  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform: translateZ(0);
 }
 
-.sidebar-text-transition {
-  transition: all 700ms cubic-bezier(0.4, 0, 0.2, 1);
+/* Dashboard content spacing transition */
+.dashboard-content {
+  transition: padding-left 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateZ(0); /* GPU acceleration */
 }
 
-.sidebar-text-visible {
-  max-width: 12rem;
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.sidebar-text-hidden {
-  max-width: 0;
-  opacity: 0;
-  transform: translateX(-1rem);
-}
-
-/* Garantir que as transições funcionem mesmo com preferências de movimento reduzido */
+/* Performance optimizations for smooth animations */
 @media (prefers-reduced-motion: no-preference) {
-  .sidebar-transition {
-    transition: all 700ms cubic-bezier(0.4, 0, 0.2, 1);
+  .sidebar-menu {
+    transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  .sidebar-text-transition {
-    transition: all 700ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-}
-
-/* Forçar animações para elementos específicos do menu */
-.sidebar-menu * {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.sidebar-menu .transition-all {
-  transition-duration: 700ms !important;
-}
-
-/* Garantir que as larguras sejam aplicadas corretamente */
-.sidebar-width-expanded {
-  width: 18rem !important;
-}
-
-.sidebar-width-collapsed {
-  width: 5rem !important;
-}
-
-/* Garantir que as transições de texto funcionem */
-.sidebar-text-visible {
-  max-width: 12rem !important;
-  opacity: 1 !important;
-  transform: translateX(0) !important;
-}
-
-.sidebar-text-hidden {
-  max-width: 0 !important;
-  opacity: 0 !important;
-  transform: translateX(-1rem) !important;
-}
-
-/* Forçar animações para o menu sidebar */
-.sidebar-menu {
-  will-change: width, transform;
-}
-
-.sidebar-menu .transition-all {
-  transition-property: all !important;
-  transition-duration: 700ms !important;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* Garantir que as larguras sejam aplicadas corretamente */
-.sidebar-menu.w-72 {
-  width: 18rem !important;
-}
-
-.sidebar-menu.w-20 {
-  width: 5rem !important;
-}
-
-/* Garantir que as transições funcionem mesmo com preferências de movimento reduzido */
-@media (prefers-reduced-motion: no-preference) {
   .sidebar-menu .transition-all {
-    transition-duration: 700ms !important;
+    transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .dashboard-content {
+    transition: padding-left 500ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-/* Regras específicas para forçar animações */
-.sidebar-menu {
-  transition: width 700ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+/* Smooth card hover animations */
+.card-hover-effect {
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateZ(0);
 }
 
-.sidebar-menu .overflow-hidden {
-  transition: max-width 700ms cubic-bezier(0.4, 0, 0.2, 1), 
-              opacity 700ms cubic-bezier(0.4, 0, 0.2, 1), 
-              transform 700ms cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* Correções específicas para evitar corte de texto */
-.sidebar-menu .overflow-hidden {
-  overflow: visible !important;
-}
-
-.sidebar-menu .max-w-0 {
-  max-width: 0 !important;
-  overflow: hidden !important;
-}
-
-.sidebar-menu .max-w-48 {
-  max-width: 12rem !important;
-  overflow: visible !important;
-}
-
-/* Garantir que o container do texto tenha espaço suficiente */
-.sidebar-menu .flex-1 {
-  flex: 1 1 0% !important;
-  min-width: 0 !important;
-}
-
-/* Garantir que o texto não seja cortado */
-.sidebar-menu .truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Melhorar a transição do texto */
-.sidebar-menu .transition-all {
-  transition-property: max-width, opacity, transform !important;
-  transition-duration: 700ms !important;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* Garantir que o texto seja visível quando o menu está expandido */
-.sidebar-menu .max-w-48 {
-  max-width: 12rem !important;
-  overflow: visible !important;
-  opacity: 1 !important;
-  transform: translateX(0) !important;
-}
-
-/* Garantir que o texto seja ocultado quando o menu está recolhido */
-.sidebar-menu .max-w-0 {
-  max-width: 0 !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  transform: translateX(-1rem) !important;
-}
-
-/* Garantir que o truncate funcione corretamente */
-.sidebar-menu .truncate {
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-/* Prevenir overflow horizontal no menu sidebar */
-.sidebar-menu {
-  overflow-x: hidden !important;
+.card-hover-effect:hover {
+  transform: translateY(-2px) scale(1.02) translateZ(0);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* Garantir que o scroll funcione corretamente na dashboard */
@@ -670,7 +547,5 @@ p {
     height: calc(100vh - 64px); /* Ajustar para o header mobile */
   }
 }
-
-
 
 

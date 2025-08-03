@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase';
+import { Recipe } from '@/hooks/useRecipes';
 
 export interface PrescriptionUsage {
   id: string;
@@ -46,7 +47,7 @@ export function usePrescriptions() {
       }
 
       // Simular dados de uso de prescrições baseado nas receitas
-      const simulatedPrescriptionUsage: PrescriptionUsage[] = (recipes || []).map((recipe, index) => ({
+      const simulatedPrescriptionUsage: PrescriptionUsage[] = (recipes || []).map((recipe: Recipe, index: number) => ({
         id: `prescription-${recipe.id}`,
         recipe_id: recipe.id,
         prescriptions_consumed: 1, // 1 prescrição por receita
@@ -138,7 +139,7 @@ export function usePrescriptions() {
           schema: 'public',
           table: 'Teste-Tabela'
         },
-        (payload) => {
+        (payload: any) => {
           console.log('Mudança detectada nas receitas (afetando prescrições):', payload);
           
           if (payload.eventType === 'INSERT') {

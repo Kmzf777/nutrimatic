@@ -124,16 +124,10 @@ export default function PrecosPage() {
             {/* Desktop Buttons */}
             <div className="hidden lg:flex items-center space-x-4">
               <Link 
-                href="/login" 
-                className="font-medium text-gray-700 hover:text-nutrimatic-600 transition-colors duration-200"
-              >
-                Log in
-              </Link>
-              <Link 
-                href="/register" 
+                href="/dashboard" 
                 className="btn btn-primary"
               >
-                Comece Já
+                Dashboard
               </Link>
             </div>
 
@@ -218,18 +212,11 @@ export default function PrecosPage() {
               {/* Botões */}
               <div className="pt-4 border-t border-gray-200 space-y-3">
                 <Link 
-                  href="/login" 
-                  className="text-gray-700 hover:text-nutrimatic-600 font-medium py-2 transition-colors block"
-                  onClick={closeMenu}
-                >
-                  Log in
-                </Link>
-                <Link 
-                  href="/register" 
+                  href="/dashboard" 
                   className="btn btn-primary w-full justify-center"
                   onClick={closeMenu}
                 >
-                  Comece Já
+                  Dashboard
                 </Link>
               </div>
             </nav>
@@ -455,8 +442,8 @@ export default function PrecosPage() {
               Junte-se a mais de 1.000 nutricionistas que já automatizaram seus processos.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register" className="btn btn-primary text-lg px-8 py-4">
-                <span>Começar teste grátis</span>
+              <Link href="/dashboard" className="btn btn-primary text-lg px-8 py-4">
+                <span>Acessar Dashboard</span>
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link href="/contato" className="btn btn-outline text-lg px-8 py-4">
