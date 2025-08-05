@@ -9,6 +9,7 @@ export interface Prescription {
   identificacao: string;
   created_at: string;
   nome_cliente: string;
+  nome?: string; // Campo alternativo para compatibilidade
   data: string;
   json: any;
   url?: string;
@@ -63,7 +64,7 @@ export function usePrescriptions() {
       // Recarregar prescrições após criar
       const { data: updatedData } = await supabase
         .from('prescricoes')
-        .select('*')
+        .select('id, identificacao, nome_cliente, nome, data, json, url, status, created_at')
         .eq('identificacao', user.id)
         .order('data', { ascending: false });
       const prescriptionsData = updatedData || [];
@@ -109,7 +110,7 @@ export function usePrescriptions() {
       // Recarregar prescrições após atualizar
       const { data: updatedData } = await supabase
         .from('prescricoes')
-        .select('*')
+        .select('id, identificacao, nome_cliente, nome, data, json, url, status, created_at')
         .eq('identificacao', userId)
         .order('data', { ascending: false });
       const prescriptionsData = updatedData || [];
@@ -153,7 +154,7 @@ export function usePrescriptions() {
       // Recarregar prescrições após deletar
       const { data: updatedData } = await supabase
         .from('prescricoes')
-        .select('*')
+        .select('id, identificacao, nome_cliente, nome, data, json, url, status, created_at')
         .eq('identificacao', userId)
         .order('data', { ascending: false });
       const prescriptionsData = updatedData || [];
@@ -184,7 +185,7 @@ export function usePrescriptions() {
     try {
       const { data, error } = await supabase
         .from('prescricoes')
-        .select('*')
+        .select('id, identificacao, nome_cliente, nome, data, json, url, status, created_at')
         .eq('id', id)
         .single();
 
@@ -205,7 +206,7 @@ export function usePrescriptions() {
     try {
       const { data, error } = await supabase
         .from('prescricoes')
-        .select('*')
+        .select('id, identificacao, nome_cliente, nome, data, json, url, status, created_at')
         .eq('status', status)
         .order('data', { ascending: false });
 
@@ -263,7 +264,7 @@ export function usePrescriptions() {
 
         const { data, error: prescriptionsError } = await supabase
           .from('prescricoes')
-          .select('*')
+          .select('id, identificacao, nome_cliente, nome, data, json, url, status, created_at')
           .eq('identificacao', userId)
           .order('data', { ascending: false });
 

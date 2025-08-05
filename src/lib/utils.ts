@@ -23,5 +23,22 @@ export function isValidSlug(slug: string): boolean {
 
 // Função para obter o nome do cliente de uma prescrição (compatibilidade com diferentes schemas)
 export function getNomeCliente(prescricao: any): string {
-  return prescricao?.nome_cliente || prescricao?.nome || 'Nome não informado';
+  if (!prescricao) return 'Nome não informado';
+  
+  // Verificar se o campo nome_cliente existe e não está vazio
+  if (prescricao.nome_cliente && prescricao.nome_cliente.trim() !== '') {
+    return prescricao.nome_cliente;
+  }
+  
+  // Verificar se o campo nome existe e não está vazio
+  if (prescricao.nome && prescricao.nome.trim() !== '') {
+    return prescricao.nome;
+  }
+  
+  // Se não houver nome, usar o ID da prescrição
+  if (prescricao.id) {
+    return `Cliente ${prescricao.id.slice(0, 8)}`;
+  }
+  
+  return 'Nome não informado';
 }

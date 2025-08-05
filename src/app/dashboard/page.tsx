@@ -6,8 +6,9 @@ import { usePrescriptions } from '@/hooks/usePrescriptions';
 import ConnectionStatus from '@/components/ui/ConnectionStatus';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FileText, Eye, RefreshCw, CheckCircle, XCircle, Clock, User, Phone, Mail } from 'lucide-react';
+import { getNomeCliente } from '@/lib/utils';
 
 export default function Dashboard() {
   const { nutricionista } = useAuth();
@@ -17,6 +18,8 @@ export default function Dashboard() {
   // Combine loading states
   const loading = prescriptionsLoading;
   
+
+
   // Dashboard carregado com dados reais do usuário
 
   // Categorizar prescrições por status  
@@ -173,7 +176,7 @@ export default function Dashboard() {
                     }`}></div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">
-                        {prescription.nome_cliente}
+                        {getNomeCliente(prescription)}
                       </p>
                       <p className="text-xs text-gray-500">
                         {new Date(prescription.data).toLocaleDateString('pt-BR')} • 
