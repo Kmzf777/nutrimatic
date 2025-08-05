@@ -1,0 +1,12 @@
+CREATE TABLE nutricionistas (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  nome TEXT NOT NULL,
+  telefone TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  active BOOLEAN DEFAULT TRUE,
+  regras TEXT,
+  presc_geradas INTEGER DEFAULT 0,
+  presc_max INTEGER DEFAULT 100
+);

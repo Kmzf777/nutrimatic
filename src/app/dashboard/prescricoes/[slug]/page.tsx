@@ -9,14 +9,37 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { CheckCircle, XCircle, Clock, Eye, ArrowLeft, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { createSlug } from '@/lib/utils';
+import { createSlug, getNomeCliente } from '@/lib/utils';
 import { triggerApprovalWebhook, triggerRejectionWebhook } from '@/lib/webhooks';
 
 // Função para encontrar prescrição pelo slug
 function findPrescricaoBySlug(prescricoes: any[], slug: string) {
-  return prescricoes.find(prescricao => 
-    createSlug(prescricao.nome_cliente) === slug
-  );
+  // Primeiro, tentar encontrar pelo slug do nome do cliente
+  let prescricao = prescricoes.find(p => {
+    const nomeCliente = getNomeCliente(p);
+    if (nomeCliente === 'Nome não informado') return false;
+    const prescricaoSlug = createSlug(nomeCliente);
+    return prescricaoSlug === slug;
+  });
+  
+  // Se não encontrou, tentar encontrar por slug baseado no ID
+  if (!prescricao) {
+    prescricao = prescricoes.find(p => {
+      const idSlug = createSlug(`prescricao-${p.id}`);
+      return idSlug === slug;
+    });
+  }
+  
+  // Se ainda não encontrou, tentar buscar diretamente pelo ID (caso o slug seja o próprio ID)
+  if (!prescricao) {
+    prescricao = prescricoes.find(p => p.id === slug);
+  }
+  
+  if (!prescricao) {
+    console.warn('Prescrição não encontrada para o slug:', slug);
+  }
+  
+  return prescricao;
 }
 
 export default function PrescricaoDetalhePage() {
@@ -46,8 +69,10 @@ export default function PrescricaoDetalhePage() {
       if (prescricao) {
         setSelectedPrescricao(prescricao);
       } else {
-        // Se não encontrou a prescrição, redireciona para a lista
-        router.push('/dashboard/prescricoes');
+        // Aguardar um pouco antes de redirecionar, caso os dados ainda estejam carregando
+        setTimeout(() => {
+          router.push('/dashboard/prescricoes');
+        }, 2000);
       }
     }
   }, [prescricoes, slug, router]);
@@ -119,11 +144,26 @@ export default function PrescricaoDetalhePage() {
       case 'Pendente':
         return <Clock className="w-6 h-6 text-yellow-600" />;
       case 'Aprovada':
+      case 'Aprovado':
         return <CheckCircle className="w-6 h-6 text-green-600" />;
       case 'Refazendo':
         return <XCircle className="w-6 h-6 text-red-600" />;
       default:
         return <Clock className="w-6 h-6 text-gray-600" />;
+    }
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case 'Pendente':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Aprovada':
+      case 'Aprovado':
+        return 'bg-green-100 text-green-800';
+      case 'Refazendo':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -202,7 +242,7 @@ export default function PrescricaoDetalhePage() {
     <ProtectedRoute>
       <DashboardLayout>
         <DashboardPageLayout
-          title={selectedPrescricao.nome_cliente}
+          title={getNomeCliente(selectedPrescricao)}
           subtitle={`Prescrição criada em ${formatDate(selectedPrescricao.data)}`}
           actions={
             <DashboardButton
@@ -223,20 +263,14 @@ export default function PrescricaoDetalhePage() {
                   {getStatusIcon(selectedPrescricao.status)}
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900">
-                      {selectedPrescricao.nome_cliente}
+                      {getNomeCliente(selectedPrescricao)}
                     </h2>
                     <p className="text-gray-600">
                       {formatDate(selectedPrescricao.data)}
                     </p>
                   </div>
                 </div>
-                <span className={`inline-flex items-center px-4 py-2 rounded-full text-lg font-medium ${
-                  selectedPrescricao.status === 'Pendente' 
-                    ? 'bg-yellow-100 text-yellow-800' 
-                    : selectedPrescricao.status === 'Aprovada'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
-                }`}>
+                <span className={`inline-flex items-center px-4 py-2 rounded-full text-lg font-medium ${getStatusBadgeColor(selectedPrescricao.status)}`}>
                   {selectedPrescricao.status}
                 </span>
               </div>

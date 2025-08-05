@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS prescricoes CASCADE;
+DROP TABLE IF EXISTS nutricionistas CASCADE;

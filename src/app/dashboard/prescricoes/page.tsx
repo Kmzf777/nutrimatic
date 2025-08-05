@@ -9,7 +9,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { CheckCircle, XCircle, Clock, Eye, RefreshCw, Loader2, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { createSlug } from '@/lib/utils';
+import { createSlug, getNomeCliente } from '@/lib/utils';
 
 export default function PrescricoesPage() {
   const router = useRouter();
@@ -27,7 +27,17 @@ export default function PrescricoesPage() {
 
   // Função para navegar para página individual da prescrição
   const handlePrescricaoClick = (prescricao: any) => {
-    const slug = createSlug(prescricao.nome_cliente);
+    // Validar se temos dados válidos para navegação
+    if (!prescricao || !prescricao.id) {
+      console.error('Prescrição inválida:', prescricao);
+      alert('Erro: Dados da prescrição estão inválidos');
+      return;
+    }
+
+    // Usar função utilitária para obter o nome
+    const nomeCliente = getNomeCliente(prescricao);
+    const slug = createSlug(nomeCliente === 'Nome não informado' ? `prescricao-${prescricao.id}` : nomeCliente);
+    
     router.push(`/dashboard/prescricoes/${slug}`);
   };
 
@@ -36,6 +46,7 @@ export default function PrescricoesPage() {
       case 'Pendente':
         return <Clock className="w-5 h-5 text-yellow-600" />;
       case 'Aprovada':
+      case 'Aprovado':
         return <CheckCircle className="w-5 h-5 text-green-600" />;
       case 'Refazendo':
         return <XCircle className="w-5 h-5 text-red-600" />;
@@ -49,11 +60,26 @@ export default function PrescricoesPage() {
       case 'Pendente':
         return 'bg-yellow-50 border-yellow-200';
       case 'Aprovada':
+      case 'Aprovado':
         return 'bg-green-50 border-green-200';
       case 'Refazendo':
         return 'bg-red-50 border-red-200';
       default:
         return 'bg-gray-50 border-gray-200';
+    }
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case 'Pendente':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Aprovada':
+      case 'Aprovado':
+        return 'bg-green-100 text-green-800';
+      case 'Refazendo':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -68,7 +94,9 @@ export default function PrescricoesPage() {
   // Filtrar e ordenar prescrições
   const prescricoesFiltradas = (filtroStatus === 'Todas' 
     ? prescricoes 
-    : prescricoes.filter(prescricao => prescricao.status === filtroStatus)
+    : filtroStatus === 'Aprovada' 
+      ? prescricoes.filter(prescricao => prescricao.status === 'Aprovada' || prescricao.status === 'Aprovado')
+      : prescricoes.filter(prescricao => prescricao.status === filtroStatus)
   ).sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
 
   return (
@@ -196,7 +224,7 @@ export default function PrescricoesPage() {
                       <div
                         key={prescricao.id}
                         onClick={() => handlePrescricaoClick(prescricao)}
-                        className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:shadow-lg hover:translate-y-[-2px] ${getStatusColor(prescricao.status)}`}
+                        className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 ${getStatusColor(prescricao.status)}`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4 flex-1">
@@ -205,16 +233,10 @@ export default function PrescricoesPage() {
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-2">
-                                <h3 className="font-semibold text-gray-900 text-xl">
-                                  {prescricao.nome_cliente}
-                                </h3>
-                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                                  prescricao.status === 'Pendente' 
-                                    ? 'bg-yellow-100 text-yellow-800' 
-                                    : prescricao.status === 'Aprovada'
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-red-100 text-red-800'
-                                }`}>
+                                                                  <h3 className="font-semibold text-gray-900 text-xl">
+                                    {getNomeCliente(prescricao)}
+                                  </h3>
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(prescricao.status)}`}>
                                   {prescricao.status}
                                 </span>
                               </div>

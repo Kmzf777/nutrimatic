@@ -127,7 +127,7 @@ export function usePrescricoes() {
 
   // Filtrar prescrições por status
   const prescricoesPendentes = prescricoes.filter(p => p.status === 'Pendente');
-  const prescricoesAprovadas = prescricoes.filter(p => p.status === 'Aprovada');
+  const prescricoesAprovadas = prescricoes.filter(p => p.status === 'Aprovada' || p.status === 'Aprovado');
   const prescricoesRefazendo = prescricoes.filter(p => p.status === 'Refazendo');
 
   useEffect(() => {
@@ -155,10 +155,13 @@ export function usePrescricoes() {
           .order('data', { ascending: false });
 
         if (fetchError) {
+          console.error('Erro na consulta de prescrições:', fetchError);
           throw new Error(fetchError.message);
         }
 
         const prescricoesData = data || [];
+        console.log('Prescrições carregadas:', prescricoesData.length);
+        
         setPrescricoes(prescricoesData);
         saveToCache(prescricoesData);
       } catch (err: any) {

@@ -20,3 +20,8 @@ export function slugToText(slug: string): string {
 export function isValidSlug(slug: string): boolean {
   return /^[a-z0-9-]+$/.test(slug);
 }
+
+// Função para obter o nome do cliente de uma prescrição (compatibilidade com diferentes schemas)
+export function getNomeCliente(prescricao: any): string {
+  return prescricao?.nome_cliente || prescricao?.nome || 'Nome não informado';
+}
