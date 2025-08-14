@@ -2,43 +2,41 @@
 
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { StatsCard, ContentCard, DashboardButton } from '@/components/dashboard/DashboardPageLayout';
-import { usePrescriptions } from '@/hooks/usePrescriptions';
+import { usePrescricoes } from '@/hooks/usePrescricoes';
 import ConnectionStatus from '@/components/ui/ConnectionStatus';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState, useEffect } from 'react';
-import { FileText, Eye, RefreshCw, CheckCircle, XCircle, Clock, User, Phone, Mail } from 'lucide-react';
+import { useState } from 'react';
+import { FileText, Eye, RefreshCw, CheckCircle, Clock, User, Phone, Mail } from 'lucide-react';
 import { getNomeCliente } from '@/lib/utils';
 
 export default function Dashboard() {
   const { nutricionista } = useAuth();
-  const { prescriptions, loading: prescriptionsLoading, createPrescription } = usePrescriptions();
+  const { prescricoes, loading: prescricoesLoading, error, refetch } = usePrescricoes();
   const [selectedPrescription, setSelectedPrescription] = useState<{ url: string; title: string } | null>(null);
 
-  // Combine loading states
-  const loading = prescriptionsLoading;
+  // Estado de loading
+  const loading = prescricoesLoading;
   
 
 
   // Dashboard carregado com dados reais do usuário
 
-  // Categorizar prescrições por status  
-  const approvedPrescriptions = prescriptions.filter(p => p.status === 'Aprovada');
-  const rejectedPrescriptions = prescriptions.filter(p => p.status === 'Refazendo');
-  const pendingPrescriptions = prescriptions.filter(p => p.status === 'Pendente');
+  // Categorizar prescrições por status
+  const approvedPrescriptions = prescricoes.filter(p => p.status === 'Aprovada' || p.status === 'Aprovado');
+  const rejectedPrescriptions = prescricoes.filter(p => p.status === 'Refazendo');
+  const pendingPrescriptions = prescricoes.filter(p => p.status === 'Pendente');
 
   // Calcular estatísticas de prescrições
-  const totalPrescriptions = prescriptions.length;
-  const activePrescriptions = prescriptions.filter(p => p.status === 'Aprovada').length;
-  const draftPrescriptions = prescriptions.filter(p => p.status === 'Pendente').length;
+  const totalPrescriptions = prescricoes.length;
+  const activePrescriptions = prescricoes.filter(p => p.status === 'Aprovada' || p.status === 'Aprovado').length;
+  const draftPrescriptions = prescricoes.filter(p => p.status === 'Pendente').length;
   
   // Usar dados do nutricionista para limite
   const monthlyLimit = nutricionista?.presc_max || 0;
   const remainingPrescriptions = Math.max(0, monthlyLimit - (nutricionista?.presc_geradas || 0));
 
-  const refetch = () => {
-    // Implementar refetch se necessário
-  };
+  // refetch já fornecido por usePrescricoes
 
 
 
@@ -64,10 +62,10 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatsCard
               title="Prescrições Geradas"
-              value={prescriptions.length}
+              value={prescricoes.length}
               icon={<FileText className="w-6 h-6" />}
               color="nutrimatic"
-              trend={{ value: prescriptions.length, isPositive: true }}
+              trend={{ value: prescricoes.length, isPositive: true }}
             />
             
             <StatsCard
@@ -149,7 +147,7 @@ export default function Dashboard() {
                 <RefreshCw className="w-8 h-8 animate-spin text-nutrimatic-600" />
                 <span className="ml-3 text-gray-600">Carregando prescrições...</span>
               </div>
-            ) : prescriptions.length === 0 ? (
+            ) : prescricoes.length === 0 ? (
               <div className="text-center py-12">
                 <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -167,10 +165,10 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-4">
-                {prescriptions.slice(0, 5).map((prescription) => (
+                {prescricoes.slice(0, 5).map((prescription) => (
                   <div key={prescription.id} className="flex items-center p-4 bg-gray-50/50 rounded-xl border border-gray-200/30">
                     <div className={`w-3 h-3 rounded-full mr-4 ${
-                      prescription.status === 'Aprovada' ? 'bg-green-500' : 
+                      (prescription.status === 'Aprovada' || prescription.status === 'Aprovado') ? 'bg-green-500' : 
                       prescription.status === 'Pendente' ? 'bg-yellow-500' : 
                       prescription.status === 'Refazendo' ? 'bg-red-500' : 'bg-gray-500'
                     }`}></div>
@@ -193,13 +191,13 @@ export default function Dashboard() {
                   </div>
                 ))}
                 
-                {prescriptions.length > 5 && (
+                {prescricoes.length > 5 && (
                   <div className="text-center pt-6 border-t border-gray-200/50">
                     <a
                       href="/dashboard/prescricoes"
                       className="text-nutrimatic-600 hover:text-nutrimatic-700 font-medium transition-colors duration-300"
                     >
-                      Ver todas as {prescriptions.length} prescrições →
+                      Ver todas as {prescricoes.length} prescrições →
                     </a>
                   </div>
                 )}

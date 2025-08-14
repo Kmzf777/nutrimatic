@@ -1,10 +1,10 @@
 'use client';
 
 interface WebhookData {
-  recipe: any;
+  recipe?: any;
   observation?: string;
   timestamp: string;
-  action: 'approve' | 'reject';
+  action: 'approve' | 'reject' | 'criar_cliente';
   [key: string]: any;
 }
 
@@ -51,6 +51,29 @@ export const useWebhooks = () => {
     });
   };
 
+  const sendWebhookWithResponse = async (url: string, data: WebhookData): Promise<any> => {
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log(`✅ Webhook enviado com sucesso para: ${url}`, result);
+      return result;
+    } catch (error) {
+      console.error(`❌ Erro ao enviar webhook para ${url}:`, error);
+      throw error;
+    }
+  };
+
   const sendRecipeStatusWebhook = async (recipe: any, action: 'approve' | 'reject', observation?: string): Promise<void> => {
     const webhookData: WebhookData = {
       recipe,
@@ -86,6 +109,7 @@ export const useWebhooks = () => {
 
   return {
     sendWebhooks,
+    sendWebhookWithResponse,
     sendRecipeStatusWebhook,
     sendRecipeRejectionWebhooks,
     sendRecipeApprovalWebhooks

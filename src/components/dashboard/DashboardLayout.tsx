@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { Bot, Users, CalendarDays } from 'lucide-react';
 import Tooltip from '../ui/Tooltip';
 import RippleButton from '../ui/RippleButton';
 import { useMenuState } from '../../hooks/useMenuState';
@@ -57,6 +58,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </svg>
       ),
       href: '/dashboard/prescricoes'
+    },
+    {
+      name: 'Clientes',
+      icon: (<Users className="w-5 h-5" />),
+      href: '/dashboard/clientes'
+    },
+    {
+      name: 'Agenda',
+      icon: (<CalendarDays className="w-5 h-5" />),
+      href: '/dashboard/agenda'
+    },
+    {
+      name: 'Agentes IA',
+      icon: (
+        <Bot className="w-5 h-5" />
+      ),
+      href: '/agentes',
+      badge: 'Novo'
     },
     {
       name: 'Uso do Sistema',

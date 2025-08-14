@@ -144,7 +144,7 @@ export const DashboardButton = memo(function DashboardButton({
   className?: string;
   [key: string]: any;
 }) {
-  const baseClasses = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const baseClasses = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60";
   
   const variants = {
     primary: "bg-nutrimatic-600 text-white hover:bg-nutrimatic-700 focus:ring-nutrimatic-500 shadow-lg hover:shadow-xl",

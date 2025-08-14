@@ -147,8 +147,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Verificar sessão atual
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // Verificar sessão atual com timeout de segurança
+        const sessionResult = await Promise.race([
+          supabase.auth.getSession(),
+          new Promise<{ data: { session: Session | null }, error: any }>((resolve) =>
+            setTimeout(() => resolve({ data: { session: null }, error: null }), 5000)
+          )
+        ]);
+        const { data: { session }, error } = sessionResult as { data: { session: Session | null }, error: any };
         
         if (error) {
           console.error('❌ Erro ao verificar sessão:', error.message);

@@ -66,14 +66,7 @@ export default function ProtectedRoute({ children, requireActive = true }: Prote
 
   // Se não há usuário, não renderizar nada (será redirecionado)
   if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="animate-spin h-8 w-8 text-nutrimatic-600 mx-auto mb-4" />
-          <p className="text-gray-600">Redirecionando...</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // **CORREÇÃO**: Permitir renderização mesmo sem nutricionista
@@ -81,26 +74,12 @@ export default function ProtectedRoute({ children, requireActive = true }: Prote
   
   // Se requer usuário ativo mas não está ativo, não renderizar nada (será redirecionado)
   if (requireActive && nutricionista && !nutricionista.active) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="animate-spin h-8 w-8 text-nutrimatic-600 mx-auto mb-4" />
-          <p className="text-gray-600">Redirecionando para configuração...</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Se não requer usuário ativo mas está ativo, não renderizar nada (será redirecionado)
   if (!requireActive && nutricionista && nutricionista.active) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="animate-spin h-8 w-8 text-nutrimatic-600 mx-auto mb-4" />
-          <p className="text-gray-600">Redirecionando para dashboard...</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return <>{children}</>;

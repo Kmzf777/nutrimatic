@@ -106,15 +106,24 @@ export default function PrescricoesPage() {
           title="Prescrições"
           subtitle="Gerencie suas prescrições geradas"
           actions={
-            <DashboardButton
-              onClick={refetch}
-              disabled={loading}
-              variant="primary"
-              size="sm"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Atualizar
-            </DashboardButton>
+            <>
+              <DashboardButton
+                onClick={() => router.push('/dashboard/criar-prescricao')}
+                variant="primary"
+                size="sm"
+              >
+                + Criar nova prescrição
+              </DashboardButton>
+              <DashboardButton
+                onClick={refetch}
+                disabled={loading}
+                variant="secondary"
+                size="sm"
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Atualizar
+              </DashboardButton>
+            </>
           }
         >
           {loading ? (
