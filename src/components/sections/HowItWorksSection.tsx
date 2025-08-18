@@ -1,28 +1,28 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ClipboardList, FileText, TrendingUp, ArrowRight, CheckCircle } from 'lucide-react';
+import { Calendar, MessageSquare, CheckCircle2, ArrowRight, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const steps = [
   {
-    icon: ClipboardList,
-    title: "Preencha o perfil do paciente",
-    description: "Informações básicas como idade, peso, objetivos e restrições alimentares.",
+    icon: Calendar,
+    title: "Cliente solicita agendamento",
+    description: "Paciente envia mensagem via WhatsApp, Instagram ou site solicitando consulta.",
     color: "nutrimatic",
     step: "01"
   },
   {
-    icon: FileText,
-    title: "Receba a prescrição pronta",
-    description: "Dieta personalizada gerada em segundos com base no perfil do paciente.",
+    icon: MessageSquare,
+    title: "IA agenda automaticamente",
+    description: "Sistema verifica disponibilidade, agenda horário e envia confirmação instantânea.",
     color: "nutrimatic",
     step: "02"
   },
   {
-    icon: TrendingUp,
-    title: "Acompanhe, automatize e atraia mais clientes",
-    description: "Gestão completa com atendimento automatizado, prospecção automática e relatórios detalhados.",
+    icon: CheckCircle2,
+    title: "Gestão completa da agenda",
+    description: "Confirmações automáticas, lembretes e reagendamentos sem sua intervenção.",
     color: "purple",
     step: "03"
   }
@@ -52,10 +52,10 @@ export default function HowItWorksSection() {
           </motion.div>
           
           <h2 className="text-gray-900 mb-6">
-            Em apenas <span className="text-gradient">3 passos simples</span>
+            Agendamento <span className="text-gradient">100% automático</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Você terá seu consultório rodando no piloto automático em menos de 5 minutos
+            Sua secretária virtual funciona 24/7, sem erros e sem sua intervenção
           </p>
         </motion.div>
 
@@ -131,10 +131,10 @@ export default function HowItWorksSection() {
         >
           <div className="card p-8 lg:p-12 max-w-4xl mx-auto">
             <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-              Pronto para começar?
+              Nunca mais perca um agendamento
             </h3>
             <p className="text-lg text-gray-600 mb-8">
-              O setup leva apenas 5 minutos e você pode cancelar a qualquer momento
+              Configure uma vez e tenha sua agenda sempre organizada, automaticamente
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard" className="btn btn-primary text-lg px-8 py-4">
@@ -149,4 +149,4 @@ export default function HowItWorksSection() {
       </div>
     </section>
   );
-} 
+}

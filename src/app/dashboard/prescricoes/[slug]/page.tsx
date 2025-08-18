@@ -9,7 +9,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { CheckCircle, XCircle, Clock, Eye, ArrowLeft, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { createSlug, getNomeCliente } from '@/lib/utils';
+import { createSlug, getNomeCliente, getClienteInfo } from '@/lib/utils';
 import { triggerApprovalWebhook, triggerRejectionWebhook } from '@/lib/webhooks';
 
 // Função para encontrar prescrição pelo slug
@@ -265,6 +265,12 @@ export default function PrescricaoDetalhePage() {
                     <h2 className="text-2xl font-bold text-gray-900">
                       {getNomeCliente(selectedPrescricao)}
                     </h2>
+                    {getClienteInfo(selectedPrescricao) && (
+                      <div className="text-sm text-gray-600 mt-1">
+                        <span className="font-medium">Tel:</span> {getClienteInfo(selectedPrescricao)?.numero} • 
+                        <span className="font-medium">Status:</span> {getClienteInfo(selectedPrescricao)?.status}
+                      </div>
+                    )}
                     <p className="text-gray-600">
                       {formatDate(selectedPrescricao.data)}
                     </p>
@@ -275,6 +281,26 @@ export default function PrescricaoDetalhePage() {
                 </span>
               </div>
             </ContentCard>
+
+            {/* Informações do Cliente */}
+            {getClienteInfo(selectedPrescricao) && (
+              <ContentCard title="Informações do Cliente" subtitle="Dados do cliente vinculado a esta prescrição">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-1">Nome</h4>
+                    <p className="text-gray-700">{getClienteInfo(selectedPrescricao)?.nome}</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-1">Telefone</h4>
+                    <p className="text-gray-700">{getClienteInfo(selectedPrescricao)?.numero}</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-1">Status</h4>
+                    <p className="text-gray-700">{getClienteInfo(selectedPrescricao)?.status}</p>
+                  </div>
+                </div>
+              </ContentCard>
+            )}
 
             {/* Visualização do PDF */}
             <ContentCard title="Prescrição" subtitle="Visualize e gerencie a prescrição">

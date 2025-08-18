@@ -37,10 +37,10 @@ export default function CTASection() {
           </motion.div>
           
           <h2 className="text-white mb-6">
-            Basta <span className="text-gradient">5 minutos</span> para ver a Nutrimatic rodando pra você
+            Configure sua <span className="text-gradient">secretária virtual</span> em 5 minutos
           </h2>
           <p className="text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-            Configure sua conta, conecte suas redes sociais e comece a automatizar seu consultório hoje mesmo
+            Ative o agendamento automático e nunca mais perca uma consulta
           </p>
         </motion.div>
 
@@ -54,15 +54,15 @@ export default function CTASection() {
         >
           <div className="flex items-center justify-center space-x-3 text-white/90">
             <Clock className="w-6 h-6 text-nutrimatic-400" />
-            <span className="text-lg font-medium">Setup em 5 minutos</span>
+            <span className="text-lg font-medium">Disponível 24/7</span>
           </div>
           <div className="flex items-center justify-center space-x-3 text-white/90">
             <CheckCircle className="w-6 h-6 text-nutrimatic-400" />
-            <span className="text-lg font-medium">Sem compromisso</span>
+            <span className="text-lg font-medium">Zero falhas</span>
           </div>
           <div className="flex items-center justify-center space-x-3 text-white/90">
             <Zap className="w-6 h-6 text-nutrimatic-400" />
-            <span className="text-lg font-medium">Resultados imediatos</span>
+            <span className="text-lg font-medium">95% comparecimento</span>
           </div>
         </motion.div>
 
@@ -113,19 +113,19 @@ export default function CTASection() {
                   <div className="w-8 h-8 bg-nutrimatic-500 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-bold">AI</span>
                   </div>
-                  <span className="font-medium text-gray-800">Assistente Nutrimatic</span>
+                  <span className="font-medium text-gray-800">Secretária Nutrimatic</span>
                 </div>
-                <p className="text-gray-700 text-sm">Olá! Vou criar uma prescrição personalizada para você. Primeiro, me conte sobre seus objetivos de saúde...</p>
+                <p className="text-gray-700 text-sm">Olá! Gostaria de agendar uma consulta? Tenho horários disponíveis para esta semana...</p>
               </div>
               
               <div className="bg-gray-50 rounded-2xl p-4">
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-bold">U</span>
+                    <span className="text-white text-sm font-bold">P</span>
                   </div>
-                  <span className="font-medium text-gray-800">Usuário</span>
+                  <span className="font-medium text-gray-800">Paciente</span>
                 </div>
-                <p className="text-gray-700 text-sm">Quero perder peso e ganhar mais energia</p>
+                <p className="text-gray-700 text-sm">Sim, gostaria de agendar para quinta-feira de manhã</p>
               </div>
               
               <div className="bg-nutrimatic-50 rounded-2xl p-4">
@@ -133,9 +133,9 @@ export default function CTASection() {
                   <div className="w-8 h-8 bg-nutrimatic-500 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-bold">AI</span>
                   </div>
-                  <span className="font-medium text-gray-800">Assistente Nutrimatic</span>
+                  <span className="font-medium text-gray-800">Secretária Nutrimatic</span>
                 </div>
-                <p className="text-gray-700 text-sm">Perfeito! Baseado no seu perfil, criei uma dieta personalizada. Aqui está sua prescrição completa...</p>
+                <p className="text-gray-700 text-sm">Perfeito! Agendei para quinta-feira às 9h. Enviarei lembretes automáticos. Consulta confirmada! ✅</p>
               </div>
             </div>
             
@@ -143,9 +143,9 @@ export default function CTASection() {
             <div className="mt-6 flex items-center justify-between text-xs text-gray-500">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-nutrimatic-500 rounded-full animate-pulse"></div>
-                <span>IA Ativa</span>
+                <span>Secretária Ativa 24/7</span>
               </div>
-              <div>Prescrição gerada em 5 segundos</div>
+              <div>Agendamento realizado em 3 segundos</div>
             </div>
           </div>
         </motion.div>
@@ -166,7 +166,7 @@ export default function CTASection() {
               <span className="text-white/90 text-lg ml-2">4.9/5</span>
             </div>
             <p className="text-lg text-white/90 mb-4">
-              Avaliação média de mais de 1.000 nutricionistas
+              Avaliação média de mais de 1.000 consultórios
             </p>
             <p className="text-sm text-white/70">
               Não é necessário cartão de crédito • Cancelamento a qualquer momento
@@ -176,4 +176,4 @@ export default function CTASection() {
       </div>
     </section>
   );
-} 
+}

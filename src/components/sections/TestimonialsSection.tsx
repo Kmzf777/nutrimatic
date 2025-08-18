@@ -10,7 +10,7 @@ const testimonials = [
     name: "Dra. Ana Silva",
     role: "Nutricionista Esportiva",
     avatar: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face",
-    content: "Hoje, meu consultório roda no automático. Nunca mais perdi tempo com ficha! A Nutrimatic revolucionou minha forma de trabalhar.",
+    content: "Nunca mais perdi um agendamento! A secretária virtual da Nutrimatic é perfeita - agenda, confirma e reagenda automaticamente.",
     rating: 5,
     clinic: "Clínica NutriSport"
   },
@@ -18,7 +18,7 @@ const testimonials = [
     name: "Dr. Carlos Mendes",
     role: "Nutricionista Clínico",
     avatar: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face",
-    content: "Aumentei minha base de clientes em 300% em apenas 3 meses. O sistema funciona perfeitamente e os pacientes adoram!",
+    content: "Minha taxa de comparecimento subiu para 95%! O sistema de confirmação automática é incrível.",
     rating: 5,
     clinic: "NutriClinic"
   },
@@ -26,7 +26,7 @@ const testimonials = [
     name: "Dra. Fernanda Costa",
     role: "Nutricionista Funcional",
     avatar: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=150&h=150&fit=crop&crop=face",
-    content: "As prescrições são incrivelmente personalizadas. Meus pacientes ficam impressionados com a qualidade e rapidez.",
+    content: "Meus pacientes adoram poder agendar a qualquer hora. A agenda está sempre organizada e sem conflitos.",
     rating: 5,
     clinic: "NutriFuncional"
   },
@@ -34,7 +34,7 @@ const testimonials = [
     name: "Dr. Roberto Alves",
     role: "Nutricionista Esportivo",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    content: "Economizo 15 horas por semana. Agora posso focar no que realmente importa: meus pacientes.",
+    content: "Zero falhas no agendamento! Posso focar 100% nos atendimentos sem me preocupar com a agenda.",
     rating: 5,
     clinic: "NutriPerformance"
   },
@@ -42,7 +42,7 @@ const testimonials = [
     name: "Dra. Juliana Santos",
     role: "Nutricionista Materno-Infantil",
     avatar: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face",
-    content: "O atendimento 24/7 é fantástico. Meus pacientes conseguem tirar dúvidas a qualquer momento.",
+    content: "O reagendamento automático é fantástico. Quando um paciente cancela, o sistema já oferece novos horários.",
     rating: 5,
     clinic: "NutriMaterno"
   },
@@ -50,17 +50,17 @@ const testimonials = [
     name: "Dr. Marcos Oliveira",
     role: "Nutricionista Comportamental",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    content: "A prospecção automática trouxe muitos clientes novos. O ROI foi incrível no primeiro mês.",
+    content: "Trabalho 24/7 sem estar presente. Meus pacientes podem agendar até de madrugada!",
     rating: 5,
     clinic: "NutriComportamental"
   }
 ];
 
 const stats = [
-  { icon: Users, value: "1.000+", label: "Nutricionistas ativos" },
-  { icon: TrendingUp, value: "50.000+", label: "Prescrições geradas" },
-  { icon: Clock, value: "24/7", label: "Atendimento automático" },
-  { icon: Award, value: "4.9/5", label: "Avaliação média" }
+  { icon: Users, value: "1.000+", label: "Consultórios ativos" },
+  { icon: TrendingUp, value: "95%", label: "Taxa de comparecimento" },
+  { icon: Clock, value: "24/7", label: "Agendamentos disponíveis" },
+  { icon: Award, value: "0", label: "Agendamentos perdidos" }
 ];
 
 export default function TestimonialsSection() {
@@ -90,7 +90,7 @@ export default function TestimonialsSection() {
             O que nossos <span className="text-gradient">nutricionistas</span> dizem
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Mais de 1.000 profissionais já transformaram seus consultórios com a Nutrimatic
+            Mais de 1.000 consultórios já automatizaram seus agendamentos com a Nutrimatic
           </p>
         </motion.div>
 
@@ -183,10 +183,10 @@ export default function TestimonialsSection() {
         >
           <div className="card p-8 lg:p-12 max-w-4xl mx-auto">
             <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-              Junte-se aos nutricionistas que já transformaram seus consultórios
+              Junte-se aos nutricionistas que nunca mais perdem agendamentos
             </h3>
             <p className="text-lg text-gray-600 mb-8">
-              Comece hoje mesmo e veja a diferença em sua rotina profissional
+              Configure sua secretária virtual e tenha 95% de taxa de comparecimento
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard" className="btn btn-primary text-lg px-8 py-4">
@@ -201,4 +201,4 @@ export default function TestimonialsSection() {
       </div>
     </section>
   );
-} 
+}

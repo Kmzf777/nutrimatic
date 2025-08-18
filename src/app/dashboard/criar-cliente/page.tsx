@@ -117,60 +117,76 @@ export default function CriarClientePage() {
       const response = await sendWebhookWithResponse(webhookUrl, webhookData);
       
       // Verificar a resposta
-      console.log('🔍 Resposta completa do webhook:', response);
-      console.log('📊 Tipo da resposta:', typeof response);
-      console.log('📏 Estrutura da resposta:', Array.isArray(response) ? 'Array' : 'Não é array');
+      console.log('Resposta completa do webhook:', response);
+      console.log('Tipo da resposta:', typeof response);
+      console.log('Estrutura da resposta:', Array.isArray(response) ? 'Array' : 'Nao e array');
+      
+      // Tratar diferentes formatos de resposta
+      let result = null;
       
       if (response && Array.isArray(response) && response.length > 0) {
-        const result = response[0];
-        console.log('✅ Primeiro resultado:', result);
-        console.log('🔑 Status recebido:', result.status);
-        console.log('📝 Mensagem do servidor:', result.message || result.error || result.details);
-         
-         if (result.status === 'true') {
-           setSuccess(true);
-           setError(null);
-           
-           // Salvar número no localStorage para evitar duplicatas
-           const numeroLimpo = formData.numero.replace(/\D/g, '');
-           const numerosUsados = JSON.parse(localStorage.getItem('numerosUsados') || '[]');
-           if (!numerosUsados.includes(numeroLimpo)) {
-             numerosUsados.push(numeroLimpo);
-             localStorage.setItem('numerosUsados', JSON.stringify(numerosUsados));
-           }
-           
-           // Redirecionar para a página de clientes após 2 segundos
-           setTimeout(() => {
-             router.push('/dashboard/clientes');
-           }, 2000);
-         } else if (result.status === 'false') {
-           // Verificar se há uma mensagem específica do servidor
-           const serverMessage = result.message || result.error || result.details;
-           if (serverMessage) {
-             setError(`Erro do servidor: ${serverMessage}`);
-           } else {
-             // Mensagem mais específica para cliente já existente
-             setError('Este número de telefone já está cadastrado no sistema. Verifique se o cliente já existe ou use um número diferente.');
-           }
-           setSuccess(false);
-           
-           // Log adicional para debug
-           console.warn('⚠️ Webhook retornou status false:', result);
-           console.warn('📱 Número tentado:', formData.numero);
-           console.warn('👤 Nome tentado:', formData.nome);
-         } else {
-           setError(`Resposta inesperada do servidor: ${result.status}`);
-           setSuccess(false);
-         }
-       } else {
-         setError('Resposta inválida do servidor. Tente novamente.');
-         setSuccess(false);
-         
-         // Log adicional para debug
-         console.error('❌ Resposta inválida do webhook:', response);
-         console.error('📊 Tipo da resposta:', typeof response);
-         console.error('📏 Estrutura da resposta:', response);
-       }
+        result = response[0];
+      } else if (response && typeof response === 'object' && response.status) {
+        result = response;
+      }
+      
+      if (result && result.status !== undefined) {
+        console.log('Resultado encontrado:', result);
+        console.log('Status recebido:', result.status, '(tipo:', typeof result.status, ')');
+        console.log('Mensagem do servidor:', result.message || result.error || result.details);
+        
+        // Converter status para string e comparar
+        const status = String(result.status).toLowerCase();
+        
+        if (status === 'true') {
+          console.log('Cliente criado com sucesso!');
+          setSuccess(true);
+          setError(null);
+          
+          // Salvar número no localStorage para evitar duplicatas
+          const numeroLimpo = formData.numero.replace(/\D/g, '');
+          const numerosUsados = JSON.parse(localStorage.getItem('numerosUsados') || '[]');
+          if (!numerosUsados.includes(numeroLimpo)) {
+            numerosUsados.push(numeroLimpo);
+            localStorage.setItem('numerosUsados', JSON.stringify(numerosUsados));
+          }
+          
+          // Redirecionar para a página de clientes após 2 segundos
+          setTimeout(() => {
+            router.push('/dashboard/clientes');
+          }, 2000);
+        } else if (status === 'false') {
+          console.log('Cliente ja existe ou erro de validacao');
+          
+          // Verificar se há uma mensagem específica do servidor
+          const serverMessage = result.message || result.error || result.details;
+          if (serverMessage) {
+            setError(`Erro do servidor: ${serverMessage}`);
+          } else {
+            // Mensagem mais específica para cliente já existente
+            setError('Este número de telefone já está cadastrado no sistema. Verifique se o cliente já existe ou use um número diferente.');
+          }
+          setSuccess(false);
+          
+          // Log adicional para debug
+          console.warn('Webhook retornou status false:', result);
+          console.warn('Numero tentado:', formData.numero);
+          console.warn('Nome tentado:', formData.nome);
+        } else {
+          console.error('Status inesperado:', result.status);
+          setError(`Resposta inesperada do servidor: ${result.status}`);
+          setSuccess(false);
+        }
+      } else {
+        console.error('Resposta invalida ou sem status');
+        setError('Resposta invalida do servidor. Tente novamente.');
+        setSuccess(false);
+        
+        // Log adicional para debug
+        console.error('Resposta completa:', response);
+        console.error('Tipo da resposta:', typeof response);
+        console.error('Estrutura da resposta:', response);
+      }
 
     } catch (err) {
       setError('Erro ao criar cliente. Tente novamente.');
@@ -289,39 +305,7 @@ export default function CriarClientePage() {
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                     <div className="flex items-center">
                       <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
-                      <span className="text-red-800">{error}</span>
-                    </div>
-                    
-                    {/* Mensagem de ajuda para cliente duplicado */}
-                    {error.includes('já está cadastrado') && (
-                      <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <div className="flex items-start">
-                          <Info className="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
-                          <div className="text-sm text-blue-700">
-                            <strong>Dica:</strong> Se você tem certeza de que este é um cliente novo, tente:
-                            <ul className="mt-2 ml-4 list-disc space-y-1">
-                              <li>Verificar se o número está correto</li>
-                              <li>Usar um número alternativo (ex: WhatsApp Business)</li>
-                              <li>Contatar o suporte se o problema persistir</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Botão para tentar novamente */}
-                    <div className="mt-3">
-                      <DashboardButton
-                        onClick={() => {
-                          setError(null);
-                          setSuccess(false);
-                        }}
-                        variant="outline"
-                        size="sm"
-                        className="text-red-600 border-red-300 hover:bg-red-50"
-                      >
-                        Limpar Erro
-                      </DashboardButton>
+                      <span className="text-red-800">Número de Telefone já cadastrado</span>
                     </div>
                   </div>
                 )}

@@ -1,5 +1,7 @@
 import Header from '@/components/ui/Header';
 import HeroSection from '@/components/sections/HeroSection';
+import AIStatsSection from '@/components/sections/AIStatsSection';
+import CustomizationSection from '@/components/sections/CustomizationSection';
 import HowItWorksSection from '@/components/sections/HowItWorksSection';
 import TimeSavingsSection from '@/components/sections/TimeSavingsSection';
 import FeaturesSection from '@/components/sections/FeaturesSection';
@@ -13,6 +15,8 @@ export default function Home() {
     <main className="min-h-screen">
       <Header />
       <HeroSection />
+      <AIStatsSection />
+      <CustomizationSection />
       <HowItWorksSection />
       <TimeSavingsSection />
       <FeaturesSection />

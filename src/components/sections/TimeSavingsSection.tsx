@@ -28,10 +28,10 @@ export default function TimeSavingsSection() {
           </motion.div>
           
           <h2 className="text-gray-900 mb-6">
-            O que você <span className="text-gradient">economiza?</span>
+            Eficiência em <span className="text-gradient">agendamentos</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Ganhe de volta até <span className="text-nutrimatic-600 font-bold text-2xl font-display">10 horas por semana</span>
+            Aumente sua taxa de comparecimento para <span className="text-nutrimatic-600 font-bold text-2xl font-display">95%</span>
           </p>
         </motion.div>
 
@@ -50,25 +50,25 @@ export default function TimeSavingsSection() {
                 <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center">
                   <XCircle className="w-6 h-6 text-red-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-red-800">Nutricionista tradicional</h3>
+                <h3 className="text-2xl font-bold text-red-800">Agendamento tradicional</h3>
               </div>
               
               <div className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-white rounded-xl">
-                  <span className="text-gray-700 font-medium">Tempo por prescrição:</span>
-                  <span className="text-3xl font-bold text-red-600">2 horas</span>
+                  <span className="text-gray-700 font-medium">Taxa de comparecimento:</span>
+                  <span className="text-3xl font-bold text-red-600">65%</span>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-white rounded-xl">
-                  <span className="text-gray-700 font-medium">Atendimento manual:</span>
-                  <span className="text-lg text-red-600 font-medium">Sim</span>
+                  <span className="text-gray-700 font-medium">Agendamentos perdidos:</span>
+                  <span className="text-lg text-red-600 font-medium">35%</span>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-white rounded-xl">
-                  <span className="text-gray-700 font-medium">Prospecção:</span>
+                  <span className="text-gray-700 font-medium">Confirmações:</span>
                   <span className="text-lg text-red-600 font-medium">Manual</span>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-white rounded-xl">
-                  <span className="text-gray-700 font-medium">Disponibilidade:</span>
-                  <span className="text-lg text-red-600 font-medium">8h/dia</span>
+                  <span className="text-gray-700 font-medium">Reagendamentos:</span>
+                  <span className="text-lg text-red-600 font-medium">Complicados</span>
                 </div>
               </div>
             </div>
@@ -92,25 +92,25 @@ export default function TimeSavingsSection() {
                 <div className="w-12 h-12 bg-nutrimatic-100 rounded-2xl flex items-center justify-center">
                   <Zap className="w-6 h-6 text-nutrimatic-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-nutrimatic-800">Com Nutrimatic</h3>
+                <h3 className="text-2xl font-bold text-nutrimatic-800">Secretária Nutrimatic</h3>
               </div>
               
               <div className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-white rounded-xl">
-                  <span className="text-gray-700 font-medium">Tempo por prescrição:</span>
-                  <span className="text-3xl font-bold text-nutrimatic-600">5 minutos</span>
+                  <span className="text-gray-700 font-medium">Taxa de comparecimento:</span>
+                  <span className="text-3xl font-bold text-nutrimatic-600">95%</span>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-white rounded-xl">
-                  <span className="text-gray-700 font-medium">Atendimento automático:</span>
-                  <span className="text-lg text-nutrimatic-600 font-medium">24/7</span>
+                  <span className="text-gray-700 font-medium">Agendamentos perdidos:</span>
+                  <span className="text-lg text-nutrimatic-600 font-medium">0%</span>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-white rounded-xl">
-                  <span className="text-gray-700 font-medium">Prospecção:</span>
-                  <span className="text-lg text-nutrimatic-600 font-medium">Automática</span>
+                  <span className="text-gray-700 font-medium">Confirmações:</span>
+                  <span className="text-lg text-nutrimatic-600 font-medium">Automáticas</span>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-white rounded-xl">
-                  <span className="text-gray-700 font-medium">Disponibilidade:</span>
-                  <span className="text-lg text-nutrimatic-600 font-medium">24h/dia</span>
+                  <span className="text-gray-700 font-medium">Reagendamentos:</span>
+                  <span className="text-lg text-nutrimatic-600 font-medium">Instantâneos</span>
                 </div>
               </div>
             </div>
@@ -127,26 +127,26 @@ export default function TimeSavingsSection() {
         >
           <div className="flex items-center justify-center space-x-4 mb-8">
             <TrendingUp className="w-8 h-8" />
-            <h3 className="text-2xl lg:text-3xl font-bold">Economia de tempo real</h3>
+            <h3 className="text-2xl lg:text-3xl font-bold">Eficiência comprovada</h3>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
             <div className="text-center">
-              <div className="text-4xl lg:text-5xl font-bold mb-3">96%</div>
-              <div className="text-lg text-white/90">Menos tempo por prescrição</div>
+              <div className="text-4xl lg:text-5xl font-bold mb-3">95%</div>
+              <div className="text-lg text-white/90">Taxa de comparecimento</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl lg:text-5xl font-bold mb-3">10h</div>
-              <div className="text-lg text-white/90">Economizadas por semana</div>
+              <div className="text-4xl lg:text-5xl font-bold mb-3">0</div>
+              <div className="text-lg text-white/90">Agendamentos perdidos</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl lg:text-5xl font-bold mb-3">520h</div>
-              <div className="text-lg text-white/90">Por ano (40h/mês)</div>
+              <div className="text-4xl lg:text-5xl font-bold mb-3">24/7</div>
+              <div className="text-lg text-white/90">Disponibilidade</div>
             </div>
           </div>
           
           <p className="text-xl lg:text-2xl mt-8 text-white/90 font-medium">
-            Mais tempo para estudar, atender, viver.
+            Agenda sempre organizada, sem falhas.
           </p>
         </motion.div>
 
@@ -160,10 +160,10 @@ export default function TimeSavingsSection() {
         >
           <div className="card p-8 lg:p-12 max-w-4xl mx-auto">
             <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-              Quer economizar essas horas?
+              Quer ter essa eficiência?
             </h3>
             <p className="text-lg text-gray-600 mb-8">
-              Comece agora mesmo e veja a diferença em sua rotina
+              Configure sua secretária virtual e nunca mais perca um agendamento
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard" className="btn btn-primary text-lg px-8 py-4">
@@ -178,4 +178,4 @@ export default function TimeSavingsSection() {
       </div>
     </section>
   );
-} 
+}

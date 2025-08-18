@@ -9,7 +9,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { CheckCircle, XCircle, Clock, Eye, RefreshCw, Loader2, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { createSlug, getNomeCliente } from '@/lib/utils';
+import { createSlug, getNomeCliente, getClienteInfo } from '@/lib/utils';
 
 export default function PrescricoesPage() {
   const router = useRouter();
@@ -242,9 +242,12 @@ export default function PrescricoesPage() {
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-2">
-                                                                  <h3 className="font-semibold text-gray-900 text-xl">
+                                <div className="flex-1">
+                                  <h3 className="font-semibold text-gray-900 text-xl">
                                     {getNomeCliente(prescricao)}
                                   </h3>
+
+                                </div>
                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(prescricao.status)}`}>
                                   {prescricao.status}
                                 </span>
@@ -273,4 +276,4 @@ export default function PrescricoesPage() {
       </DashboardLayout>
     </ProtectedRoute>
   );
-} 
+}

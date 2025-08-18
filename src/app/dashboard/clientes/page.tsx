@@ -8,6 +8,7 @@ import ConnectionStatus from '@/components/ui/ConnectionStatus';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, RefreshCw, Users, CheckCircle, Clock, XCircle, ClipboardList, UserPlus } from 'lucide-react';
+import { createSlug } from '@/lib/utils';
 
 export default function ClientesPage() {
   const { clientes, loading, error, refetch, formatTimeAgo, formatNumero, waLink, counts } = useClientes();
@@ -15,6 +16,11 @@ export default function ClientesPage() {
   const [filterStatus, setFilterStatus] = useState<'Todos' | 'novo' | 'aguardando_pagamento' | 'anamnese' | 'ativo' | 'inativo'>('Todos');
   const router = useRouter();
   // Agente removido da UI
+
+  const handleClienteClick = (cliente: any) => {
+    const slug = createSlug(cliente.nome || cliente.numero || cliente.id);
+    router.push(`/dashboard/clientes/${slug}`);
+  };
   
 
   const filteredClientes = useMemo(() => {
@@ -65,8 +71,7 @@ export default function ClientesPage() {
           <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
             <StatsCard title="Total" value={counts.total} icon={<Users className="w-6 h-6" />} color="nutrimatic" />
             <StatsCard title="Novos" value={counts.novos} icon={<ClipboardList className="w-6 h-6" />} color="purple" />
-            <StatsCard title="Aguard. Pgto." value={counts.aguardando_pagamento} icon={<Clock className="w-6 h-6" />} color="yellow" />
-            <StatsCard title="Anamnese" value={counts.anamnese} icon={<ClipboardList className="w-6 h-6" />} color="purple" />
+
             <StatsCard title="Ativos" value={counts.ativos} icon={<CheckCircle className="w-6 h-6" />} color="green" />
             <StatsCard title="Inativos" value={counts.inativos} icon={<XCircle className="w-6 h-6" />} color="red" />
           </div>
@@ -90,8 +95,6 @@ export default function ClientesPage() {
               <DashboardSelect value={filterStatus} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilterStatus(e.target.value as any)}>
                 <option value="Todos">Todos</option>
                 <option value="novo">Novo</option>
-                <option value="aguardando_pagamento">Aguardando pagamento</option>
-                <option value="anamnese">Anamnese</option>
                 <option value="ativo">Ativo</option>
                 <option value="inativo">Inativo</option>
               </DashboardSelect>
@@ -129,7 +132,7 @@ export default function ClientesPage() {
                     {filteredClientes.map((c) => {
                       const initials = (c.nome || (c.numero || '')).split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
                       return (
-                        <tr key={c.id} className="hover:bg-gray-50/50 transition-all duration-300">
+                        <tr key={c.id} className="hover:bg-gray-50/50 transition-all duration-300 cursor-pointer" onClick={() => handleClienteClick(c)}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="w-10 h-10 bg-nutrimatic-100 rounded-xl flex items-center justify-center">

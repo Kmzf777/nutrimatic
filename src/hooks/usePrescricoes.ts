@@ -150,7 +150,15 @@ export function usePrescricoes() {
 
         const { data, error: fetchError } = await supabase
           .from('prescricoes')
-          .select('*')
+          .select(`
+            *,
+            cliente:clientes(
+              id,
+              nome,
+              numero,
+              status
+            )
+          `)
           .eq('identificacao', userId)
           .order('data', { ascending: false });
 
@@ -189,7 +197,15 @@ export function usePrescricoes() {
 
       const { data, error: fetchError } = await supabase
         .from('prescricoes')
-        .select('*')
+        .select(`
+          *,
+          cliente:clientes(
+            id,
+            nome,
+            numero,
+            status
+          )
+        `)
         .eq('identificacao', userId)
         .order('data', { ascending: false });
 
@@ -219,4 +235,4 @@ export function usePrescricoes() {
     approvePrescricao,
     rejectPrescricao,
   };
-} 
+}

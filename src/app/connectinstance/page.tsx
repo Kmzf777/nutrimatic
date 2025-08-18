@@ -36,8 +36,8 @@ export default function ConnectInstancePage() {
         return;
       }
       const endpoints = [
-        'https://n8n.canastrainteligencia.com/webhook-test/connectinstance',
-        'https://webhook.canastrainteligencia.com/webhook/connectinstance',
+        'https://n8n-n8n.0dt1f5.easypanel.host/webhook-test/connectinstance',
+        'https://n8n-n8n.0dt1f5.easypanel.host/webhook/connectinstance',
       ];
 
       const payload = {
@@ -135,8 +135,8 @@ export default function ConnectInstancePage() {
     setFeedback(null);
     try {
       const endpoints = [
-        'https://n8n.canastrainteligencia.com/webhook-test/verifyinstance',
-        'https://webhook.canastrainteligencia.com/webhook/verifyinstance',
+        'https://n8n-n8n.0dt1f5.easypanel.host/webhook-test/verifyinstance',
+        'https://n8n-n8n.0dt1f5.easypanel.host/webhook/verifyinstance',
       ];
 
       const payload = {

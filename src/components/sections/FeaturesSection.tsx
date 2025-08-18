@@ -16,56 +16,56 @@ import Link from 'next/link';
 
 const features = [
   {
-    icon: Brain,
-    title: "Prescrições automáticas e personalizadas",
-    description: "IA avançada que cria dietas personalizadas baseadas no perfil completo do paciente.",
+    icon: Clock,
+    title: "Agendamento automático 24/7",
+    description: "Secretária virtual que agenda consultas automaticamente, sem intervenção humana.",
     color: "nutrimatic",
-    highlight: "com IA"
+    highlight: "24/7"
   },
   {
     icon: MessageCircle,
-    title: "Atendimento Automatizado",
-    description: "Atendimento automático 24/7 via redes sociais mais populares.",
+    title: "Confirmação inteligente de consultas",
+    description: "Sistema que confirma automaticamente agendamentos via WhatsApp, SMS e email.",
     color: "nutrimatic",
-    highlight: "24/7"
+    highlight: "Inteligente"
   },
   {
     icon: Users,
-    title: "Prospecção automática de clientes",
-    description: "Encontre e atraia novos pacientes automaticamente.",
+    title: "Reagendamento automático",
+    description: "Quando um paciente cancela, o sistema automaticamente oferece novos horários.",
     color: "purple",
-    highlight: "Automática"
+    highlight: "Automático"
   },
   {
-    icon: Clock,
-    title: "Agentes de atendimento 24/7",
-    description: "Sistema inteligente que nunca dorme e sempre responde.",
+    icon: Brain,
+    title: "IA para gestão de agenda",
+    description: "Inteligência artificial que otimiza sua agenda e evita conflitos de horários.",
     color: "green",
-    highlight: "24/7"
+    highlight: "com IA"
   },
   {
     icon: BarChart3,
-    title: "Relatórios e gestão de atendimentos",
-    description: "Dashboards completos para acompanhar o crescimento do seu consultório.",
+    title: "Relatórios de eficiência",
+    description: "Dashboards que mostram taxa de comparecimento e otimização da agenda.",
     color: "orange",
-    highlight: "Completos"
+    highlight: "Eficiência"
   },
   {
-    icon: Zap,
-    title: "Integração fácil",
-    description: "Conecte com Instagram, site e outras ferramentas em minutos.",
+    icon: Shield,
+    title: "Zero falhas no agendamento",
+    description: "Sistema redundante que garante que nenhum agendamento seja perdido.",
     color: "pink",
-    highlight: "Fácil"
+    highlight: "Zero falhas"
   }
 ];
 
 const benefits = [
-  "Setup em 5 minutos",
-  "Sem necessidade de conhecimento técnico",
-  "Suporte especializado para nutricionistas",
-  "Cancelamento a qualquer momento",
-  "Atualizações gratuitas",
-  "Backup automático dos dados"
+  "Agenda sempre organizada",
+  "Confirmações automáticas",
+  "Reagendamentos inteligentes",
+  "Relatórios de comparecimento",
+  "Integração com WhatsApp",
+  "Backup automático da agenda"
 ];
 
 export default function FeaturesSection() {
@@ -88,14 +88,14 @@ export default function FeaturesSection() {
             className="inline-flex items-center space-x-2 bg-nutrimatic-100 text-nutrimatic-700 px-4 py-2 rounded-full text-sm font-medium mb-6"
           >
             <Zap className="w-4 h-4" />
-            <span>Recursos e diferenciais</span>
+            <span>Secretaria e agendamentos</span>
           </motion.div>
           
           <h2 className="text-gray-900 mb-6">
-            Nutrimatic faz <span className="text-gradient">MUITO MAIS</span> que IA para prescrições
+            Secretaria virtual <span className="text-gradient">100% EFICIENTE</span> para seu consultório
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Uma plataforma completa que automatiza todo o seu consultório, desde a primeira consulta até o acompanhamento
+            Sistema completo de agendamentos que funciona 24/7, sem erros, sem falhas e sem intervenção humana
           </p>
         </motion.div>
 
@@ -244,4 +244,4 @@ export default function FeaturesSection() {
       </div>
     </section>
   );
-} 
+}

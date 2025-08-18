@@ -94,9 +94,6 @@ export default function AgentesPage() {
               <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[
                   { title: 'Agente Secretaria', href: '/agentes/secretaria', color: 'from-purple-500 to-purple-700', desc: 'Agenda, confirmações e atendimento básico.', icon: Headset },
-                  { title: 'Agente de Marketing', href: '/agentes/marketing', color: 'from-pink-500 to-rose-600', desc: 'Captação e campanhas automatizadas.', icon: Megaphone },
-                  { title: 'Agente de Prescrições', href: '/agentes/prescricoes', color: 'from-emerald-500 to-teal-600', desc: 'Gera e organiza prescrições com IA.', icon: FileText },
-                  { title: 'Agente de Pós-Venda', href: '/agentes/pos-venda', color: 'from-blue-500 to-indigo-600', desc: 'Follow-up, lembretes e suporte.', icon: LifeBuoy },
                 ].map((card) => {
                   const Icon = card.icon as any;
                   return (

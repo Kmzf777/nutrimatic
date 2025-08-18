@@ -2,41 +2,37 @@
 
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { StatsCard, ContentCard, DashboardButton } from '@/components/dashboard/DashboardPageLayout';
-import { usePrescricoes } from '@/hooks/usePrescricoes';
+import { useClientes } from '@/hooks/useClientes';
 import ConnectionStatus from '@/components/ui/ConnectionStatus';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState } from 'react';
-import { FileText, Eye, RefreshCw, CheckCircle, Clock, User, Phone, Mail } from 'lucide-react';
-import { getNomeCliente } from '@/lib/utils';
+import { useState, useMemo } from 'react';
+import { Users, Eye, RefreshCw, CheckCircle, Clock, User, Phone, Mail, UserPlus } from 'lucide-react';
+import { createSlug } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
   const { nutricionista } = useAuth();
-  const { prescricoes, loading: prescricoesLoading, error, refetch } = usePrescricoes();
-  const [selectedPrescription, setSelectedPrescription] = useState<{ url: string; title: string } | null>(null);
+  const { clientes, loading, error, refetch, counts, formatTimeAgo } = useClientes();
+  const router = useRouter();
 
-  // Estado de loading
-  const loading = prescricoesLoading;
-  
+  // Clientes novos de hoje
+  const clientesHoje = useMemo(() => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    return clientes.filter(cliente => {
+      const dataCliente = new Date(cliente.created_at);
+      dataCliente.setHours(0, 0, 0, 0);
+      return dataCliente.getTime() === hoje.getTime();
+    });
+  }, [clientes]);
+
+  const handleClienteClick = (cliente: any) => {
+    const slug = createSlug(cliente.nome || cliente.numero || cliente.id);
+    router.push(`/dashboard/clientes/${slug}`);
+  };
 
 
-  // Dashboard carregado com dados reais do usuário
-
-  // Categorizar prescrições por status
-  const approvedPrescriptions = prescricoes.filter(p => p.status === 'Aprovada' || p.status === 'Aprovado');
-  const rejectedPrescriptions = prescricoes.filter(p => p.status === 'Refazendo');
-  const pendingPrescriptions = prescricoes.filter(p => p.status === 'Pendente');
-
-  // Calcular estatísticas de prescrições
-  const totalPrescriptions = prescricoes.length;
-  const activePrescriptions = prescricoes.filter(p => p.status === 'Aprovada' || p.status === 'Aprovado').length;
-  const draftPrescriptions = prescricoes.filter(p => p.status === 'Pendente').length;
-  
-  // Usar dados do nutricionista para limite
-  const monthlyLimit = nutricionista?.presc_max || 0;
-  const remainingPrescriptions = Math.max(0, monthlyLimit - (nutricionista?.presc_geradas || 0));
-
-  // refetch já fornecido por usePrescricoes
 
 
 
@@ -45,7 +41,7 @@ export default function Dashboard() {
       <DashboardLayout>
         <DashboardPageLayout
           title="Dashboard"
-          subtitle="Visão geral das suas prescrições"
+          subtitle="Visão geral dos seus clientes"
           actions={
             <DashboardButton
               onClick={refetch}
@@ -61,35 +57,35 @@ export default function Dashboard() {
           {/* Cards de estatísticas */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatsCard
-              title="Prescrições Geradas"
-              value={prescricoes.length}
-              icon={<FileText className="w-6 h-6" />}
+              title="Total de Clientes"
+              value={counts.total}
+              icon={<Users className="w-6 h-6" />}
               color="nutrimatic"
-              trend={{ value: prescricoes.length, isPositive: true }}
+              trend={{ value: counts.total, isPositive: true }}
             />
             
             <StatsCard
-              title="Prescrições Aprovadas"
-              value={approvedPrescriptions.length}
+              title="Clientes Novos"
+              value={counts.novos}
+              icon={<UserPlus className="w-6 h-6" />}
+              color="yellow"
+              trend={{ value: counts.novos, isPositive: true }}
+            />
+            
+            <StatsCard
+              title="Clientes Ativos"
+              value={counts.ativos}
               icon={<CheckCircle className="w-6 h-6" />}
               color="green"
-              trend={{ value: approvedPrescriptions.length, isPositive: true }}
-            />
-            
-            <StatsCard
-              title="Prescrições Pendentes"
-              value={pendingPrescriptions.length}
-              icon={<Clock className="w-6 h-6" />}
-              color="yellow"
-              trend={{ value: pendingPrescriptions.length, isPositive: pendingPrescriptions.length > 0 }}
+              trend={{ value: counts.ativos, isPositive: counts.ativos > 0 }}
             />
 
             <StatsCard
-              title="Prescrições Restantes"
-              value={remainingPrescriptions}
+              title="Clientes Inativos"
+              value={counts.inativos}
               icon={<Clock className="w-6 h-6" />}
-              color="purple"
-              trend={{ value: remainingPrescriptions, isPositive: remainingPrescriptions > 0 }}
+              color="red"
+              trend={{ value: counts.inativos, isPositive: false }}
             />
           </div>
 
@@ -132,10 +128,10 @@ export default function Dashboard() {
             </ContentCard>
           )}
 
-          {/* Seção de Prescrições */}
+          {/* Seção de Clientes Novos de Hoje */}
           <ContentCard
-            title="Prescrições Recentes"
-            subtitle="Suas prescrições ativas e rascunhos"
+            title="Clientes Novos de Hoje"
+            subtitle="Clientes que chegaram hoje"
             actions={
               <div className="flex items-center space-x-3">
                 <ConnectionStatus />
@@ -145,59 +141,56 @@ export default function Dashboard() {
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <RefreshCw className="w-8 h-8 animate-spin text-nutrimatic-600" />
-                <span className="ml-3 text-gray-600">Carregando prescrições...</span>
+                <span className="ml-3 text-gray-600">Carregando clientes...</span>
               </div>
-            ) : prescricoes.length === 0 ? (
+            ) : clientesHoje.length === 0 ? (
               <div className="text-center py-12">
-                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <p className="text-gray-600 text-lg mb-2">Nenhuma prescrição encontrada</p>
-                <p className="text-sm text-gray-500">Suas prescrições aparecerão aqui</p>
+                <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 text-lg mb-2">Nenhum cliente novo hoje</p>
+                <p className="text-sm text-gray-500">Novos clientes aparecerão aqui</p>
                 <div className="mt-4">
                   <a
-                    href="/dashboard/prescricoes"
+                    href="/dashboard/clientes"
                     className="text-nutrimatic-600 hover:text-nutrimatic-700 font-medium transition-colors duration-300"
                   >
-                    Ver página de prescrições →
+                    Ver todos os clientes →
                   </a>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
-                {prescricoes.slice(0, 5).map((prescription) => (
-                  <div key={prescription.id} className="flex items-center p-4 bg-gray-50/50 rounded-xl border border-gray-200/30">
-                    <div className={`w-3 h-3 rounded-full mr-4 ${
-                      (prescription.status === 'Aprovada' || prescription.status === 'Aprovado') ? 'bg-green-500' : 
-                      prescription.status === 'Pendente' ? 'bg-yellow-500' : 
-                      prescription.status === 'Refazendo' ? 'bg-red-500' : 'bg-gray-500'
-                    }`}></div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
-                        {getNomeCliente(prescription)}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(prescription.data).toLocaleDateString('pt-BR')} • 
-                        {prescription.status === 'Aprovada' ? 'Aprovada' : 
-                         prescription.status === 'Pendente' ? 'Pendente' : 
-                         prescription.status === 'Refazendo' ? 'Refazendo' : prescription.status}
-                      </p>
+                {clientesHoje.slice(0, 5).map((cliente) => {
+                  const initials = (cliente.nome || (cliente.numero || '')).split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
+                  return (
+                    <div key={cliente.id} className="flex items-center p-4 bg-gray-50/50 rounded-xl border border-gray-200/30 cursor-pointer hover:bg-gray-100/50 transition-all duration-300" onClick={() => handleClienteClick(cliente)}>
+                      <div className="w-10 h-10 bg-nutrimatic-100 rounded-xl flex items-center justify-center mr-4">
+                        <span className="text-nutrimatic-600 font-medium">{initials}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">
+                          {cliente.nome || 'Sem nome'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {cliente.numero} • {formatTimeAgo(cliente.created_at)}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Novo</span>
+                        <button className="p-2 text-gray-400 hover:text-nutrimatic-600 rounded-lg hover:bg-white transition-all duration-300">
+                          <Eye className="w-5 h-5" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <button className="p-2 text-gray-400 hover:text-nutrimatic-600 rounded-lg hover:bg-white transition-all duration-300">
-                        <Eye className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
                 
-                {prescricoes.length > 5 && (
+                {clientesHoje.length > 5 && (
                   <div className="text-center pt-6 border-t border-gray-200/50">
                     <a
-                      href="/dashboard/prescricoes"
+                      href="/dashboard/clientes"
                       className="text-nutrimatic-600 hover:text-nutrimatic-700 font-medium transition-colors duration-300"
                     >
-                      Ver todas as {prescricoes.length} prescrições →
+                      Ver todos os {clientesHoje.length} clientes novos de hoje →
                     </a>
                   </div>
                 )}
