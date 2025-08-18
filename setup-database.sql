@@ -9,7 +9,7 @@ CREATE TABLE nutricionistas (
   telefone TEXT NOT NULL,
   email TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  active BOOLEAN DEFAULT FALSE,
+  active BOOLEAN DEFAULT TRUE,
   regras TEXT,
   presc_geradas INTEGER DEFAULT 0,
   presc_max INTEGER DEFAULT 0

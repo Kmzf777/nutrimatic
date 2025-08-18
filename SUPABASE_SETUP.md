@@ -43,7 +43,7 @@ CREATE TABLE nutricionistas (
   telefone TEXT NOT NULL,
   email TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  active BOOLEAN DEFAULT FALSE,
+  active BOOLEAN DEFAULT TRUE,
   regras TEXT,
   presc_geradas INTEGER DEFAULT 0,
   presc_max INTEGER DEFAULT 0
@@ -208,4 +208,4 @@ Após configurar o Supabase:
 2. Configure o n8n para gerar prescrições
 3. Teste a aprovação/rejeição de prescrições
 4. Configure monitoramento e logs
-5. Implemente backup e recuperação de dados 
+5. Implemente backup e recuperação de dados
