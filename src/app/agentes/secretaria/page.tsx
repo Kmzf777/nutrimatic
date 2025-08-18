@@ -66,7 +66,7 @@ export default function SecretariaAgentPage() {
     try {
       // Processar janela de horários para webhook
       const processedScheduleWindow = Object.entries(scheduleWindow).reduce((acc, [day, schedule]) => {
-        acc[day] = {
+        (acc as any)[day] = {
           open: schedule.open,
           morning: schedule.open ? schedule.morning : 'fechado',
           afternoon: schedule.open ? schedule.afternoon : 'fechado'
