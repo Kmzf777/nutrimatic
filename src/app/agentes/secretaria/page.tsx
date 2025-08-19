@@ -15,6 +15,7 @@ export default function SecretariaAgentPage() {
   const [creativity, setCreativity] = useState(0.7);
   const [businessName, setBusinessName] = useState('');
   const [agentName, setAgentName] = useState('');
+  const [context, setContext] = useState('');
   const [emojis, setEmojis] = useState(true);
   const [consultationTime, setConsultationTime] = useState('30');
   const [returnTime, setReturnTime] = useState('15');
@@ -78,6 +79,7 @@ export default function SecretariaAgentPage() {
         creativity,
         businessName,
         agentName,
+        context,
         emojis,
         consultationTime: parseInt(consultationTime),
         returnTime: parseInt(returnTime),
@@ -132,6 +134,7 @@ export default function SecretariaAgentPage() {
       setCreativity(config.creativity || 0.7);
       setBusinessName(config.business_name || '');
       setAgentName(config.agent_name || '');
+      setContext(config.context || '');
       setEmojis(config.emojis !== undefined ? config.emojis : true);
       setConsultationTime(config.consultation_time?.toString() || '30');
       setReturnTime(config.return_time?.toString() || '15');
@@ -211,6 +214,29 @@ export default function SecretariaAgentPage() {
                   placeholder="Digite o nome do agente"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nutrimatic-500 focus:border-nutrimatic-500 transition-colors"
                 />
+              </div>
+              
+              {/* Campo Contexto */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Contexto
+                </label>
+                <textarea
+                  value={context}
+                  onChange={(e) => setContext(e.target.value)}
+                  placeholder="Aqui você deve contar de maneira objetiva como funciona, qual seu método de trabalho, sua especialidade, escreva mais coisas aqui que fazem sentido, essa textarea serve para dar contexto à secretaria, para caso o lead seja novo, tenha dúvidas, etc."
+                  maxLength={1000}
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nutrimatic-500 focus:border-nutrimatic-500 transition-colors resize-vertical"
+                />
+                <div className="flex justify-between items-center mt-1">
+                  <p className="text-xs text-gray-500">
+                    Descreva como funciona seu método de trabalho e especialidades para orientar a secretária
+                  </p>
+                  <span className="text-xs text-gray-400">
+                    {context.length}/1000
+                  </span>
+                </div>
               </div>
               
               {/* Campo Emojis */}

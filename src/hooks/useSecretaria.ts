@@ -7,6 +7,7 @@ interface SecretariaConfig {
   identificacao: string;
   agent_name: string;
   business_name: string;
+  context?: string;
   creativity: number;
   emojis: boolean;
   consultation_time: number;
