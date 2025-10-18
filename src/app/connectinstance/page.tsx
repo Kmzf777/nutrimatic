@@ -4,7 +4,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { ContentCard, DashboardButton, DashboardInput } from '@/components/dashboard/DashboardPageLayout';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { QrCode, Smartphone, CheckCircle2, Info, Shield, HelpCircle, RefreshCw, Phone } from 'lucide-react';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,6 +20,33 @@ export default function ConnectInstancePage() {
   const [feedback, setFeedback] = useState<{ type: 'info' | 'error' | 'success'; text: string } | null>(null);
   const [phoneInput, setPhoneInput] = useState('');
 
+
+  // Verificar se já existe instância conectada para o usuário e redirecionar
+  useEffect(() => {
+    let cancelled = false;
+    const checkExistingInstance = async () => {
+      if (!user || !isSupabaseConfigured()) return;
+      try {
+        const { data, error } = await supabase
+          .from('instancias')
+          .select('status')
+          .eq('identificacao', user.id)
+          .limit(1);
+        if (cancelled) return;
+        if (!error && Array.isArray(data) && data.length > 0) {
+          const statusValue = String((data[0] as any).status || '').toLowerCase();
+          // Considerar 'conectado' compatível com 'ativo' para cenários antigos
+          if (statusValue === 'conectado' || statusValue === 'ativo') {
+            router.replace('/agentes');
+          }
+        }
+      } catch (e) {
+        // Silencioso: se der erro na consulta, permanece na página
+      }
+    };
+    checkExistingInstance();
+    return () => { cancelled = true; };
+  }, [user, supabase, router]);
   const sanitizePhone = (value: string) => value.replace(/\D+/g, '');
   const phoneDigits = sanitizePhone(phoneInput);
   const isPhoneValid = phoneDigits.length >= 10 && phoneDigits.length <= 13; // BR: 10-11, permite c/código do país
@@ -37,7 +64,7 @@ export default function ConnectInstancePage() {
       }
       const endpoints = [
         'https://n8n-n8n.0dt1f5.easypanel.host/webhook-test/connectinstance',
-        'https://n8n-n8n.0dt1f5.easypanel.host/webhook/connectinstance',
+        'https://webhook.canastrainteligencia.com/webhook/connectinstance',
       ];
 
       const payload = {
@@ -136,7 +163,7 @@ export default function ConnectInstancePage() {
     try {
       const endpoints = [
         'https://n8n-n8n.0dt1f5.easypanel.host/webhook-test/verifyinstance',
-        'https://n8n-n8n.0dt1f5.easypanel.host/webhook/verifyinstance',
+        'https://webhook.canastrainteligencia.com/webhook/verifyinstance',
       ];
 
       const payload = {
@@ -171,10 +198,46 @@ export default function ConnectInstancePage() {
 
       const extractStatus = (data: any): 'conectado' | 'desconectado' | null => {
         if (!data) return null;
-        if (typeof data === 'string') return normalizeStatus(data);
-        const obj = typeof data === 'object' ? data : {};
-        const direct = obj.status || obj.Status || (obj.data && obj.data.status);
-        if (typeof direct === 'string') return normalizeStatus(direct);
+
+        const tryNormalize = (val: any): 'conectado' | 'desconectado' | null => {
+          if (typeof val === 'string') return normalizeStatus(val);
+          if (val && typeof val === 'object') {
+            const direct = (val as any).status || (val as any).Status || ((val as any).data && (val as any).data.status);
+            if (typeof direct === 'string') return normalizeStatus(direct);
+          }
+          return null;
+        };
+
+        // Se vier string, tentar normalizar ou parsear JSON
+        if (typeof data === 'string') {
+          const direct = normalizeStatus(data);
+          if (direct) return direct;
+          try {
+            const parsed = JSON.parse(data);
+            return extractStatus(parsed);
+          } catch {
+            return null;
+          }
+        }
+
+        // Se vier array (ex.: [{ status: "desconectado" }])
+        if (Array.isArray(data)) {
+          for (const el of data) {
+            const st = extractStatus(el);
+            if (st) return st;
+          }
+          return null;
+        }
+
+        // Objeto simples
+        const st = tryNormalize(data);
+        if (st) return st;
+
+        // Nested sob data
+        if (data && typeof data === 'object' && 'data' in data) {
+          return extractStatus((data as any).data);
+        }
+
         return null;
       };
 

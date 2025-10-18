@@ -24,8 +24,9 @@ export default function AgentesPage() {
         return;
       }
 
+      // Se o Supabase não estiver configurado, não redireciona automaticamente; mostrar CTA de conexão
       if (!isSupabaseConfigured()) {
-        // Em desenvolvimento sem Supabase configurado, não redireciona
+        setInstanceInfo({ number: null, status: null });
         setChecking(false);
         return;
       }
@@ -35,26 +36,46 @@ export default function AgentesPage() {
           .from('instancias')
           .select('id, number, status')
           .eq('identificacao', user.id)
-          .limit(1);
+          .order('created_at', { ascending: false })
+          .maybeSingle();
 
         if (isCancelled) return;
 
+        // Em caso de erro na consulta, não redirecionar; permitir página carregar
         if (error) {
-          // Em caso de erro, apenas permanece na página
+          console.warn('Erro ao consultar instancias:', error);
+          setInstanceInfo({ number: null, status: null });
           setChecking(false);
           return;
         }
 
-        const hasInstance = Array.isArray(data) && data.length > 0;
-        if (!hasInstance) {
+        // Se não há instância, redirecionar para conectar instância
+        if (!data) {
+          setInstanceInfo({ number: null, status: null });
+          setChecking(false);
           router.replace('/connectinstance');
           return;
         }
-        const row = data![0] as any;
-        setInstanceInfo({ number: row.number || null, status: row.status || null });
+
+        const statusValue = String((data as any).status || '').toLowerCase();
+        const numberValue = (data as any).number || null;
+        setInstanceInfo({ number: numberValue, status: (data as any).status || null });
+
+        // Se não está conectado/ativo, redirecionar para conectar instância
+        if (statusValue !== 'conectado' && statusValue !== 'ativo') {
+          setChecking(false);
+          router.replace('/connectinstance');
+          return;
+        }
+
+        // Instância conectada, permanecer na página Agentes
         setChecking(false);
-      } catch {
-        if (!isCancelled) setChecking(false);
+      } catch (e) {
+        if (!isCancelled) {
+          console.warn('Falha inesperada ao verificar instância:', e);
+          setInstanceInfo({ number: null, status: null });
+          setChecking(false);
+        }
       }
     };
 
@@ -73,7 +94,7 @@ export default function AgentesPage() {
           ) : (
             <div className="space-y-8">
               <ContentCard title="WhatsApp Conectado" className="max-w-3xl mx-auto">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify_between gap-4">
                   <div>
                     <p className="text-xs text-gray-500">Número</p>
                     <p className="text-base font-semibold text-gray-900">{instanceInfo?.number || '—'}</p>
@@ -81,8 +102,9 @@ export default function AgentesPage() {
                   <div>
                     <p className="text-xs text-gray-500">Status</p>
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                      instanceInfo?.status === 'ativo' ? 'bg-green-100 text-green-800' :
+                      instanceInfo?.status === 'ativo' || instanceInfo?.status === 'conectado' ? 'bg-green-100 text-green-800' :
                       instanceInfo?.status === 'pendente' ? 'bg-yellow-100 text-yellow-800' :
+                      instanceInfo?.status === 'inativo' || instanceInfo?.status === 'desconectado' ? 'bg-red-100 text-red-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
                       {instanceInfo?.status || '—'}
