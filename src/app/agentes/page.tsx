@@ -11,7 +11,7 @@ import { createClient, isSupabaseConfigured } from '@/lib/supabase';
 
 export default function AgentesPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [checking, setChecking] = useState(true);
   const [instanceInfo, setInstanceInfo] = useState<{ number: string | null; status: string | null } | null>(null);
   const supabase = createClient();
@@ -19,15 +19,20 @@ export default function AgentesPage() {
   useEffect(() => {
     let isCancelled = false;
     const verifyInstance = async () => {
+      if (loading) {
+        // Aguardar autenticação concluir antes de verificar instância
+        return;
+      }
       if (!user) {
         setChecking(false);
         return;
       }
-
-      // Se o Supabase não estiver configurado, não redireciona automaticamente; mostrar CTA de conexão
+ 
+      // Se o Supabase não estiver configurado, redirecionar para conectar instância
       if (!isSupabaseConfigured()) {
         setInstanceInfo({ number: null, status: null });
         setChecking(false);
+        router.replace('/connectinstance');
         return;
       }
 
@@ -37,6 +42,7 @@ export default function AgentesPage() {
           .select('id, number, status')
           .eq('identificacao', user.id)
           .order('created_at', { ascending: false })
+          .limit(1)
           .maybeSingle();
 
         if (isCancelled) return;
@@ -83,7 +89,16 @@ export default function AgentesPage() {
     return () => {
       isCancelled = true;
     };
-  }, [user, supabase, router]);
+  }, [user, loading, supabase, router]);
+
+  // Redirecionamento robusto baseado em estado calculado
+  useEffect(() => {
+    if (checking) return;
+    const status = (instanceInfo?.status || '').toLowerCase();
+    if (!instanceInfo || (status !== 'conectado' && status !== 'ativo')) {
+      router.replace('/connectinstance');
+    }
+  }, [checking, instanceInfo, router]);
 
   return (
     <ProtectedRoute>
@@ -94,7 +109,7 @@ export default function AgentesPage() {
           ) : (
             <div className="space-y-8">
               <ContentCard title="WhatsApp Conectado" className="max-w-3xl mx-auto">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify_between gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                     <p className="text-xs text-gray-500">Número</p>
                     <p className="text-base font-semibold text-gray-900">{instanceInfo?.number || '—'}</p>
