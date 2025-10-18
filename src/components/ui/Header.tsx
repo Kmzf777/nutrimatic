@@ -9,36 +9,55 @@ import { usePathname } from 'next/navigation';
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const pathname = usePathname();
 
   // Detectar se estamos em páginas que precisam de background sólido
   const isAuthPage = pathname === '/login' || pathname === '/register';
+  const isHomePage = pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
-      // Detecta se passou da hero section (aproximadamente 100vh)
-      const heroHeight = window.innerHeight;
-      setIsScrolled(window.scrollY > heroHeight * 0.8);
+      const heroSection = document.querySelector('[data-hero-section]');
+      const heroHeight = heroSection ? heroSection.clientHeight : window.innerHeight;
+      const scrollY = window.scrollY;
+      
+      // Para home page: header fica completamente oculto na hero section
+       if (isHomePage) {
+         setIsHeaderVisible(scrollY > heroHeight * 0.95);
+         setIsScrolled(scrollY > heroHeight * 0.95);
+       } else {
+        // Para outras páginas: comportamento normal
+        setIsHeaderVisible(true);
+        setIsScrolled(scrollY > heroHeight * 0.8);
+      }
     };
 
     // Se for página de auth, sempre considerar como "scrolled" para ter background sólido
     if (isAuthPage) {
       setIsScrolled(true);
+      setIsHeaderVisible(true);
       return;
     }
 
     window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Executar uma vez no mount
+    
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isAuthPage]);
+  }, [isAuthPage, isHomePage]);
 
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
           ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100' 
           : 'glass border-b border-white/10'
+      } ${
+        isHeaderVisible 
+          ? 'translate-y-0 opacity-100' 
+          : '-translate-y-full opacity-0'
       }`}>
         <div className="container">
           <div className="flex items-center justify-between h-16 lg:h-20">
@@ -221,4 +240,4 @@ export default function Header() {
       </div>
     </>
   );
-} 
+}

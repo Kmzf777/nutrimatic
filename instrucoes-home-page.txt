@@ -1,0 +1,877 @@
+Você é um desenvolvedor especializado em criar homepages de alta conversão para SaaS B2B. Crie uma landing page completa e responsiva para o NutriMatic - um agente de IA para nutricionistas que automatiza atendimento via WhatsApp.
+🎯 SOBRE O PRODUTO
+NutriMatic é uma plataforma SaaS que oferece:
+
+Agente de IA Secretária: Atendimento automatizado 24/7 no WhatsApp
+Automações Inteligentes: Agendamento, cancelamento, reagendamento e follow-ups automáticos
+Dashboard Centralizado: Visualização e gestão de todos os agendamentos
+Gestão de Pacientes: Lista completa de clientes com histórico e informações centralizadas
+Notificações Inteligentes: A IA avisa pacientes sobre mudanças e faz recargas proativas
+
+Público-alvo: Nutricionistas que querem escalar seu consultório, reduzir trabalho manual e nunca perder um agendamento.
+CTA Principal: "Agende Sua Reunião Agora" (sales-led, com possibilidade de teste grátis secundário)
+
+🏗️ ESTRUTURA DA PÁGINA (ORDEM EXATA)
+1. HERO SECTION (Above the Fold) - DESIGN HYPER IMPACTANTE
+Estilo Visual:
+
+Layout split-screen assimétrico (60% copy à esquerda, 40% visual à direita)
+Fundo com gradient sutil e elementos flutuantes de glassmorphism
+Animações suaves de entrada (fade-in + slide-up)
+Elementos de destaque com brilho/glow sutil
+
+Componentes:
+HEADLINE (Typography Hero - Extra Bold, Display Size):
+"Sua Secretária de IA que Agenda Consultas Enquanto Você Dorme"
+```
+
+**SUB-HEADLINE (Typography Medium, 60% da headline)**:
+```
+"Automatize 100% do seu atendimento no WhatsApp com o NutriMatic. 
+Agendamentos, cancelamentos, follow-ups e lembretes — tudo resolvido 
+pela IA, sem você mover um dedo. Mais tempo para cuidar, zero tempo perdido."
+```
+
+**CTAs (Botões Side-by-Side)**:
+- **Primário** (Large, com micro-animação de pulso): "Agende Sua Reunião Agora" → Ícone calendário
+- **Secundário** (Large, outline style): "Ver Como Funciona em 2 min" → Ícone play (abre vídeo demo)
+
+**Visual à Direita**:
+- **Imagem Fictícia**: Mockup 3D de tela de smartphone em perspectiva isométrica, mostrando interface do WhatsApp com conversa ativa entre "Ana (Paciente)" e "NutriMatic IA". A conversa mostra 3-4 mensagens:
+  - Ana: "Oi, quero marcar consulta"
+  - NutriMatic: "Olá Ana! 😊 Tenho horários disponíveis: Quinta 14h ou Sexta 10h. Qual prefere?"
+  - Ana: "Quinta às 14h"
+  - NutriMatic: "✅ Agendado! Quinta 14h com Dra. Juliana. Vou te lembrar 1 dia antes!"
+- **Elementos flutuantes ao redor**: Ícones minimalistas com glassmorphism (calendário, sino de notificação, checkmark verde) posicionados com profundidade (z-index variado)
+- **Badge floating**: "Disponível 24/7" com ícone de relógio
+
+---
+
+### 2. BARRA DE CONFIANÇA INSTANTÂNEA
+
+**Estilo Visual**:
+- Faixa horizontal com fundo sutil (leve blur ou cor neutra)
+- Layout em grid horizontal com scroll suave (mobile)
+
+**Componentes**:
+
+**Texto acima dos logos** (Typography Small, Uppercase, Letter-spacing):
+```
+"Nutricionistas que já escalaram seus consultórios com NutriMatic"
+```
+
+**Grid de Logos**:
+- 6-8 logos fictícios de clínicas/nutricionistas (em tons de cinza para elegância)
+- **Descrição**: Logos minimalistas tipo "Clínica NutriVida", "Dra. Carla Santos", "Espaço Equilíbrio", "Instituto NutriSaúde"
+
+**Métricas em Cards Pequenos** (abaixo dos logos):
+- Card 1: "**+2.500** consultas agendadas/mês" (ícone calendário)
+- Card 2: "**97%** de pacientes satisfeitos" (ícone estrela)
+- Card 3: "**Zero** agendamentos perdidos" (ícone escudo/checkmark)
+
+---
+
+### 3. SEÇÃO "A DOR" - PROBLEMA IDENTIFICADO
+
+**Estilo Visual**:
+- Layout centralizado com largura máxima de 800px
+- Fundo com leve textura ou pattern sutil
+- Ícones grandes com animação on-scroll (scale-up)
+
+**Componentes**:
+
+**Headline** (Typography Bold, Centered):
+```
+"Ainda Perdendo Pacientes por Responder WhatsApp Depois das 22h?"
+```
+
+**Sub-texto** (Typography Regular, Centered):
+```
+Você não está sozinho. A maioria dos nutricionistas enfrenta os mesmos problemas:
+```
+
+**Grid 3 Colunas com Dores** (Cards com ícone + texto):
+
+**Card 1**:
+- **Ícone**: Relógio com X vermelho sobreposto
+- **Título**: "Pacientes desistem enquanto você atende"
+- **Texto**: "42% dos contatos no WhatsApp não recebem resposta em até 2 horas — e você perde a consulta para o concorrente que respondeu em 5 minutos."
+
+**Card 2**:
+- **Ícone**: Calendário caótico com múltiplos eventos sobrepostos
+- **Título**: "Gestão manual = retrabalho constante"
+- **Texto**: "Confirmar horários, remarcar consultas, enviar lembretes… 3 horas do seu dia vão embora em tarefas administrativas que uma IA faria em segundos."
+
+**Card 3**:
+- **Ícone**: Gráfico de linha caindo
+- **Título**: "Faltas não avisadas matam sua receita"
+- **Texto**: "1 em cada 4 pacientes falta sem avisar. Sem follow-up ativo, você perde R$800-1.500/semana em horários vazios."
+
+**Elemento Visual Complementar**:
+- Abaixo dos cards, uma linha do tempo horizontal ilustrando "O Dia de um Nutricionista Sem Automação" vs "Com NutriMatic" (antes/depois visual com ícones)
+
+---
+
+### 4. SEÇÃO "A SOLUÇÃO" - APRESENTAÇÃO DO NUTRIMATIC
+
+**Estilo Visual**:
+- Layout full-width com split assimétrico invertido (visual 55% esquerda, copy 45% direita)
+- Fundo com gradient diagonal suave
+- Animação parallax no scroll
+
+**Componentes**:
+
+**Visual à Esquerda**:
+- **Imagem Fictícia**: Mockup de dashboard do NutriMatic em perspectiva 3D. Interface mostrando:
+  - Painel superior com KPIs: "28 consultas esta semana | 94% taxa de presença | 12 novos pacientes"
+  - Lista de agendamentos com avatares fictícios de pacientes, horários e status (verde = confirmado, amarelo = pendente)
+  - Sidebar com menu: Dashboard, Pacientes, Automações, Relatórios
+- **Elemento flutuante**: Notificação popup estilo toast: "✅ IA confirmou consulta de João Silva para amanhã 15h"
+
+**Copy à Direita**:
+
+**Eyebrow** (Typography Small, Uppercase, com ícone estrela):
+```
+★ A SOLUÇÃO COMPLETA
+```
+
+**Headline** (Typography Extra Bold):
+```
+"Seu Consultório no Piloto Automático. 
+Literalmente."
+```
+
+**Sub-headline** (Typography Regular):
+```
+NutriMatic é o único agente de IA feito SOB MEDIDA para nutricionistas. 
+Não é um chatbot genérico — é uma secretária digital que entende 
+sua rotina e fala a língua dos seus pacientes.
+```
+
+**Lista de Benefícios** (Checkmarks verdes + texto bold):
+- ✅ **Atendimento 24/7 no WhatsApp** — Responde na hora, mesmo às 3h da manhã
+- ✅ **Agenda automaticamente** — Paciente escolhe horário e pronto, está marcado
+- ✅ **Follow-up inteligente** — IA recarga pacientes que não agendam retorno em 30 dias
+- ✅ **Dashboard que você realmente usa** — Veja tudo: quem agendou, quem cancelou, receita projetada
+- ✅ **Zero trabalho manual** — A IA cancela, remarca e avisa pacientes automaticamente
+
+**CTA** (Botão large com ícone):
+```
+"Agende Sua Reunião Agora" → (Arrow right icon)
+```
+
+---
+
+### 5. SEÇÃO "COMO FUNCIONA" - DEMONSTRAÇÃO VISUAL DO FLUXO
+
+**Estilo Visual**:
+- Layout centralizado com fluxo vertical (mobile-first thinking)
+- Design de timeline com connecting lines (linha pontilhada conectando steps)
+- Cards com elevação (shadow) e hover effect (lift)
+
+**Componentes**:
+
+**Headline** (Typography Bold, Centered):
+```
+"Veja Como o NutriMatic Funciona em 3 Passos Simples"
+```
+
+**Timeline Vertical** (3 Steps):
+
+**Step 1** - Badge com número grande "1":
+- **Ícone**: WhatsApp logo + ícone link
+- **Título**: "Conecte seu WhatsApp em 2 minutos"
+- **Texto**: "Sem instalação complicada. Cole um QR Code, autorize a API oficial do WhatsApp e pronto. Sua IA já está viva."
+- **Visual**: GIF animado mostrando QR Code sendo escaneado + tela de "Conectado com sucesso ✅"
+
+**Step 2** - Badge com número "2":
+- **Ícone**: Cérebro com circuitos (AI brain)
+- **Título**: "Ensine a IA em 5 minutos (ou use nosso template)"
+- **Texto**: "Defina seus horários disponíveis, mensagens de boas-vindas e regras de agendamento. A IA aprende seu jeito e replica com perfeição."
+- **Visual**: Screenshot de interface de configuração com toggles e campos de texto preenchidos
+
+**Step 3** - Badge com número "3":
+- **Ícone**: Foguete decolando
+- **Título**: "Deixe a IA trabalhar (e relaxe)"
+- **Texto**: "A partir de agora, todo contato no WhatsApp é atendido, qualificado e agendado automaticamente. Você só abre o dashboard para ver a mágica acontecendo."
+- **Visual**: GIF animado de notificações chegando no dashboard ("Nova consulta agendada", "Follow-up enviado", "Paciente confirmou presença")
+
+**Elemento de Fechamento**:
+- Box destacado com ícone de tempo: "**Tempo total de setup: ~10 minutos** | Economia de tempo semanal: **12+ horas**"
+
+---
+
+### 6. SEÇÃO DE FUNCIONALIDADES - FEATURES DETALHADAS
+
+**Estilo Visual**:
+- Layout em grid alternado (feature à esquerda, visual à direita; depois inverte)
+- Cada feature é uma seção full-width com fundo alternado (branco/cinza claro)
+- Imagens/mockups com perspective e depth
+
+**Componentes**:
+
+**Headline Geral** (Typography Bold, Centered, acima de todas features):
+```
+"Tudo que Você Precisa para Escalar Seu Consultório. Nada que Você Não Precisa."
+```
+
+---
+
+**FEATURE 1**: (Copy esquerda, Visual direita)
+
+**Eyebrow**: 🤖 AGENTE DE IA CONVERSACIONAL
+
+**Título**: "Mais Inteligente que 90% das Secretárias Humanas"
+
+**Descrição**:
+```
+O NutriMatic não segue scripts robóticos. Ele entende contexto, responde 
+perguntas sobre sua metodologia, horários, valores — e fecha o agendamento 
+sem precisar de você. É como ter uma secretária que nunca dorme, nunca erra 
+e sempre fala com empatia.
+```
+
+**Bullets**:
+- Responde perguntas frequentes (ex: "Quanto custa?", "Atende plano X?")
+- Qualifica pacientes automaticamente (descobre objetivos e urgência)
+- Fala naturalmente (nada de "Opção 1, Opção 2")
+
+**Visual**: 
+- Mockup de conversa WhatsApp em smartphone, mostrando troca natural:
+  - Paciente: "Vocês atendem perto do shopping?"
+  - IA: "Sim! O consultório fica a 5 min do Shopping Center. Quer agendar uma avaliação?"
+
+---
+
+**FEATURE 2**: (Visual esquerda, Copy direita)
+
+**Eyebrow**: 📅 AGENDAMENTO AUTOMÁTICO
+
+**Título**: "Paciente Escolhe, IA Agenda. Sem Você no Meio."
+
+**Descrição**:
+```
+Sua agenda sempre atualizada em tempo real. Paciente vê horários disponíveis, 
+escolhe o melhor, e BOOM — está na agenda. O NutriMatic integra com Google 
+Calendar e envia lembretes automáticos 24h antes. Zero conflitos, zero retrabalho.
+```
+
+**Bullets**:
+- Sincronização bidirecional com Google Calendar/Outlook
+- Detecta e bloqueia horários já ocupados
+- Envia confirmação automática por WhatsApp + e-mail
+
+**Visual**:
+- Split screen mostrando: (1) conversa WhatsApp com paciente escolhendo "Terça 10h"; (2) dashboard onde o horário aparece preenchido instantaneamente
+
+---
+
+**FEATURE 3**: (Copy esquerda, Visual direita)
+
+**Eyebrow**: 🔄 GESTÃO DE CANCELAMENTOS E REMARCAÇÕES
+
+**Título**: "Paciente Cancelou? A IA Já Encontrou Outro."
+
+**Descrição**:
+```
+Cancelamentos acontecem. Mas com NutriMatic, eles não viram prejuízo. 
+A IA avisa você, oferece remarcação ao paciente, e automaticamente dispara 
+mensagens para a lista de espera. Seu horário vago vira receita em minutos.
+```
+
+**Bullets**:
+- Confirmação automática de cancelamento/remarcação
+- Lista de espera inteligente (IA oferece horário vago para outros pacientes)
+- Dashboard mostra taxa de ocupação em tempo real
+
+**Visual**:
+- Sequência de 3 telas mostrando: (1) Paciente cancela no WhatsApp; (2) IA marca horário como "disponível" no dashboard; (3) IA envia mensagem para outro paciente na lista de espera
+
+---
+
+**FEATURE 4**: (Visual esquerda, Copy direita)
+
+**Eyebrow**: 📊 DASHBOARD DE CONTROLE TOTAL
+
+**Título**: "Você Gerencia. A IA Executa."
+
+**Descrição**:
+```
+Um painel limpo, visual e completo. Veja todos os agendamentos da semana, 
+histórico de cada paciente, taxa de presença, receita projetada e até 
+pacientes que precisam de follow-up. Cancele consultas com 1 clique — 
+a IA avisa o paciente automaticamente.
+```
+
+**Bullets**:
+- Visão semanal/mensal de agenda com filtros
+- Perfil completo de cada paciente (histórico, notas, próxima consulta)
+- Métricas de performance (taxa de presença, receita mensal, tempo economizado)
+
+**Visual**:
+- Mockup full-screen do dashboard com elementos destacados:
+  - Calendário visual tipo Kanban com cards de pacientes
+  - Sidebar com lista de pacientes e avatares
+  - Gráfico de barras "Receita vs. Mês Anterior" mostrando crescimento
+
+---
+
+**FEATURE 5**: (Copy esquerda, Visual direita)
+
+**Eyebrow**: 🎯 FOLLOW-UP PROATIVO
+
+**Título**: "Pacientes Nunca Mais Esquecem de Você."
+
+**Descrição**:
+```
+A IA monitora automaticamente quem não agenda retorno há 30/60/90 dias 
+e envia mensagens personalizadas de reengajamento. "Oi Ana! Faz tempo que 
+não nos vemos. Que tal agendar um check-in?" — resultado: até 40% mais 
+consultas recorrentes.
+```
+
+**Bullets**:
+- Campanhas de reativação automáticas e personalizadas
+- Lembretes de consultas de manutenção (ex: "Sua avaliação trimestral chegou!")
+- Mensagens de aniversário e datas especiais (opcional)
+
+**Visual**:
+- Conversa WhatsApp mostrando mensagem de follow-up enviada pela IA: "Olá Mariana! 😊 Passou um tempinho desde sua última consulta. Vamos agendar um check-in para ver sua evolução?"
+
+---
+
+### 7. SEÇÃO DE PROVA SOCIAL - DEPOIMENTOS COM ROI
+
+**Estilo Visual**:
+- Layout em grid 2 colunas (desktop) / 1 coluna (mobile)
+- Cards com elevação, foto do depoente, citação e métrica destacada
+- Fundo com pattern sutil
+
+**Componentes**:
+
+**Headline** (Typography Bold, Centered):
+```
+"Nutricionistas Reais. Resultados Reais. Comprovados."
+```
+
+**Grid de Depoimentos** (3-4 cards):
+
+**Depoimento 1**:
+- **Foto**: Avatar circular de mulher profissional (fictício)
+- **Nome + Cargo**: "Dra. Juliana Mendes | Nutricionista Clínica"
+- **Citação**: 
+```
+  "Em 2 meses, passei de 40 para 68 consultas/mês. O NutriMatic virou 
+  minha secretária 24/7. Nunca mais perdi um agendamento porque demorei 
+  para responder no WhatsApp."
+```
+- **Métrica Destacada em Badge**: "+70% consultas em 60 dias"
+
+**Depoimento 2**:
+- **Foto**: Avatar circular de homem profissional (fictício)
+- **Nome + Cargo**: "Dr. Carlos Almeida | Nutrição Esportiva"
+- **Citação**:
+```
+  "O follow-up automático é INSANO. 38% dos meus pacientes inativos voltaram 
+  depois que a IA mandou mensagem de reengajamento. É dinheiro que eu estava 
+  deixando na mesa."
+```
+- **Métrica Destacada**: "38% reativação de pacientes"
+
+**Depoimento 3**:
+- **Foto**: Avatar circular de mulher profissional (fictício)
+- **Nome + Cargo**: "Dra. Ana Costa | Emagrecimento & Saúde"
+- **Citação**:
+```
+  "Economizo 12 horas por semana. DOZE. Antes eu ficava até 21h respondendo 
+  WhatsApp. Hoje a IA faz tudo e eu só abro o dashboard para ver quantos 
+  novos pacientes agendaram."
+```
+- **Métrica Destacada**: "12h/semana economizadas"
+
+**Depoimento 4** (opcional):
+- **Foto**: Avatar circular
+- **Nome + Cargo**: "Clínica NutriVida | 4 nutricionistas"
+- **Citação**:
+```
+  "Escalamos de 2 para 4 profissionais sem contratar secretária. O NutriMatic 
+  gerencia a agenda de todos, evita conflitos e mantém tudo organizado. ROI 
+  absurdo."
+```
+- **Métrica Destacada**: "R$0 em contratação administrativa"
+
+---
+
+### 8. SEÇÃO "ANTES vs DEPOIS" - COMPARAÇÃO VISUAL
+
+**Estilo Visual**:
+- Layout split-screen vertical com divisor centralizado
+- Lado esquerdo em tons de cinza/vermelho (negativo), lado direito em tons de verde/azul (positivo)
+- Animação de transição no scroll (wipe effect)
+
+**Componentes**:
+
+**Headline** (Typography Bold, Centered, acima do split):
+```
+"Como Era Sua Rotina ANTES. Como Será COM o NutriMatic."
+```
+
+**Split Screen**:
+
+**LADO ESQUERDO** (Sem NutriMatic):
+- **Título**: "SEM NutriMatic ❌"
+- **Lista de frustrações com ícones negativos**:
+  - ❌ Responder WhatsApp até 22h (e perder agendamentos mesmo assim)
+  - ❌ Planilha Excel desatualizada = horários sobrepostos
+  - ❌ Ligar para pacientes para confirmar consulta
+  - ❌ Perder 3-5h/semana em tarefas administrativas
+  - ❌ 25% de taxa de faltas sem aviso
+  - ❌ Pacientes inativos esquecidos = receita perdida
+
+**LADO DIREITO** (Com NutriMatic):
+- **Título**: "COM NutriMatic ✅"
+- **Lista de benefícios com ícones positivos**:
+  - ✅ IA responde em <2 min, 24/7 (você nem precisa estar online)
+  - ✅ Agenda sempre sincronizada e sem conflitos
+  - ✅ Confirmações e lembretes 100% automáticos
+  - ✅ 12+ horas/semana liberadas para atender
+  - ✅ Taxa de presença acima de 90% (follow-up ativo)
+  - ✅ Reativação automática gera 30-40% mais consultas
+
+---
+
+### 9. SEÇÃO DE OBJEÇÕES - FAQ ESTRATÉGICO
+
+**Estilo Visual**:
+- Layout accordion (perguntas clicáveis que expandem)
+- Cards com borda suave e hover effect
+- Ícones ilustrando cada pergunta
+
+**Componentes**:
+
+**Headline** (Typography Bold, Centered):
+```
+"Perguntas que Todo Nutricionista Faz (Respondidas)"
+```
+
+**Accordion Items**:
+
+**Pergunta 1**: "É difícil de configurar? Não sou técnico(a)."
+- **Resposta**: "Zero. É literalmente escanear um QR Code e preencher 3 campos (seus horários, mensagem de boas-vindas). Se você usa WhatsApp, você sabe usar o NutriMatic. Levou 8 minutos para nossa última cliente configurar tudo."
+
+**Pergunta 2**: "A IA vai falar besteira ou ser robótica?"
+- **Resposta**: "Não. O NutriMatic foi treinado especificamente para nutricionistas. Ele entende termos como 'avaliação nutricional', 'retorno', 'plano alimentar'. E você pode personalizar o tom (formal, amigável, etc). Teste: ninguém percebe que não é humano."
+
+**Pergunta 3**: "E se o paciente quiser falar comigo diretamente?"
+- **Resposta**: "A IA identifica e transfere. Se o paciente pedir algo que precise de você (ex: dúvida técnica), a IA avisa: 'Vou transferir para a Dra. Juliana, ela te responde em breve!' Você tem controle total."
+
+**Pergunta 4**: "Funciona com minha agenda no Google Calendar?"
+- **Resposta**: "Sim. Integração nativa e bidirecional. Você marca um horário no Google, o NutriMatic bloqueia. Paciente agenda no WhatsApp, aparece no Google. Sempre sincronizado."
+
+**Pergunta 5**: "Quanto custa? Vale a pena para quem está começando?"
+- **Resposta**: "A partir de R$X/mês (valor fictício — você define). Se você faz 10+ consultas/mês, o ROI é imediato. Um agendamento que você não perderia sozinho já paga o mês. Teste 14 dias grátis e veja."
+
+**Pergunta 6**: "E a privacidade dos dados dos meus pacientes?"
+- **Resposta**: "Nível bancário. Usamos a API oficial do WhatsApp (Meta Business), criptografia de ponta a ponta, conformidade LGPD. Seus dados nunca são vendidos ou compartilhados. Você é dono de 100% das informações."
+
+---
+
+### 10. SEÇÃO DE MÉTRICAS DE IMPACTO - NÚMEROS QUE VENDEM
+
+**Estilo Visual**:
+- Layout em grid 4 colunas (desktop) / 2 colunas (mobile)
+- Cards grandes com número destacado (typography gigante) + label pequena
+- Animação counter-up nos números ao entrar na viewport
+
+**Componentes**:
+
+**Headline** (Typography Bold, Centered):
+```
+"Os Números Não Mentem. O NutriMatic Entrega."
+```
+
+**Grid de Métricas**:
+
+**Métrica 1**:
+- **Número Grande**: "2.847"
+- **Label**: "Consultas agendadas no último mês"
+
+**Métrica 2**:
+- **Número Grande**: "94%"
+- **Label**: "Taxa média de presença (vs. 75% sem automação)"
+
+**Métrica 3**:
+- **Número Grande**: "12h"
+- **Label**: "Economizadas por nutricionista/semana"
+
+**Métrica 4**:
+- **Número Grande**: "<2min"
+- **Label**: "Tempo médio de resposta da IA (vs. 3h+ manual)"
+
+**Elemento Visual Complementar**:
+- Abaixo das métricas, um gráfico de linhas mostrando crescimento fictício: "Consultas Agendadas - Jan a Mar 2025" com linha ascendente (visual limpo, cores brand)
+
+---
+
+### 11. SEÇÃO CTA FINAL - ÚLTIMA CHAMADA PARA AÇÃO
+
+**Estilo Visual**:
+- Seção full-width com fundo gradient vibrante ou imagem de fundo com overlay escuro
+- Layout centralizado com copy empilhada
+- Botões grandes com animação de hover (scale + glow)
+
+**Componentes**:
+
+**Eyebrow** (Typography Small, Uppercase):
+```
+🚀 PRONTO PARA ESCALAR?
+```
+
+**Headline** (Typography Extra Bold, Centered, cor contrastante):
+```
+"Pare de Perder Consultas. 
+Comece a Escalar Hoje."
+```
+
+**Sub-headline** (Typography Regular, Centered):
+```
+Agende uma demonstração de 15 minutos e veja o NutriMatic funcionando 
+ao vivo. Sem compromisso. Sem cartão de crédito. Só resultados.
+```
+
+**CTAs** (Empilhados verticalmente ou lado a lado):
+- **Primário** (Extra Large, com ícone): "Agende Sua Reunião Agora" → (Calendar icon)
+- **Secundário** (Large, outline): "Ou Teste Grátis por 14 Dias" → (Rocket icon)
+
+**Elemento de Urgência/Scarcity** (Badge pequeno abaixo dos CTAs):
+```
+⚡ Apenas 3 vagas de onboarding esta semana
+Visual de Fundo:
+
+Imagem: Nutricionista sorrindo com tablet/notebook mostrando dashboard do NutriMatic (imagem desfocada/overlay para não competir com copy)
+
+
+12. FOOTER - CREDIBILIDADE E NAVEGAÇÃO
+Estilo Visual:
+
+Layout em colunas (4 colunas desktop, empilhadas mobile)
+Fundo escuro com texto claro
+Espaçamento generoso
+
+Componentes:
+Coluna 1 - Branding:
+
+Logo NutriMatic (versão monocromática branca)
+Tagline curto: "Inteligência Artificial para Nutricionistas"
+Ícones de redes sociais (Instagram, LinkedIn, YouTube)
+
+Coluna 2 - Links Rápidos:
+
+Título: "Produto"
+Links: Como Funciona | Funcionalidades | Preços | FAQ
+
+Coluna 3 - Recursos:
+
+Título: "Recursos"
+Links: Blog | Estudos de Caso | Central de Ajuda | Agendar Demo
+
+Coluna 4 - Confiança:
+
+Título: "Segurança"
+Badges:
+
+"API Oficial WhatsApp (Meta Business Partner)"
+"Conformidade LGPD"
+"SSL 256-bit Encryption"
+Rating 4.9/5 (G2 ou Capterra - fictício)
+
+
+
+Bottom Bar:
+
+Texto small: "© 2025 NutriMatic. Todos os direitos reservados."
+Links: Termos de Uso | Política de Privacidade
+
+
+🎨 DIRETRIZES DE DESIGN (SEM CORES/FONTES)
+Estilo Geral
+
+Aesthetic: Moderno, limpo, minimalista com toques de sofisticação tech
+Layout Philosophy: Mobile-first, responsivo, com espaçamento generoso (whitespace é seu amigo)
+Visual Hierarchy: Forte contraste entre headlines e body, uso estratégico de tamanhos
+
+Elementos Visuais
+
+Botões: Cantos arredondados (border-radius médio), padding generoso, micro-animações no hover (scale 1.05 + sombra)
+Cards: Elevação sutil (shadow), hover effect (lift), bordas arredondadas
+Ícones: Estilo line/outline para leveza, ou filled para CTAs
+Imagens: Mockups em perspectiva 3D, screenshots com device frames (iPhone/Macbook), gifs para demonstração de fluxos
+
+Animações e Interatividade
+
+Scroll Animations: Fade-in + slide-up ao entrar na viewport (stagger para listas)
+Hover States: Sempre presente (scale, color shift, shadow increase)
+Loading States: Skeleton screens ou spinners minimalistas
+Parallax: Sutil em backgrounds (velocidade 0.5x do scroll)
+
+Responsividade
+
+Breakpoints: Mobile (<768px), Tablet (768-1024px), Desktop (>1024px)
+Mobile Adjustments:
+
+Hero copy reduzida
+Responsividade (continuação)
+
+Mobile Adjustments:
+
+Hero copy reduzida (headline menor, sub-headline mais concisa)
+CTAs empilhados verticalmente (full-width)
+Grids viram colunas únicas
+Imagens/mockups em tamanho menor com mais zoom
+Navegação hamburger menu
+Accordion FAQ sempre colapsado por padrão
+Métricas em 2 colunas max
+
+
+Tablet Adjustments:
+
+Grids 2 colunas
+Hero mantém layout split mas com proporções 50/50
+Navegação híbrida (principais visíveis, secundários em menu)
+
+
+
+Componentes Reutilizáveis
+Section Container:
+
+Max-width: 1200-1400px
+Padding lateral: 20px (mobile), 40px (tablet), 80px (desktop)
+Margin vertical entre seções: 80px (mobile), 120px (desktop)
+
+Typography Scale (relativa):
+
+Display (Hero Headlines): 2.5-4rem
+H1: 2-3rem
+H2: 1.5-2.5rem
+H3: 1.25-1.75rem
+Body: 1-1.125rem
+Small: 0.875-1rem
+
+Spacing System (consistência):
+
+Base unit: 8px
+Stack: 8px, 16px, 24px, 32px, 48px, 64px, 96px
+Inline: 8px, 12px, 16px, 24px, 32px
+
+
+📝 COPYWRITING - PRINCÍPIOS APLICADOS
+Tom de Voz
+
+Personalidade: Confiante mas acessível, técnico sem ser robótico, empático
+Linguagem: Direta, conversacional, orientada a resultados
+Evitar: Jargões excessivos, promessas vagas ("revolucionário", "inovador" sem contexto), textos longos sem quebra
+
+Estrutura de Persuasão por Seção
+Hero: Promessa audaciosa + prova de credibilidade implícita
+Dor: Empatia + quantificação do problema (estatísticas/cenários reais)
+Solução: Contraste claro com a dor + benefícios concretos
+Features: Traduzir SEMPRE funcionalidade em benefício ("Dashboard" → "Você gerencia. A IA executa.")
+Prova Social: Métricas específicas > citações genéricas
+CTA: Verbos de ação + baixo risco ("Agende" vs "Compre", "Teste Grátis" vs "Assine")
+Gatilhos Psicológicos Utilizados
+
+Urgência/Escarcity: "Apenas 3 vagas de onboarding esta semana"
+Prova Social: Depoimentos com ROI + métricas de escala
+Aversão à Perda: "Pare de Perder Consultas" (foco na dor de perder)
+Autoridade: Badges oficiais (Meta Partner, LGPD), números grandes
+Reciprocidade: Teste grátis sem cartão de crédito
+Clareza: FAQ remove objeções proativamente
+
+
+🔧 ESPECIFICAÇÕES TÉCNICAS PARA IMPLEMENTAÇÃO
+Stack Recomendado
+
+Framework: React (Next.js preferred para SEO) ou Vue.js
+Styling: Tailwind CSS (utility-first, perfect para rapid prototyping)
+Animations: Framer Motion (scroll triggers, page transitions)
+Forms: React Hook Form + validação (para CTAs de agendamento/trial)
+Analytics: Hotjar (heatmaps) + Google Analytics 4 (tracking de conversão)
+
+Performance Targets
+
+First Contentful Paint: <1.5s
+Time to Interactive: <3s
+Cumulative Layout Shift: <0.1
+Lighthouse Score: 90+ (Performance, Accessibility, Best Practices, SEO)
+
+Otimizações Obrigatórias
+
+Imagens: WebP format, lazy loading, srcset para responsive
+Fonts: Preload critical fonts, subset apenas caracteres usados
+Code Splitting: Lazy load seções below the fold
+Minification: CSS/JS minificados, tree-shaking
+CDN: Assets servidos via CDN (Cloudflare/Vercel)
+
+Acessibilidade (WCAG 2.1 AA)
+
+Contraste: Mínimo 4.5:1 para texto normal, 3:1 para texto grande
+Keyboard Navigation: Tab order lógico, focus states visíveis
+Screen Readers: Alt text em todas imagens, ARIA labels em ícones
+Skip Links: "Skip to main content" no topo
+Semantic HTML: Uso correto de <header>, <nav>, <main>, <section>, <article>
+
+
+📊 CONVERSÃO - ELEMENTOS DE TRACKING
+Eventos para Rastrear (Google Analytics/Mixpanel)
+Macro Conversões:
+
+CTA "Agende Sua Reunião" clicado (primary goal)
+Form de agendamento enviado
+CTA "Teste Grátis" clicado (secondary goal)
+Form de trial signup completo
+
+Micro Conversões:
+
+Scroll depth (25%, 50%, 75%, 100%)
+Vídeo demo reproduzido
+FAQ item expandido
+Hover em cards de features (engagement)
+Clique em depoimento (interesse em prova social)
+
+Segmentação:
+
+Source/Medium (organic, paid, referral)
+Device type (mobile, tablet, desktop)
+Tempo na página
+Bounce rate por seção (heatmap)
+
+A/B Tests Recomendados (pós-lançamento)
+
+Hero CTA: "Agende Sua Reunião" vs "Veja o NutriMatic em Ação" vs "Comece Grátis Hoje"
+Headline Hero: Foco em dor vs foco em benefício vs foco em transformação
+Posição do Vídeo Demo: Hero section vs seção "Como Funciona"
+Prova Social: Logos + métricas vs Depoimentos em vídeo vs Estudos de caso longform
+FAQ: Accordion vs Seção expandida por padrão
+CTA Final: Single CTA vs Dual CTAs (reunião + trial)
+
+
+🎯 CHECKLIST FINAL PRÉ-LANÇAMENTO
+Conteúdo
+
+ Todas headlines testadas para clareza (leia em voz alta)
+ Zero typos/erros gramaticais
+ CTAs consistentes em copy e design
+ Números/estatísticas verificados (ou marcados como "fictícios para exemplo")
+ Depoimentos têm nomes, cargos, fotos (ou avatares se fictícios)
+ FAQ responde TOP 6-8 objeções reais de clientes
+
+Design
+
+ Hierarchy visual clara (squint test: principais elementos visíveis com olhos semicerrados)
+ Espaçamento consistente (usar sistema de 8px)
+ Todos estados interativos definidos (hover, active, disabled, loading)
+ Versão mobile testada em dispositivos reais (não só emulador)
+ Imagens otimizadas (<200KB cada, WebP)
+ Sem elementos cortados/overlapping em breakpoints
+
+Funcionalidade
+
+ Todos CTAs linkeados corretamente (agendar demo → calendário, teste grátis → signup)
+ Forms validam inputs (email format, telefone, campos obrigatórios)
+ Animações suaves (60fps, sem janks)
+ Videos/gifs com fallback para browsers antigos
+ Lazy loading funcionando (imagens below fold só carregam no scroll)
+
+SEO
+
+ Title tag otimizado: "NutriMatic - Agente de IA para Nutricionistas | Automação WhatsApp"
+ Meta description (150-160 chars): "Escale seu consultório com IA que agenda, cancela e faz follow-up no WhatsApp 24/7. Economize 12h/semana. Teste grátis."
+ H1 único e claro
+ Alt text em todas imagens (descritivo + keywords naturais)
+ URL limpa: nutrimatic.com (não nutrimatic.com/home/page/index)
+ Schema markup: Organization, Product, FAQPage
+
+Performance
+
+ Lighthouse score >90 em todas categorias
+ Load time <3s em 3G (mobile)
+ Sem resources bloqueando render (CSS inline crítico)
+ GTM/Analytics implementados e testando
+
+Legal/Compliance
+
+ Banner de cookies (LGPD compliance)
+ Links para Política de Privacidade e Termos de Uso (mesmo que em draft)
+ Badges de segurança com links para verificação (se aplicável)
+
+
+💡 EXTRAS PARA CONVERSÃO MÁXIMA (NICE-TO-HAVES)
+Chatbot Interativo no Site
+
+Widget no canto inferior direito: "Fale com Nosso Agente IA" (demo ao vivo do produto)
+Responde FAQs básicos e pode agendar demos diretamente
+Jogada de mestre: Use seu próprio NutriMatic para demonstração (dogfooding)
+
+Vídeo Demo Profissional
+
+60-90 segundos, script tight
+Mostra problema → solução → demo rápido de 3 features principais → CTA
+Legendas sempre (80% assistem sem som)
+Thumbnail custom com play button gigante
+
+Calculadora de ROI Interativa
+
+"Calcule Quanto Você Economiza com NutriMatic"
+Inputs: Consultas/mês, Tempo gasto em admin/dia, Valor hora
+Output: "Você economizará R$X/mês e Y horas/semana"
+Captura email para enviar cálculo detalhado
+
+Popup de Exit-Intent
+
+Aparece quando mouse move para fechar aba
+Copy: "Espera! Antes de sair..." → Oferta irresistível (ex: "15 min de consultoria grátis" ou "Checklist: 7 Erros que Fazem Você Perder Consultas")
+Captura email
+
+Prova Social Dinâmica
+
+Banner flutuante discreto: "🎉 Dra. Maria (São Paulo) acabou de agendar uma demo"
+Atualiza a cada 30-60s com nomes/cidades fictícias (ou reais se tiver)
+Cria senso de movimento e validação social
+
+Seção "Visto em" (Press/Media)
+
+Se tiver aparições em blogs, podcasts, eventos
+Logos de publicações + link para artigo/entrevista
+Aumenta autoridade massivamente
+
+
+📋 RESUMO EXECUTIVO (TL;DR)
+Estrutura: 12 seções em funil progressivo (Awareness → Consideration → Decision)
+Copy Strategy:
+
+Hero = Promessa audaciosa
+Seções 2-5 = Construção de valor (dor, solução, features)
+Seções 6-9 = Remoção de objeções (prova social, comparação, FAQ)
+Seções 10-11 = Conversão agressiva (métricas, CTA final)
+
+Design Pillars:
+
+Minimalismo sofisticado
+Hierarquia visual forte
+Animações sutis mas presentes
+Mobile-obsessed
+
+Conversion Weapons:
+
+CTAs repetidos estrategicamente (3-4x na página)
+Prova social quantitativa (métricas > depoimentos genéricos)
+Baixo atrito (teste grátis sem CC, demos de 15min)
+Urgência/escassez dosadas
+FAQ proativo
+
+Success Metrics:
+
+Taxa de conversão hero CTA: 3-5% (benchmark SaaS B2B)
+Scroll depth médio: >60%
+Bounce rate: <50%
+Time on page: >2min
