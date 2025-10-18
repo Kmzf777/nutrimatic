@@ -3,6 +3,7 @@
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { ContentCard, DashboardButton, DashboardInput } from '@/components/dashboard/DashboardPageLayout';
+import DesktopOnly from '@/components/ui/DesktopOnly';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { QrCode, Smartphone, CheckCircle2, Info, Shield, HelpCircle, RefreshCw, Phone } from 'lucide-react';
@@ -266,9 +267,13 @@ export default function ConnectInstancePage() {
     }
   };
   return (
-    <ProtectedRoute>
-      <DashboardLayout>
-        <DashboardPageLayout title="Conectar Instância" subtitle="Conecte um número para ativar os Agentes IA">
+    <DesktopOnly 
+      title="Conectar Instância - Apenas Desktop"
+      message="A funcionalidade de conectar instância do WhatsApp está disponível apenas em dispositivos desktop para garantir a melhor experiência durante o processo de configuração."
+    >
+      <ProtectedRoute>
+        <DashboardLayout>
+          <DashboardPageLayout title="Conectar Instância" subtitle="Conecte um número para ativar os Agentes IA">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Stepper */}
             <ContentCard className="lg:col-span-1">
@@ -411,6 +416,7 @@ export default function ConnectInstancePage() {
         </DashboardPageLayout>
       </DashboardLayout>
     </ProtectedRoute>
+    </DesktopOnly>
   );
 }
 

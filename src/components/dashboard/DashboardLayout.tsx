@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Bot, Users, CalendarDays, MessageCircle } from 'lucide-react';
 import Tooltip from '../ui/Tooltip';
 import RippleButton from '../ui/RippleButton';
+import MobileBottomNavigation from './MobileBottomNavigation';
 import { useMenuState } from '../../hooks/useMenuState';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -82,51 +83,54 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   };
 
+  // Fechar o menu automaticamente ao mudar de rota no mobile
+  useEffect(() => {
+    if (isMobile && isMenuExpanded) {
+      setIsMenuExpanded(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   return (
     <div className="h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Overlay */}
-      {isMenuExpanded && (
+      {!isMobile && isMenuExpanded && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={() => setIsMenuExpanded(false)}
         />
       )}
 
-      {/* Sidebar - Always floating */}
+      {/* Sidebar - Desktop only */}
+      {!isMobile && (
       <div
         className={`sidebar-menu fixed z-50 h-full bg-white shadow-2xl border-r border-gray-200/50 backdrop-blur-xl transition-all duration-500 ease-out ${
-          isMobile 
-            ? isMenuExpanded 
-              ? 'w-72 translate-x-0' 
-              : 'w-72 -translate-x-full'
-            : isMenuVisible 
-              ? 'w-72 translate-x-0' 
-              : 'w-20 translate-x-0'
+        isMenuVisible ? 'w-72 translate-x-0' : 'w-20 translate-x-0'
         }`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         {/* Header with Logo */}
-        <div className="h-20 border-b border-gray-200/50 flex items-center px-5 bg-gradient-to-r from-nutrimatic-50 to-white">
+        <div className="h-16 lg:h-20 border-b border-gray-200/50 flex items-center px-4 lg:px-5 bg-gradient-to-r from-nutrimatic-50 to-white">
           <div className="flex items-center w-full">
             {/* Logo - sempre fixo à esquerda */}
-            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center flex-shrink-0">
               <Image
                 src="/Nutrimatic Icon Vetor.png"
                 alt="Nutrimatic"
-                width={40}
-                height={40}
-                className="w-10 h-10"
+                width={32}
+                height={32}
+                className="w-8 h-8 lg:w-10 lg:h-10"
               />
             </div>
             
             {/* Texto Nutrimatic - aparece quando menu abre */}
             <div
-              className={`ml-3 overflow-hidden flex items-center h-10 transition-all duration-500 ease-out ${
+              className={`ml-2 lg:ml-3 overflow-hidden flex items-center h-8 lg:h-10 transition-all duration-500 ease-out ${
                 isMenuVisible ? 'w-auto opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-2'
               }`}
             >
-              <span className="text-2xl font-bold text-nutrimatic-600 font-display whitespace-nowrap leading-10" title="Nutrimatic">
+              <span className="text-xl lg:text-2xl font-bold text-nutrimatic-600 font-display whitespace-nowrap leading-8 lg:leading-10" title="Nutrimatic">
                 Nutrimatic
               </span>
             </div>
@@ -138,7 +142,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             className={`absolute right-4 p-2 rounded-lg bg-white/80 backdrop-blur-sm border border-gray-200/50 
               hover:bg-nutrimatic-50 hover:border-nutrimatic-200 transition-all duration-300 lg:hidden
               ${isMenuExpanded ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}
-          >
+            >
             <svg 
               className={`w-4 h-4 text-gray-600 transition-transform duration-300 ${isMenuExpanded ? 'rotate-180' : ''}`} 
               fill="none" 
@@ -151,7 +155,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 px-5 py-4 pb-20 overflow-y-auto overflow-x-hidden">
+        <nav className="flex-1 px-4 lg:px-5 py-3 lg:py-4 pb-16 lg:pb-20 overflow-y-auto overflow-x-hidden">
           <div className="flex flex-col gap-2">
             {menuItems.map((item) => {
               const isActive = pathname === item.href;
@@ -162,15 +166,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   key={item.name}
                   href={item.href}
                   onClick={() => handleItemClick(item.href)}
-                  className={`group relative flex items-center h-12 rounded-lg transition-all duration-300
+                  className={`group relative flex items-center h-10 lg:h-12 rounded-lg transition-all duration-300 touch-manipulation
                     ${isActive 
                       ? 'bg-nutrimatic-50 border border-nutrimatic-200' 
-                      : 'hover:bg-nutrimatic-50 hover:text-nutrimatic-700'
+                      : 'hover:bg-nutrimatic-50 hover:text-nutrimatic-700 active:bg-nutrimatic-100'
                     }
                   `}
                 >
                   {/* Ícone - sempre centralizado no seu container */}
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-300 flex-shrink-0
+                  <div className={`flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 rounded-lg transition-all duration-300 flex-shrink-0
                     ${isActive ? 'bg-nutrimatic-500 text-white shadow-lg' : 'text-gray-500 group-hover:text-nutrimatic-600'}
                   `}>
                     {!isVisible ? (
@@ -180,16 +184,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     ) : (
                       item.icon
                     )}
-                  </div>
+                    </div>
                   
                                      {/* Texto - aparece quando menu abre */}
                    <div
-                     className={`ml-3 overflow-hidden flex items-center flex-1 transition-all duration-500 ease-out ${
+                     className={`ml-2 lg:ml-3 overflow-hidden flex items-center flex-1 transition-all duration-500 ease-out ${
                        isVisible ? 'w-auto opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-2'
                      }`}
                    >
                      <div className="flex items-center min-w-0 flex-1">
-                       <span className={`font-medium text-base whitespace-nowrap flex-1 ${isActive ? 'text-nutrimatic-700' : 'text-gray-700'}`} title={item.name}>
+                       <span className={`font-medium text-sm lg:text-base whitespace-nowrap flex-1 ${isActive ? 'text-nutrimatic-700' : 'text-gray-700'}`} title={item.name}>
                          {item.name}
                        </span>
                        
@@ -214,16 +218,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* User Profile Section */}
         <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200/50 bg-gradient-to-r from-gray-50 to-white">
-          <div className="flex items-center px-5 py-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-nutrimatic-400 via-nutrimatic-500 to-nutrimatic-700 rounded-full flex-shrink-0 shadow-lg ring-2 ring-nutrimatic-200/30"></div>
+          <div className="flex items-center px-4 lg:px-5 py-2 lg:py-3">
+            <div className="w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-nutrimatic-400 via-nutrimatic-500 to-nutrimatic-700 rounded-full flex-shrink-0 shadow-lg ring-2 ring-nutrimatic-200/30"></div>
             
             <div
-              className={`ml-3 overflow-hidden flex flex-col justify-center transition-all duration-500 ease-out ${
+              className={`ml-2 lg:ml-3 overflow-hidden flex flex-col justify-center transition-all duration-500 ease-out ${
                 isMenuVisible ? 'w-auto opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-2'
               }`}
             >
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-gray-900 whitespace-nowrap">
+                <p className="text-xs lg:text-sm font-semibold text-gray-900 whitespace-nowrap">
                   {nutricionista?.nome || user?.email?.split('@')[0] || 'Usuário'}
                 </p>
                 <p className="text-xs text-gray-500 whitespace-nowrap">
@@ -235,36 +239,46 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* Logout button */}
             <button
               onClick={() => setShowLogoutModal(true)}
-              className={`ml-auto p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all duration-300
+              className={`ml-auto p-1.5 lg:p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all duration-300 touch-manipulation
                 ${isMenuVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
             </button>
           </div>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Main Content - Full width */}
       <div className="flex-1 flex flex-col min-h-0 w-full">
         {/* Mobile menu button - only visible on mobile */}
-        <div className="lg:hidden p-4 border-b border-gray-200/50 bg-white/80 backdrop-blur-xl flex-shrink-0 relative z-30">
-          <button
-            onClick={handleMenuToggle}
-            className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+        <div className="lg:hidden p-3 border-b border-gray-200/50 bg-white/80 backdrop-blur-xl flex-shrink-0 relative z-30">
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9"></div>
+            {/* Logo mobile */}
+            <div className="flex items-center space-x-2">
+              <Image
+                src="/Nutrimatic Icon Vetor.png"
+                alt="Nutrimatic"
+                width={24}
+                height={24}
+                className="w-6 h-6"
+              />
+              <span className="text-lg font-bold text-nutrimatic-600 font-display">
+                Nutrimatic
+              </span>
+            </div>
+            <div className="w-9 h-9"></div> {/* Spacer para centralizar o logo */}
+          </div>
         </div>
-        
+
         {/* Main Content Area */}
         <main className={`flex-1 overflow-y-auto overflow-x-hidden dashboard-content transition-all duration-500 ease-out ${
           isMobile ? 'pl-0' : isMenuVisible ? 'lg:pl-72' : 'lg:pl-20'
         }`}>
-          <div className="animate-fade-in main-content p-6">
+          <div className="animate-fade-in main-content p-4 lg:p-6 pb-20 lg:pb-6">
             {children}
           </div>
         </main>
@@ -315,6 +329,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </div>
       )}
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNavigation />
     </div>
   );
 }

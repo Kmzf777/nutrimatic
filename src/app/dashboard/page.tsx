@@ -54,8 +54,8 @@ export default function Dashboard() {
             </DashboardButton>
           }
         >
-          {/* Cards de estatísticas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Cards de estatísticas - Responsivo */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
             <StatsCard
               title="Total de Clientes"
               value={counts.total}
@@ -95,33 +95,33 @@ export default function Dashboard() {
               title="Suas Informações"
               subtitle="Dados da sua conta"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <User className="w-5 h-5 text-gray-600" />
-                  <div>
-                    <p className="text-sm text-gray-600">Nome</p>
-                    <p className="font-medium text-gray-900">{nutricionista.nome}</p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-3 lg:gap-4">
+                <div className="flex items-center space-x-2 lg:space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <User className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs lg:text-sm text-gray-600">Nome</p>
+                    <p className="font-medium text-gray-900 text-sm lg:text-base truncate">{nutricionista.nome}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <Mail className="w-5 h-5 text-gray-600" />
-                  <div>
-                    <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-medium text-gray-900">{nutricionista.email}</p>
+                <div className="flex items-center space-x-2 lg:space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <Mail className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs lg:text-sm text-gray-600">Email</p>
+                    <p className="font-medium text-gray-900 text-sm lg:text-base truncate">{nutricionista.email}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <Phone className="w-5 h-5 text-gray-600" />
-                  <div>
-                    <p className="text-sm text-gray-600">Telefone</p>
-                    <p className="font-medium text-gray-900">{nutricionista.telefone}</p>
+                <div className="flex items-center space-x-2 lg:space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <Phone className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs lg:text-sm text-gray-600">Telefone</p>
+                    <p className="font-medium text-gray-900 text-sm lg:text-base truncate">{nutricionista.telefone}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                  <div>
-                    <p className="text-sm text-gray-600">Status</p>
-                    <p className="font-medium text-green-900">Ativo</p>
+                <div className="flex items-center space-x-2 lg:space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <CheckCircle className="w-4 h-4 lg:w-5 lg:h-5 text-green-600 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs lg:text-sm text-gray-600">Status</p>
+                    <p className="font-medium text-green-900 text-sm lg:text-base">Ativo</p>
                   </div>
                 </div>
               </div>
@@ -162,22 +162,22 @@ export default function Dashboard() {
                 {clientesHoje.slice(0, 5).map((cliente) => {
                   const initials = (cliente.nome || (cliente.numero || '')).split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
                   return (
-                    <div key={cliente.id} className="flex items-center p-4 bg-gray-50/50 rounded-xl border border-gray-200/30 cursor-pointer hover:bg-gray-100/50 transition-all duration-300" onClick={() => handleClienteClick(cliente)}>
-                      <div className="w-10 h-10 bg-nutrimatic-100 rounded-xl flex items-center justify-center mr-4">
-                        <span className="text-nutrimatic-600 font-medium">{initials}</span>
+                    <div key={cliente.id} className="flex items-center p-3 lg:p-4 bg-gray-50/50 rounded-lg lg:rounded-xl border border-gray-200/30 cursor-pointer hover:bg-gray-100/50 transition-all duration-300 active:bg-gray-200/50" onClick={() => handleClienteClick(cliente)}>
+                      <div className="w-8 h-8 lg:w-10 lg:h-10 bg-nutrimatic-100 rounded-lg lg:rounded-xl flex items-center justify-center mr-3 lg:mr-4 flex-shrink-0">
+                        <span className="text-nutrimatic-600 font-medium text-xs lg:text-sm">{initials}</span>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
                           {cliente.nome || 'Sem nome'}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 truncate">
                           {cliente.numero} • {formatTimeAgo(cliente.created_at)}
                         </p>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Novo</span>
-                        <button className="p-2 text-gray-400 hover:text-nutrimatic-600 rounded-lg hover:bg-white transition-all duration-300">
-                          <Eye className="w-5 h-5" />
+                      <div className="flex items-center space-x-1 lg:space-x-2 flex-shrink-0">
+                        <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 hidden sm:inline-block">Novo</span>
+                        <button className="p-1.5 lg:p-2 text-gray-400 hover:text-nutrimatic-600 rounded-lg hover:bg-white transition-all duration-300 touch-manipulation">
+                          <Eye className="w-4 h-4 lg:w-5 lg:h-5" />
                         </button>
                       </div>
                     </div>

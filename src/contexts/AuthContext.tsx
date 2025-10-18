@@ -26,51 +26,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchNutricionista = async (userId: string) => {
     try {
-      console.log('🔍 Buscando nutricionista para userId:', userId);
-      
       const { data, error } = await supabase
         .from('nutricionistas')
         .select('*')
         .eq('id', userId)
         .single();
 
-      console.log('📊 Resultado da busca:', { data, error });
-
       if (error) {
-        console.error('❌ Erro ao buscar nutricionista:', error.message, error.code, error);
-        // Se não encontrar nutricionista, criar um registro básico
-        if (error.code === 'PGRST116') {
-          console.log('🔧 Criando registro básico de nutricionista...');
-          setNutricionista({
-            id: userId,
-            nome: 'Usuário',
-            email: '',
-            telefone: '',
-            active: true,
-            presc_max: 50,
-            presc_geradas: 0
-          } as any);
-        } else {
-          // Para outros erros, definir como null mas não bloquear
-          setNutricionista(null);
-        }
-        return;
+        console.error('Erro ao buscar nutricionista:', error);
+        return null;
       }
 
-      console.log('✅ Nutricionista encontrado:', data);
-      setNutricionista(data);
+      return data;
     } catch (error) {
-      console.error('❌ Erro inesperado ao buscar nutricionista:', error);
-      // Em caso de erro, não bloquear o usuário
-      setNutricionista({
-        id: userId,
-        nome: 'Usuário',
-        email: '',
-        telefone: '',
-        active: true,
-        presc_max: 50,
-        presc_geradas: 0
-      } as any);
+      console.error('Erro inesperado ao buscar nutricionista:', error);
+      return null;
     }
   };
 
@@ -133,10 +103,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Evitar inicialização múltipla
     if (isInitializing.current) {
+      console.log('🔄 Inicialização já em andamento, ignorando...');
       return;
     }
     
     isInitializing.current = true;
+    console.log('🚀 Iniciando useEffect de inicialização...');
 
     const initializeAuth = async () => {
       try {
@@ -152,6 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
+        console.log('🔍 Verificando sessão atual...');
         // Verificar sessão atual com timeout de segurança
         const sessionResult = await Promise.race([
           supabase.auth.getSession(),
@@ -171,18 +144,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } 
         
         if (session?.user) {
-          console.log('✅ Sessão ativa encontrada:', session.user.email);
           setUser(session.user);
           
-          console.log('🔄 Buscando dados do nutricionista...');
           // Buscar nutricionista com timeout de segurança
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Timeout na busca do nutricionista')), 5000)
           );
           
           try {
-            await Promise.race([fetchNutricionista(session.user.id), timeoutPromise]);
-            console.log('✅ Dados do nutricionista carregados');
+            const nutricionistaData = await Promise.race([fetchNutricionista(session.user.id), timeoutPromise]);
+            if (nutricionistaData) {
+              setNutricionista(nutricionistaData);
+            }
           } catch (timeoutError) {
             console.warn('⚠️ Timeout na busca do nutricionista, criando dados básicos');
             setNutricionista({
@@ -196,7 +169,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } as any);
           }
         } else {
-          console.log('👤 Nenhuma sessão ativa');
           setUser(null);
           setNutricionista(null);
         }
@@ -206,7 +178,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
         setNutricionista(null);
       } finally {
-        console.log('✅ Inicialização completa - definindo loading = false');
         setLoading(false);
         setInitialized(true);
       }

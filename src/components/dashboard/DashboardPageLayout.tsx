@@ -18,26 +18,26 @@ const DashboardPageLayout = memo(function DashboardPageLayout({
   className = "" 
 }: DashboardPageLayoutProps) {
   return (
-    <div className={`space-y-6 ${className}`}>
-      {/* Header da Página */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg border border-gray-200/50 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 font-display">{title}</h1>
+    <div className={`space-y-4 lg:space-y-6 ${className}`}>
+      {/* Header da Página - Responsivo */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-lg lg:rounded-xl shadow-lg border border-gray-200/50 p-4 lg:p-6">
+        <div className="flex flex-col space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl lg:text-2xl font-bold text-gray-900 font-display truncate">{title}</h1>
             {subtitle && (
               <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
             )}
           </div>
           {actions && (
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 lg:space-x-3 flex-shrink-0">
               {actions}
             </div>
           )}
         </div>
       </div>
 
-      {/* Conteúdo da Página */}
-      <div className="space-y-6">
+      {/* Conteúdo da Página - Responsivo */}
+      <div className="space-y-4 lg:space-y-6">
         {children}
       </div>
     </div>
@@ -71,17 +71,19 @@ export const StatsCard = memo(function StatsCard({
   };
 
   return (
-    <div className={`bg-white/80 backdrop-blur-xl rounded-xl shadow-lg border border-gray-200/50 p-6 hover:shadow-xl transition-all duration-300 ${className}`}>
+    <div className={`bg-white/80 backdrop-blur-xl rounded-lg lg:rounded-xl shadow-lg border border-gray-200/50 p-4 lg:p-6 hover:shadow-xl transition-all duration-300 ${className}`}>
       <div className="flex items-center">
-        <div className={`p-3 rounded-xl ${colorClasses[color]}`}>
-          {icon}
+        <div className={`p-2 lg:p-3 rounded-lg lg:rounded-xl ${colorClasses[color]} flex-shrink-0`}>
+          <div className="w-5 h-5 lg:w-6 lg:h-6">
+            {icon}
+          </div>
         </div>
-        <div className="ml-4 flex-1">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <div className="flex items-center space-x-2">
-            <p className="text-2xl font-bold text-gray-900">{value}</p>
+        <div className="ml-3 lg:ml-4 flex-1 min-w-0">
+          <p className="text-xs lg:text-sm font-medium text-gray-600 truncate">{title}</p>
+          <div className="flex items-center space-x-1 lg:space-x-2">
+            <p className="text-lg lg:text-2xl font-bold text-gray-900 truncate">{value}</p>
             {trend && (
-              <span className={`text-sm font-medium ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}>
+              <span className={`text-xs lg:text-sm font-medium flex-shrink-0 ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}>
                 {trend.isPositive ? '+' : ''}{trend.value}%
               </span>
             )}
@@ -107,23 +109,23 @@ export const ContentCard = memo(function ContentCard({
   className?: string;
 }) {
   return (
-    <div className={`bg-white/80 backdrop-blur-xl rounded-xl shadow-lg border border-gray-200/50 ${className}`}>
+    <div className={`bg-white/80 backdrop-blur-xl rounded-lg lg:rounded-xl shadow-lg border border-gray-200/50 ${className}`}>
       {(title || actions) && (
-        <div className="p-6 border-b border-gray-200/50">
-          <div className="flex items-center justify-between">
-            <div>
-              {title && <h2 className="text-lg font-semibold text-gray-900">{title}</h2>}
+        <div className="p-4 lg:p-6 border-b border-gray-200/50">
+          <div className="flex flex-col space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+            <div className="min-w-0 flex-1">
+              {title && <h2 className="text-base lg:text-lg font-semibold text-gray-900 truncate">{title}</h2>}
               {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
             </div>
             {actions && (
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 lg:space-x-3 flex-shrink-0">
                 {actions}
               </div>
             )}
           </div>
         </div>
       )}
-      <div className="p-6">
+      <div className="p-4 lg:p-6">
         {children}
       </div>
     </div>
@@ -144,19 +146,19 @@ export const DashboardButton = memo(function DashboardButton({
   className?: string;
   [key: string]: any;
 }) {
-  const baseClasses = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60";
+  const baseClasses = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 touch-manipulation";
   
   const variants = {
-    primary: "bg-nutrimatic-600 text-white hover:bg-nutrimatic-700 focus:ring-nutrimatic-500 shadow-lg hover:shadow-xl",
-    secondary: "bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500",
-    outline: "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500",
-    ghost: "text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-500"
+    primary: "bg-nutrimatic-600 text-white hover:bg-nutrimatic-700 focus:ring-nutrimatic-500 shadow-lg hover:shadow-xl active:bg-nutrimatic-800",
+    secondary: "bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500 active:bg-gray-300",
+    outline: "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500 active:bg-gray-100",
+    ghost: "text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-500 active:bg-gray-200"
   };
 
   const sizes = {
-    sm: "px-3 py-2 text-sm",
-    md: "px-4 py-2 text-sm",
-    lg: "px-6 py-3 text-base"
+    sm: "px-2 py-1.5 text-xs lg:px-3 lg:py-2 lg:text-sm",
+    md: "px-3 py-2 text-sm lg:px-4 lg:py-2 lg:text-sm",
+    lg: "px-4 py-2.5 text-sm lg:px-6 lg:py-3 lg:text-base"
   };
 
   return (
@@ -234,4 +236,4 @@ export const StatusBadge = memo(function StatusBadge({
       {statusText[status]}
     </span>
   );
-}); 
+});

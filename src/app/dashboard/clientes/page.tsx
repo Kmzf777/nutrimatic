@@ -44,6 +44,129 @@ export default function ClientesPage() {
     return <span className={`${base} bg-gray-100 text-gray-800`}>{status}</span>;
   };
 
+  // Corpo principal isolado para evitar ternários complexos em JSX
+  const renderBody = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <RefreshCw className="w-8 h-8 animate-spin text-nutrimatic-600" />
+          <span className="ml-3 text-gray-600">Carregando clientes...</span>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-2">Erro ao carregar clientes: {error}</p>
+          <p className="text-xs text-gray-500 mb-4">Veja o console do navegador para detalhes técnicos do erro.</p>
+          <DashboardButton onClick={refetch} variant="primary">Tentar novamente</DashboardButton>
+        </div>
+      );
+    }
+
+    if (filteredClientes.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600 text-lg">Nenhum cliente encontrado</p>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        {/* Desktop Table */}
+        <div className="hidden lg:block overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50/50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Número</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Última atividade</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200/50">
+              {filteredClientes.map((c) => {
+                const initials = (c.nome || (c.numero || '')).split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
+                return (
+                  <tr key={c.id} className="hover:bg-gray-50/50 transition-all duration-300 cursor-pointer" onClick={() => handleClienteClick(c)}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-nutrimatic-100 rounded-xl flex items-center justify-center">
+                          <span className="text-nutrimatic-600 font-medium">{initials}</span>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{c.nome || 'Sem nome'}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-nutrimatic-700">
+                      {waLink(c.numero) ? (
+                        <a href={waLink(c.numero)} target="_blank" rel="noreferrer" className="hover:underline">
+                          {formatNumero(c.numero)}
+                        </a>
+                      ) : (
+                        formatNumero(c.numero)
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(c.status)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatTimeAgo(c.last_msg || c.created_at)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="lg:hidden space-y-3">
+          {filteredClientes.map((c) => {
+            const initials = (c.nome || (c.numero || '')).split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
+            return (
+              <div 
+                key={c.id} 
+                className="bg-gray-50/50 rounded-lg p-4 cursor-pointer hover:bg-gray-100/50 transition-all duration-300 active:bg-gray-200/50 border border-gray-200/30"
+                onClick={() => handleClienteClick(c)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-nutrimatic-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-nutrimatic-600 font-medium text-sm">{initials}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {c.nome || 'Sem nome'}
+                      </p>
+                      {getStatusBadge(c.status)}
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span className="truncate">
+                        {waLink(c.numero) ? (
+                          <a href={waLink(c.numero)} target="_blank" rel="noreferrer" className="text-nutrimatic-600 hover:underline">
+                            {formatNumero(c.numero)}
+                          </a>
+                        ) : (
+                          formatNumero(c.numero)
+                        )}
+                      </span>
+                      <span className="flex-shrink-0 ml-2">
+                        {formatTimeAgo(c.last_msg || c.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </>
+    );
+  };
+
   return (
     <ProtectedRoute>
       <DashboardLayout>
@@ -51,27 +174,25 @@ export default function ClientesPage() {
           title="Clientes"
           subtitle="Leads e clientes por status e agente"
           actions={
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 lg:space-x-3">
               <DashboardButton onClick={refetch} disabled={loading} variant="secondary" size="sm">
-                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Atualizar
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''} lg:mr-2`} />
+                <span className="hidden lg:inline">Atualizar</span>
               </DashboardButton>
               <DashboardButton 
                 onClick={() => router.push('/dashboard/criar-cliente')} 
                 variant="primary" 
                 size="sm"
               >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Novo Cliente
+                <UserPlus className="w-4 h-4 lg:mr-2" />
+                <span className="hidden lg:inline">Novo Cliente</span>
               </DashboardButton>
             </div>
           }
         >
-          
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
             <StatsCard title="Total" value={counts.total} icon={<Users className="w-6 h-6" />} color="nutrimatic" />
             <StatsCard title="Novos" value={counts.novos} icon={<ClipboardList className="w-6 h-6" />} color="purple" />
-
             <StatsCard title="Ativos" value={counts.ativos} icon={<CheckCircle className="w-6 h-6" />} color="green" />
             <StatsCard title="Inativos" value={counts.inativos} icon={<XCircle className="w-6 h-6" />} color="red" />
           </div>
@@ -81,7 +202,7 @@ export default function ClientesPage() {
             subtitle="Status operacional"
             actions={<div className="flex items-center space-x-3"><ConnectionStatus /></div>}
           >
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 mb-4 lg:mb-6">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <DashboardInput
@@ -92,80 +213,19 @@ export default function ClientesPage() {
                   className="pl-10"
                 />
               </div>
-              <DashboardSelect value={filterStatus} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilterStatus(e.target.value as any)}>
+              <DashboardSelect value={filterStatus} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilterStatus(e.target.value as any)} className="lg:w-auto">
                 <option value="Todos">Todos</option>
                 <option value="novo">Novo</option>
                 <option value="ativo">Ativo</option>
                 <option value="inativo">Inativo</option>
               </DashboardSelect>
-              
             </div>
 
-            <div className="overflow-x-auto">
-              {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <RefreshCw className="w-8 h-8 animate-spin text-nutrimatic-600" />
-                  <span className="ml-3 text-gray-600">Carregando clientes...</span>
-                </div>
-              ) : error ? (
-                <div className="text-center py-12">
-                  <p className="text-red-600 mb-2">Erro ao carregar clientes: {error}</p>
-                  <p className="text-xs text-gray-500 mb-4">Veja o console do navegador para detalhes técnicos do erro.</p>
-                  <DashboardButton onClick={refetch} variant="primary">Tentar novamente</DashboardButton>
-                </div>
-              ) : filteredClientes.length === 0 ? (
-                <div className="text-center py-12">
-                  <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 text-lg">Nenhum cliente encontrado</p>
-                </div>
-              ) : (
-                <table className="w-full">
-                  <thead className="bg-gray-50/50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Número</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Última atividade</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200/50">
-                    {filteredClientes.map((c) => {
-                      const initials = (c.nome || (c.numero || '')).split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
-                      return (
-                        <tr key={c.id} className="hover:bg-gray-50/50 transition-all duration-300 cursor-pointer" onClick={() => handleClienteClick(c)}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="w-10 h-10 bg-nutrimatic-100 rounded-xl flex items-center justify-center">
-                                <span className="text-nutrimatic-600 font-medium">{initials}</span>
-                              </div>
-                              <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">{c.nome || 'Sem nome'}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-nutrimatic-700">
-                            {waLink(c.numero) ? (
-                              <a href={waLink(c.numero)} target="_blank" rel="noreferrer" className="hover:underline">
-                                {formatNumero(c.numero)}
-                              </a>
-                            ) : (
-                              formatNumero(c.numero)
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(c.status)}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {formatTimeAgo(c.last_msg || c.created_at)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
+            {renderBody()}
+
+            <div className="mt-4 lg:mt-6 pt-4 lg:pt-6 border-t border-gray-200/50">
               {filteredClientes.length > 0 && (
-                <div className="mt-6 pt-6 border-t border-gray-200/50">
-                  <p className="text-sm text-gray-600">Mostrando {filteredClientes.length} de {clientes.length} clientes</p>
-                </div>
+                <p className="text-xs lg:text-sm text-gray-600">Mostrando {filteredClientes.length} de {clientes.length} clientes</p>
               )}
             </div>
           </ContentCard>

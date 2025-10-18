@@ -99,9 +99,12 @@ const config: Config = {
         'gradient-primary': 'linear-gradient(135deg, var(--nutrimatic-500) 0%, var(--nutrimatic-600) 100%)',
         'gradient-secondary': 'linear-gradient(135deg, var(--nutrimatic-500) 0%, var(--purple-500) 100%)',
       },
+      spacing: {
+        'safe-area-inset-bottom': 'env(safe-area-inset-bottom)',
+      },
     },
   },
   plugins: [],
 };
 
-export default config; 
+export default config;

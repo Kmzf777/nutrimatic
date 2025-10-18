@@ -5,7 +5,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { ContentCard, DashboardButton } from '@/components/dashboard/DashboardPageLayout';
 import { addDays, addMonths, endOfMonth, endOfWeek, isSameDay, isSameMonth, isToday, startOfMonth, startOfWeek } from 'date-fns';
-import { CalendarDays, ChevronLeft, ChevronRight, MoreVertical, Trash2, X } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, MoreVertical, Trash2, X, Plus, Clock, MapPin, User } from 'lucide-react';
 import { useAgenda } from '@/hooks/useAgenda';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -62,7 +62,6 @@ export default function AgendaPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const supabase = createClient();
   const { user, nutricionista } = useAuth();
-  // Search params handled via Suspense child component
 
   const WEBHOOK_URLS = [
     'https://n8n-n8n.0dt1f5.easypanel.host/webhook-test/agenda-alterar',
@@ -95,6 +94,14 @@ export default function AgendaPage() {
   const gridStart = startOfWeek(monthStart, { weekStartsOn: 0 });
   const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
+  // Calculate period that includes both current month and selected date month
+  const selectedMonthStart = startOfMonth(selectedDate);
+  const selectedMonthEnd = endOfMonth(selectedDate);
+  
+  // Use the broader period that includes both months
+  const dataStart = monthStart < selectedMonthStart ? monthStart : selectedMonthStart;
+  const dataEnd = monthEnd > selectedMonthEnd ? monthEnd : selectedMonthEnd;
+
   const days = useMemo(() => {
     const result: Date[] = [];
     let day = gridStart;
@@ -105,7 +112,7 @@ export default function AgendaPage() {
     return result;
   }, [gridStart, gridEnd]);
 
-  // Dias do carrossel: mês atual completo
+  // Dias do carrossel: mes atual completo
   const carouselDays = useMemo(() => {
     const result: Date[] = [];
     let day = monthStart;
@@ -116,6 +123,19 @@ export default function AgendaPage() {
     return result;
   }, [monthStart, monthEnd]);
 
+  // Synchronize currentMonth with selectedDate when necessary
+  useEffect(() => {
+    const selectedMonth = selectedDate.getMonth();
+    const selectedYear = selectedDate.getFullYear();
+    const currentMonthValue = currentMonth.getMonth();
+    const currentYear = currentMonth.getFullYear();
+    
+    // If selected date is in a different month, update currentMonth
+    if (selectedMonth !== currentMonthValue || selectedYear !== currentYear) {
+      setCurrentMonth(new Date(selectedYear, selectedMonth, 1));
+    }
+  }, [selectedDate, currentMonth]);
+
   // Center selected day (or today on first render) within the visible window
   useEffect(() => {
     if (carouselDays.length === 0) return;
@@ -125,7 +145,8 @@ export default function AgendaPage() {
     const start = Math.min(maxStartLocal, Math.max(0, (idx === -1 ? 0 : idx) - half));
     setCarouselStart(start);
   }, [carouselDays, selectedDate]);
-  const { eventsByDate, loading, error, refetch } = useAgenda(monthStart, monthEnd);
+  
+  const { eventsByDate, loading, error, refetch } = useAgenda(dataStart, dataEnd);
 
   function formatLongDate(date: Date) {
     const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' });
@@ -159,13 +180,13 @@ export default function AgendaPage() {
           title="Agenda"
           subtitle="Crie, edite e apague seus agendamentos"
           actions={
-            <div className="flex items-center space-x-2">
+            <div className="hidden md:flex items-center space-x-2">
               <DashboardButton
                 variant="primary"
                 size="sm"
                 onClick={() => setViewMode(viewMode === 'month' ? 'carousel' : 'month')}
               >
-                {viewMode === 'month' ? 'Voltar' : 'Ver mês completo'}
+                {viewMode === 'month' ? 'Voltar' : 'Ver mes completo'}
               </DashboardButton>
               <DashboardButton variant="ghost" size="sm" onClick={refetch}>
                 Atualizar
@@ -174,14 +195,331 @@ export default function AgendaPage() {
           }
         >
           {viewMode === 'carousel' ? (
-            <>
-              <ContentCard 
-                title={formatMonthYear(currentMonth)} 
-                subtitle="Selecione um dia para ver os detalhes"
+            <div>
+              {/* MOBILE DESIGN - Google Agenda Style */}
+              <div className="block md:hidden">
+                {/* Mobile Header with Month Navigation */}
+                <div className="bg-gradient-to-r from-nutrimatic-600 to-nutrimatic-700 rounded-2xl p-6 mb-6 text-white shadow-xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h2 className="text-2xl font-bold">{formatMonthYear(currentMonth)}</h2>
+                      <p className="text-nutrimatic-100 text-sm">Toque em uma data para ver os agendamentos</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setCurrentMonth(prev => addMonths(prev, -1))}
+                        className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => setCurrentMonth(prev => addMonths(prev, 1))}
+                        className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Today Button */}
+                  <button
+                    onClick={() => {
+                      const today = new Date();
+                      setCurrentMonth(today);
+                      setSelectedDate(today);
+                    }}
+                    className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                  >
+                    <CalendarDays className="w-4 h-4 mr-2 inline" />
+                    Hoje
+                  </button>
+                </div>
+
+                {/* Mobile Calendar Grid */}
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-6">
+                  {/* Week Days Header */}
+                  <div className="grid grid-cols-7 bg-gray-50 border-b border-gray-100">
+                    {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map((d) => (
+                      <div key={d} className="text-xs font-semibold text-gray-600 text-center py-3">
+                        {d}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Calendar Days */}
+                  <div className="grid grid-cols-7">
+                    {days.map((day) => {
+                      const key = toISODate(day);
+                      const dayEvents = eventsByDate[key] || [];
+                      const outsideMonth = !isSameMonth(day, monthStart);
+                      const today = isToday(day);
+                      const isSelected = isSameDay(day, selectedDate);
+                      const hasEvents = dayEvents.length > 0;
+                      
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => setSelectedDate(day)}
+                          className={`
+                            relative aspect-square border-r border-b border-gray-100 p-2 transition-all duration-200
+                            ${outsideMonth ? 'bg-gray-50 text-gray-400' : 'bg-white text-gray-900 hover:bg-nutrimatic-50'}
+                            ${isSelected ? 'bg-nutrimatic-100 ring-2 ring-nutrimatic-500 ring-inset' : ''}
+                            ${today && !isSelected ? 'bg-blue-50 text-blue-700 font-bold' : ''}
+                          `}
+                        >
+                          <div className="flex flex-col items-center justify-center h-full">
+                            <span className={`text-sm ${today && !isSelected ? 'font-bold' : ''}`}>
+                              {day.getDate()}
+                            </span>
+                            {hasEvents && (
+                              <div className="flex space-x-1 mt-1">
+                                {dayEvents.slice(0, 3).map((_, idx) => (
+                                  <div
+                                    key={idx}
+                                    className={`w-1.5 h-1.5 rounded-full ${
+                                      isSelected ? 'bg-nutrimatic-600' : 'bg-nutrimatic-400'
+                                    }`}
+                                  />
+                                ))}
+                                {dayEvents.length > 3 && (
+                                  <div className="text-xs text-gray-500">+</div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          {today && (
+                            <div className="absolute top-1 right-1">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Selected Date Events - Mobile */}
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">
+                          {selectedDate.toLocaleDateString('pt-BR', { 
+                            weekday: 'long', 
+                            day: 'numeric', 
+                            month: 'long' 
+                          })}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {selectedEvents.length === 0 
+                            ? 'Nenhum agendamento' 
+                            : `${selectedEvents.length} ${selectedEvents.length === 1 ? 'agendamento' : 'agendamentos'}`
+                          }
+                        </p>
+                      </div>
+                      <Link href="/dashboard/criar-agendamento">
+                        <button className="bg-nutrimatic-600 hover:bg-nutrimatic-700 text-white p-3 rounded-full shadow-lg transition-colors">
+                          <Plus className="w-5 h-5" />
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+                    {selectedEvents.length === 0 ? (
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <CalendarDays className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <p className="text-gray-500 text-sm">Nenhum agendamento para este dia</p>
+                        <Link href="/dashboard/criar-agendamento">
+                          <button className="mt-4 bg-nutrimatic-600 hover:bg-nutrimatic-700 text-white px-6 py-2 rounded-full text-sm font-medium transition-colors">
+                            Criar agendamento
+                          </button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {selectedEvents.map((ev) => {
+                          const contactNumber = ev.number ? ev.number.split('').filter(c => c >= '0' && c <= '9').join('') : '';
+                          const contactUrl = contactNumber ? `https://wa.me/${contactNumber}` : undefined;
+                          const tipoLabel = ev.tipo ? ev.tipo.charAt(0).toUpperCase() + ev.tipo.slice(1) : undefined;
+                          const statusText = (ev.status || 'agendado');
+                          const statusLabel = statusText.charAt(0).toUpperCase() + statusText.slice(1);
+                          
+                          const statusColor = (() => {
+                            const s = statusText.toLowerCase();
+                            if (s === 'aguardando') return 'bg-amber-500 text-white';
+                            if (s === 'agendado') return 'bg-emerald-500 text-white';
+                            if (s === 'confirmado') return 'bg-blue-500 text-white';
+                            if (s === 'cancelado') return 'bg-red-500 text-white';
+                            if (s === 'realizado') return 'bg-gray-500 text-white';
+                            return 'bg-gray-500 text-white';
+                          })();
+
+                          const eventColor = (() => {
+                            if (ev.color === 'green') return 'border-emerald-500 bg-emerald-50';
+                            if (ev.color === 'blue') return 'border-blue-500 bg-blue-50';
+                            if (ev.color === 'purple') return 'border-purple-500 bg-purple-50';
+                            if (ev.color === 'yellow') return 'border-amber-500 bg-amber-50';
+                            return 'border-gray-400 bg-gray-50';
+                          })();
+
+                          return (
+                            <div
+                              key={ev.id}
+                              className={`border-l-4 ${eventColor} rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 bg-white`}
+                            >
+                              {/* Header com horario e status */}
+                              <div className="flex items-center justify-between mb-4">
+                                {ev.time && (
+                                  <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-sm border">
+                                    <Clock className="w-5 h-5 mr-2 text-nutrimatic-600" />
+                                    <span className="font-bold text-lg text-gray-900">{ev.time}</span>
+                                  </div>
+                                )}
+                                <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-sm ${statusColor}`}>
+                                  {statusLabel}
+                                </span>
+                              </div>
+                              
+                              {/* Nome do cliente */}
+                              <div className="mb-4">
+                                <h3 className="text-xl font-bold text-gray-900 mb-1 flex items-center">
+                                  <User className="w-5 h-5 mr-3 text-nutrimatic-600" />
+                                  {ev.title}
+                                </h3>
+                                {ev.action && (
+                                  <p className="text-gray-600 ml-8 text-sm leading-relaxed">{ev.action}</p>
+                                )}
+                              </div>
+                              
+                              {/* Tipo de consulta */}
+                              {tipoLabel && (
+                                <div className="mb-6">
+                                  <div className="flex items-center bg-gray-50 rounded-xl px-4 py-3 border">
+                                    <MapPin className="w-5 h-5 mr-3 text-gray-600" />
+                                    <span className="font-medium text-gray-800">{tipoLabel}</span>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Botoes de acao */}
+                              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+                                {contactUrl && (
+                                  <button
+                                    onClick={() => window.open(contactUrl, '_blank')}
+                                    className="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg min-w-[120px]"
+                                    title="Contatar via WhatsApp"
+                                  >
+                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                                    </svg>
+                                    WhatsApp
+                                  </button>
+                                )}
+                                
+                                <button
+                                  onClick={() => {
+                                    setEditEventId(ev.id);
+                                    setEditDate(ev.date);
+                                    setEditTime(ev.time || '09:00');
+                                  }}
+                                  className="flex items-center justify-center bg-nutrimatic-500 hover:bg-nutrimatic-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg min-w-[100px]"
+                                  title="Editar agendamento"
+                                >
+                                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                  Editar
+                                </button>
+                                
+                                <button
+                                  onClick={() => setMenuOpenForId(menuOpenForId === ev.id ? null : ev.id)}
+                                  className="flex items-center justify-center bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg relative min-w-[100px]"
+                                >
+                                  <Trash2 className="w-5 h-5 mr-2" />
+                                  Excluir
+                                  {menuOpenForId === ev.id && (
+                                    <div className="absolute top-full right-0 mt-2 z-10 bg-white border border-gray-200 rounded-xl shadow-xl min-w-[200px] p-4">
+                                      <p className="text-gray-700 text-sm mb-4 font-medium">Confirmar exclusao?</p>
+                                      <div className="flex space-x-2">
+                                        <button
+                                          className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${deletingId === ev.id ? 'bg-gray-300 text-gray-500' : 'bg-red-500 hover:bg-red-600 text-white'}`}
+                                          onClick={async () => {
+                                            if (deletingId) return;
+                                            try {
+                                              setDeletingId(ev.id);
+                                              const { data: beforeData } = await supabase
+                                                .from('agenda')
+                                                .select('*')
+                                                .eq('id', ev.id)
+                                                .single();
+                                              const { error } = await supabase
+                                                .from('agenda')
+                                                .delete()
+                                                .eq('id', ev.id);
+                                              if (error) throw error;
+                                              setMenuOpenForId(null);
+                                              await sendWebhooks('remove', beforeData || { id: ev.id, date: ev.date, time: ev.time, action: ev.action, number: ev.number, title: ev.title });
+                                              await refetch();
+                                            } catch (e) {
+                                              console.error('Erro ao remover evento', e);
+                                              alert('Erro ao remover evento');
+                                            } finally {
+                                              setDeletingId(null);
+                                            }
+                                          }}
+                                          disabled={deletingId === ev.id}
+                                        >
+                                          {deletingId === ev.id ? 'Excluindo...' : 'Sim, excluir'}
+                                        </button>
+                                        <button
+                                          className="flex-1 px-4 py-2 rounded-lg font-medium bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
+                                          onClick={() => setMenuOpenForId(null)}
+                                        >
+                                          Cancelar
+                                        </button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <ContentCard
+                title="Agenda"
+                subtitle="Visualize e gerencie seus agendamentos"
                 actions={
                   <div className="flex items-center space-x-2">
                     <DashboardButton
-                      variant="outline"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCurrentMonth(prev => addMonths(prev, -1))}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </DashboardButton>
+                    <span className="text-sm font-medium text-gray-700 min-w-[120px] text-center">
+                      {formatMonthYear(currentMonth)}
+                    </span>
+                    <DashboardButton
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCurrentMonth(prev => addMonths(prev, 1))}
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </DashboardButton>
+                    <DashboardButton
+                      variant="ghost"
                       size="sm"
                       onClick={() => {
                         const today = new Date();
@@ -189,377 +527,140 @@ export default function AgendaPage() {
                         setSelectedDate(today);
                       }}
                     >
-                      <CalendarDays className="w-4 h-4 mr-2" />Hoje
-                    </DashboardButton>
-                    <Link href="/dashboard/criar-agendamento">
-                      <DashboardButton variant="primary" size="sm">
-                        Novo agendamento
-                      </DashboardButton>
-                    </Link>
-                    <DashboardButton variant="ghost" size="sm" onClick={() => setCurrentMonth(prev => addMonths(prev, -1))}>
-                      <ChevronLeft className="w-4 h-4" />
-                    </DashboardButton>
-                    <DashboardButton variant="ghost" size="sm" onClick={() => setCurrentMonth(prev => addMonths(prev, 1))}>
-                      <ChevronRight className="w-4 h-4" />
+                      Hoje
                     </DashboardButton>
                   </div>
                 }
               >
-                {error && <div className="mb-2 text-sm text-red-600">{error}</div>}
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => {
-                      if (canPrevDay && selectedIndex >= 0) {
-                        setSelectedDate(carouselDays[selectedIndex - 1]);
-                      }
-                    }}
-                    disabled={!canPrevDay}
-                    className={`p-2 rounded-lg border transition-colors ${
-                      !canPrevDay ? 'text-gray-300 border-gray-100' : 'text-gray-600 border-gray-200 hover:bg-gray-50'
-                    }`}
-                    aria-label="Anterior"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-
-                  <div className="grid grid-cols-7 gap-2 flex-1">
-                    {carouselDays.slice(carouselStart, carouselStart + visibleCount).map((day) => {
-                      const key = toISODate(day);
-                      const count = (eventsByDate[key] || []).length;
-                      const selected = isSameDay(day, selectedDate);
-                      const today = isToday(day);
+                <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden">
+                  {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map((day) => (
+                    <div key={day} className="bg-gray-50 p-2 text-center text-xs font-medium text-gray-600">
+                      {day}
+                    </div>
+                  ))}
+                  {days.map((day) => {
+                    const key = toISODate(day);
+                    const dayEvents = eventsByDate[key] || [];
+                    const outsideMonth = !isSameMonth(day, monthStart);
+                    const today = isToday(day);
+                    const isSelected = isSameDay(day, selectedDate);
+                    
+                    return (
+                      <div
+                        key={key}
+                        className={`bg-white p-2 min-h-[80px] cursor-pointer transition-colors ${
+                          outsideMonth ? 'text-gray-400' : 'text-gray-900'
+                        } ${today ? 'bg-blue-50' : ''} ${isSelected ? 'bg-nutrimatic-50' : ''} hover:bg-gray-50`}
+                        onClick={() => setSelectedDate(day)}
+                      >
+                        <div className={`text-sm ${today ? 'font-bold text-blue-600' : ''}`}>
+                          {day.getDate()}
+                        </div>
+                        <div className="mt-1 space-y-1">
+                          {dayEvents.slice(0, 2).map((event) => (
+                            <div
+                              key={event.id}
+                              className={`text-xs p-1 rounded truncate ${
+                                event.color === 'green' ? 'bg-green-100 text-green-800' :
+                                event.color === 'blue' ? 'bg-blue-100 text-blue-800' :
+                                event.color === 'purple' ? 'bg-purple-100 text-purple-800' :
+                                event.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {event.time} {event.title}
+                            </div>
+                          ))}
+                          {dayEvents.length > 2 && (
+                            <div className="text-xs text-gray-500">+{dayEvents.length - 2} mais</div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    {formatLongDate(selectedDate)}
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedEvents.map((ev) => {
+                      const contactNumber = ev.number ? ev.number.split('').filter(c => c >= '0' && c <= '9').join('') : '';
+                      const contactUrl = contactNumber ? `https://wa.me/${contactNumber}` : undefined;
+                      
                       return (
-                        <button
-                          key={key}
-                          onClick={() => setSelectedDate(day)}
-                          className={`w-full min-w-[90px] rounded-xl border p-2 text-center transition-all ${
-                            selected
-                              ? 'bg-nutrimatic-600 text-white border-nutrimatic-600 shadow-lg'
-                              : 'bg-white/80 border-gray-200 hover:bg-nutrimatic-50'
-                          } ${today && !selected ? 'ring-2 ring-nutrimatic-300' : ''}`}
-                          title={`${weekdayShort(day)}, ${day.getDate()} ${day.toLocaleDateString('pt-BR', { month: 'short' })}`}
+                        <div
+                          key={ev.id}
+                          className={`p-4 rounded-lg border-l-4 ${
+                            ev.color === 'green' ? 'border-green-500 bg-green-50' :
+                            ev.color === 'blue' ? 'border-blue-500 bg-blue-50' :
+                            ev.color === 'purple' ? 'border-purple-500 bg-purple-50' :
+                            ev.color === 'yellow' ? 'border-yellow-500 bg-yellow-50' :
+                            'border-gray-400 bg-gray-50'
+                          }`}
                         >
-                          <div className="text-[10px] opacity-80">{weekdayShort(day)}</div>
-                          <div className="text-xl font-bold leading-6">{day.getDate()}</div>
-                          <div className="text-[10px] opacity-80">{day.toLocaleDateString('pt-BR', { month: 'short' })}</div>
-                          <div className={`mt-2 text-[10px] font-medium ${selected ? 'text-white/90' : 'text-nutrimatic-700'}`}>
-                            {count > 0 ? `${count} ${count === 1 ? 'evento' : 'eventos'}` : 'Sem eventos'}
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                {ev.time && (
+                                  <span className="text-sm font-medium text-gray-600">{ev.time}</span>
+                                )}
+                                <h4 className="font-medium text-gray-900">{ev.title}</h4>
+                              </div>
+                              {ev.action && (
+                                <p className="text-sm text-gray-600 mt-1">{ev.action}</p>
+                              )}
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              {contactUrl && (
+                                <button
+                                  onClick={() => window.open(contactUrl, '_blank')}
+                                  className="p-2 text-green-600 hover:bg-green-100 rounded-md transition-colors"
+                                  title={contactUrl ? `Abrir contato: ${contactNumber}` : 'Numero indisponivel'}
+                                >
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                                  </svg>
+                                </button>
+                              )}
+                              <button
+                                onClick={() => setMenuOpenForId(menuOpenForId === ev.id ? null : ev.id)}
+                                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors relative"
+                                title="Mais acoes"
+                              >
+                                <MoreVertical className="w-4 h-4" />
+                                {menuOpenForId === ev.id && (
+                                  <div className="absolute right-0 top-full mt-1 z-10 bg-white border border-gray-200 rounded-md shadow-lg min-w-[150px]">
+                                    <button
+                                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                                      onClick={() => {
+                                        if (!confirm('Confirmar remocao do agendamento?')) return;
+                                        setMenuOpenForId(null);
+                                        // Handle delete
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4 mr-2" />
+                                      Remover agendamento
+                                    </button>
+                                  </div>
+                                )}
+                              </button>
+                            </div>
                           </div>
-                        </button>
+                        </div>
                       );
                     })}
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      if (canNextDay && selectedIndex >= 0) {
-                        setSelectedDate(carouselDays[selectedIndex + 1]);
-                      }
-                    }}
-                    disabled={!canNextDay}
-                    className={`p-2 rounded-lg border transition-colors ${
-                      !canNextDay ? 'text-gray-300 border-gray-100' : 'text-gray-600 border-gray-200 hover:bg-gray-50'
-                    }`}
-                    aria-label="Próximo"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-              </ContentCard>
-
-              <ContentCard title={formatLongDate(selectedDate)} subtitle={selectedEvents.length ? undefined : 'Sem eventos para este dia'}>
-                <div className="space-y-3">
-                  {selectedEvents.map((ev) => {
-                    const contactNumber = ev.number ? ev.number.split('').filter(c => c >= '0' && c <= '9').join('') : '';
-                    const contactUrl = contactNumber ? `https://wa.me/${contactNumber}` : undefined;
-                    const tipoLabel = ev.tipo ? ev.tipo.charAt(0).toUpperCase() + ev.tipo.slice(1) : undefined;
-                    const statusText = (ev.status || 'agendado');
-                    const statusLabel = statusText.charAt(0).toUpperCase() + statusText.slice(1);
-                    const statusClass = (() => {
-                      const s = statusText.toLowerCase();
-                      if (s === 'aguardando') return 'bg-amber-50 text-amber-700 border-amber-200';
-                      if (s === 'agendado') return 'bg-green-50 text-green-700 border-green-200';
-                      if (s === 'confirmado') return 'bg-blue-50 text-blue-700 border-blue-200';
-                      if (s === 'cancelado') return 'bg-red-50 text-red-700 border-red-200';
-                      if (s === 'realizado') return 'bg-gray-50 text-gray-700 border-gray-200';
-                      return 'bg-gray-50 text-gray-700 border-gray-200';
-                    })();
-                    const tipoClass = (() => {
-                      const t = (ev.tipo || '').toLowerCase();
-                      if (t === 'online') return 'bg-blue-50 text-blue-700 border-blue-200';
-                      if (t === 'presencial') return 'bg-green-50 text-green-700 border-green-200';
-                      return 'bg-gray-50 text-gray-700 border-gray-200';
-                    })();
-                    return (
-                      <div key={ev.id} className="p-4 rounded-xl border bg-white shadow-sm hover:shadow-md transition">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-start gap-3 min-w-0">
-                            <div
-                              className={`w-2 h-2 mt-1.5 rounded-full ${
-                                ev.color === 'green' ? 'bg-green-500' :
-                                ev.color === 'blue' ? 'bg-blue-500' :
-                                ev.color === 'purple' ? 'bg-purple-500' :
-                                ev.color === 'yellow' ? 'bg-yellow-500' : 'bg-gray-400'
-                              }`}
-                            />
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                {ev.time && <span className="text-sm font-semibold text-gray-900">{ev.time}</span>}
-                                <span className="text-sm text-gray-900 truncate">{ev.title}</span>
-                              </div>
-                              <div className="mt-2 flex flex-wrap items-center gap-2">
-                                {ev.action && (
-                                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">{ev.action}</span>
-                                )}
-                                {tipoLabel && (
-                                  <span className={`text-xs px-2 py-0.5 rounded-full border ${tipoClass}`}>{tipoLabel}</span>
-                                )}
-                                <span className={`text-xs px-2 py-0.5 rounded-full border ${statusClass}`}>{statusLabel}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="relative flex items-center gap-2 flex-shrink-0">
-                            <DashboardButton
-                              variant="outline"
-                              size="sm"
-                              onClick={() => { if (contactUrl) window.open(contactUrl, '_blank'); }}
-                              disabled={!contactUrl}
-                              title={contactUrl ? `Abrir contato: ${contactNumber}` : 'Número indisponível'}
-                            >
-                              Entrar em contato
-                            </DashboardButton>
-                            <DashboardButton
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setEditEventId(ev.id);
-                                setEditDate(ev.date);
-                                setEditTime(ev.time || '09:00');
-                              }}
-                              title="Editar evento"
-                            >
-                              Editar
-                            </DashboardButton>
-                            <button
-                              className="p-2 rounded-md hover:bg-gray-100 border border-gray-200"
-                              onClick={() => setMenuOpenForId(menuOpenForId === ev.id ? null : ev.id)}
-                              aria-haspopup="menu"
-                              aria-expanded={menuOpenForId === ev.id}
-                              title="Mais ações"
-                            >
-                              <MoreVertical className="w-4 h-4 text-gray-600" />
-                            </button>
-                            {menuOpenForId === ev.id && (
-                              <div className="absolute top-10 right-0 z-10 bg-white border border-gray-200 rounded-lg shadow-lg">
-                                <button
-                                  className={`flex items-center gap-2 px-3 py-2 w-full ${deletingId === ev.id ? 'text-gray-400' : 'text-red-600 hover:bg-red-50'}`}
-                                  onClick={async () => {
-                                    if (deletingId) return;
-                                    if (!confirm('Confirmar remoção do agendamento?')) return;
-                                    try {
-                                      setDeletingId(ev.id);
-                                      const { data: beforeData } = await supabase
-                                        .from('agenda')
-                                        .select('*')
-                                        .eq('id', ev.id)
-                                        .single();
-                                      const { error } = await supabase
-                                        .from('agenda')
-                                        .delete()
-                                        .eq('id', ev.id);
-                                      if (error) throw error;
-                                      setMenuOpenForId(null);
-                                      await sendWebhooks('remove', beforeData || { id: ev.id, date: ev.date, time: ev.time, action: ev.action, number: ev.number, title: ev.title });
-                                      await refetch();
-                                    } catch (e) {
-                                      console.error('Erro ao remover evento', e);
-                                      alert('Erro ao remover evento');
-                                    } finally {
-                                      setDeletingId(null);
-                                    }
-                                  }}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Remover agendamento
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )})}
                     {selectedEvents.length === 0 && (
-                      <div className="text-sm text-gray-500">Você não possui agendamentos neste dia.</div>
+                      <div className="text-sm text-gray-500">Voce nao possui agendamentos neste dia.</div>
                     )}
                   </div>
-              </ContentCard>
-            </>
-          ) : (
-            <>
-            <ContentCard 
-              title={formatMonthYear(currentMonth)} 
-              subtitle="Clique em um dia para selecionar"
-              actions={
-                <div className="flex items-center space-x-2">
-                  <DashboardButton
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const today = new Date();
-                      setCurrentMonth(today);
-                      setSelectedDate(today);
-                    }}
-                  >
-                    <CalendarDays className="w-4 h-4 mr-2" />Hoje
-                  </DashboardButton>
-                  <Link href="/dashboard/criar-agendamento">
-                    <DashboardButton variant="primary" size="sm">
-                      Novo agendamento
-                    </DashboardButton>
-                  </Link>
-                  <DashboardButton variant="ghost" size="sm" onClick={() => setCurrentMonth(prev => addMonths(prev, -1))}>
-                    <ChevronLeft className="w-4 h-4" />
-                  </DashboardButton>
-                  <DashboardButton variant="ghost" size="sm" onClick={() => setCurrentMonth(prev => addMonths(prev, 1))}>
-                    <ChevronRight className="w-4 h-4" />
-                  </DashboardButton>
                 </div>
-              }
-            >
-              <div className="grid grid-cols-7 gap-2">
-                {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((d) => (
-                  <div key={d} className="text-xs font-medium text-gray-500 text-center py-2">
-                    {d}
-                  </div>
-                ))}
-                {days.map((day) => {
-                  const key = toISODate(day);
-                  const dayEvents = eventsByDate[key] || [];
-                  const outsideMonth = !isSameMonth(day, monthStart);
-                  const today = isToday(day);
-                  const isSelected = isSameDay(day, selectedDate);
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => setSelectedDate(day)}
-                      className={`min-h-[110px] text-left rounded-lg border p-2 transition-all duration-200 hover:shadow-sm ${
-                        outsideMonth ? 'bg-gray-50 border-gray-100 text-gray-400' : 'bg-white/70 border-gray-200'
-                      } ${today ? 'ring-2 ring-nutrimatic-400' : ''} ${isSelected ? 'outline outline-2 outline-nutrimatic-500' : ''}`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className={`text-sm font-medium ${outsideMonth ? 'text-gray-400' : 'text-gray-700'}`}>
-                          {day.getDate()}
-                        </span>
-                        {today && (
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-nutrimatic-100 text-nutrimatic-700">Hoje</span>
-                        )}
-                      </div>
-                      <div className="space-y-1">
-                        {dayEvents.length === 0 ? (
-                          <div className="text-[11px] text-gray-400 italic">Sem eventos</div>
-                        ) : (
-                          dayEvents.slice(0, 3).map((ev) => (
-                            <div
-                              key={ev.id}
-                              className={`text-[11px] px-2 py-1 rounded-md border flex items-center gap-1 truncate ${
-                                ev.color === 'green' ? 'bg-green-50 border-green-100 text-green-700' :
-                                ev.color === 'blue' ? 'bg-blue-50 border-blue-100 text-blue-700' :
-                                ev.color === 'purple' ? 'bg-purple-50 border-purple-100 text-purple-700' :
-                                ev.color === 'yellow' ? 'bg-yellow-50 border-yellow-100 text-yellow-700' :
-                                'bg-gray-50 border-gray-100 text-gray-700'
-                              }`}
-                              title={`${ev.time ? ev.time + ' • ' : ''}${ev.title}`}
-                            >
-                              {ev.time && <span className="font-semibold">{ev.time}</span>}
-                              <span className="truncate">{ev.title}</span>
-                            </div>
-                          ))
-                        )}
-                        {dayEvents.length > 3 && (
-                          <div className="text-[11px] text-gray-500">+{dayEvents.length - 3} mais</div>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </ContentCard>
-            <ContentCard title={formatLongDate(selectedDate)} subtitle={selectedEvents.length ? undefined : 'Sem eventos para este dia'}>
-              <div className="space-y-3">
-                {selectedEvents.map((ev) => {
-                  const contactNumber = ev.number ? ev.number.split('').filter(c => c >= '0' && c <= '9').join('') : '';
-                  const contactUrl = contactNumber ? `https://wa.me/${contactNumber}` : undefined;
-                  const tipoLabel = ev.tipo ? ev.tipo.charAt(0).toUpperCase() + ev.tipo.slice(1) : undefined;
-                  const statusText = (ev.status || 'agendado');
-                  const statusLabel = statusText.charAt(0).toUpperCase() + statusText.slice(1);
-                  const statusClass = (() => {
-                    const s = statusText.toLowerCase();
-                    if (s === 'aguardando') return 'bg-amber-50 text-amber-700 border-amber-200';
-                    if (s === 'agendado') return 'bg-green-50 text-green-700 border-green-200';
-                    if (s === 'confirmado') return 'bg-blue-50 text-blue-700 border-blue-200';
-                    if (s === 'cancelado') return 'bg-red-50 text-red-700 border-red-200';
-                    if (s === 'realizado') return 'bg-gray-50 text-gray-700 border-gray-200';
-                    return 'bg-gray-50 text-gray-700 border-gray-200';
-                  })();
-                  const tipoClass = (() => {
-                    const t = (ev.tipo || '').toLowerCase();
-                    if (t === 'online') return 'bg-blue-50 text-blue-700 border-blue-200';
-                    if (t === 'presencial') return 'bg-green-50 text-green-700 border-green-200';
-                    return 'bg-gray-50 text-gray-700 border-gray-200';
-                  })();
-                  return (
-                    <div key={ev.id} className="p-4 rounded-xl border bg-white shadow-sm hover:shadow-md transition">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3 min-w-0">
-                          <div
-                            className={`w-2 h-2 mt-1.5 rounded-full ${
-                              ev.color === 'green' ? 'bg-green-500' :
-                              ev.color === 'blue' ? 'bg-blue-500' :
-                              ev.color === 'purple' ? 'bg-purple-500' :
-                              ev.color === 'yellow' ? 'bg-yellow-500' : 'bg-gray-400'
-                            }`}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              {ev.time && <span className="text-sm font-semibold text-gray-900">{ev.time}</span>}
-                              <span className="text-sm text-gray-900 truncate">{ev.title}</span>
-                            </div>
-                            <div className="mt-2 flex flex-wrap items-center gap-2">
-                              {ev.action && (
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">{ev.action}</span>
-                              )}
-                              {tipoLabel && (
-                                <span className={`text-xs px-2 py-0.5 rounded-full border ${tipoClass}`}>{tipoLabel}</span>
-                              )}
-                              <span className={`text-xs px-2 py-0.5 rounded-full border ${statusClass}`}>{statusLabel}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="relative flex items-center gap-2 flex-shrink-0">
-                          <DashboardButton
-                            variant="outline"
-                            size="sm"
-                            onClick={() => { if (contactUrl) window.open(contactUrl, '_blank'); }}
-                            disabled={!contactUrl}
-                            title={contactUrl ? `Abrir contato: ${contactNumber}` : 'Número indisponível'}
-                          >
-                            Entrar em contato
-                          </DashboardButton>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-                {selectedEvents.length === 0 && (
-                  <div className="text-sm text-gray-500">Você não possui agendamentos neste dia.</div>
-                )}
-              </div>
               </ContentCard>
-            </>
-           )}
-         </DashboardPageLayout>
-       </DashboardLayout>
-
+            </div>
+          )}
+        </DashboardPageLayout>
+      </DashboardLayout>
 
       {editEventId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -585,7 +686,7 @@ export default function AgendaPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1">Horário</label>
+                <label className="block text-sm text-gray-600 mb-1">Horario</label>
                 <input
                   type="time"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-nutrimatic-500"
@@ -602,25 +703,25 @@ export default function AgendaPage() {
                 disabled={saving || !editDate || !(new RegExp('^\\d{4}-\\d{2}-\\d{2}$')).test(editDate) || !(new RegExp('^\\d{2}:\\d{2}$')).test(editTime)}
                 onClick={async () => {
                   if (!editDate || !(new RegExp('^\\d{4}-\\d{2}-\\d{2}$')).test(editDate)) {
-                    alert('Informe uma data válida (YYYY-MM-DD).');
+                    alert('Informe uma data valida (YYYY-MM-DD).');
                     return;
                   }
                   if (!editTime || !(new RegExp('^\\d{2}:\\d{2}$')).test(editTime)) {
-                    alert('Informe um horário válido (HH:MM).');
+                    alert('Informe um horario valido (HH:MM).');
                     return;
                   }
                   try {
                     setSaving(true);
-                    if (!isSupabaseConfigured()) throw new Error('Supabase não configurado');
+                    if (!isSupabaseConfigured()) throw new Error('Supabase nao configurado');
                     
-                    // Buscar dados originais antes da edição
+                    // Buscar dados originais antes da edicao
                     const { data: originalData } = await supabase
                       .from('agenda')
                       .select('*')
                       .eq('id', editEventId)
                       .single();
                     
-                    // Fazer a atualização
+                    // Fazer a atualizacao
                     const { error } = await supabase
                       .from('agenda')
                       .update({ dia: editDate, horario: editTime })
@@ -651,8 +752,8 @@ export default function AgendaPage() {
                     
                     await refetch();
                   } catch (e) {
-                    console.error('Erro ao salvar edição', e);
-                    alert('Erro ao salvar edição');
+                    console.error('Erro ao salvar edicao', e);
+                    alert('Erro ao salvar edicao');
                   } finally {
                     setSaving(false);
                   }
@@ -667,6 +768,7 @@ export default function AgendaPage() {
     </ProtectedRoute>
   );
 }
+
 
 
 

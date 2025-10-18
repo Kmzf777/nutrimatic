@@ -1,21 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export function useMenuState() {
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [isMobile, setIsMobile] = useState(true); // Começar como mobile para evitar flash
   const [isInitialized, setIsInitialized] = useState(false);
+  const prevIsMobileRef = useRef<boolean>(true);
 
   useEffect(() => {
     const checkScreenSize = () => {
       const mobile = window.innerWidth < 1024;
+      const prev = prevIsMobileRef.current;
       setIsMobile(mobile);
-      
-      // Se mudou para desktop, resetar estados
-      if (!mobile) {
+
+      // Ao cruzar o breakpoint, garantir estados consistentes
+      if (mobile !== prev) {
+        // Ao entrar no mobile, o menu deve iniciar fechado e sem hover
+        // Ao entrar no desktop, também iniciamos fechado e sem hover
         setIsMenuExpanded(false);
+        setIsHovering(false);
+        prevIsMobileRef.current = mobile;
       }
     };
 
@@ -59,4 +65,4 @@ export function useMenuState() {
     handleMouseEnter,
     handleMouseLeave,
   };
-} 
+}
