@@ -34,8 +34,8 @@ export function getNomeCliente(prescricao: any): string {
   if (!prescricao) return 'Nome não informado';
   
   // Prioridade 1: Dados do cliente relacionado (novo sistema com JOIN)
-  if (prescricao.cliente && prescricao.cliente.nome && prescricao.cliente.nome.trim() !== '') {
-    return prescricao.cliente.nome;
+  if (prescricao.clientes && prescricao.clientes.nome && prescricao.clientes.nome.trim() !== '') {
+    return prescricao.clientes.nome;
   }
   
   // Prioridade 2: Campo nome_cliente (compatibilidade)
@@ -61,12 +61,12 @@ export function getClienteInfo(prescricao: any) {
   if (!prescricao) return null;
   
   // Se temos dados do cliente relacionado
-  if (prescricao.cliente) {
+  if (prescricao.clientes) {
     return {
-      id: prescricao.cliente.id,
-      nome: prescricao.cliente.nome || 'Nome não informado',
-      numero: prescricao.cliente.numero || '',
-      status: prescricao.cliente.status || 'Desconhecido'
+      id: prescricao.clientes.id,
+      nome: prescricao.clientes.nome || 'Nome não informado',
+      numero: prescricao.clientes.numero || '',
+      status: prescricao.clientes.status || 'Desconhecido'
     };
   }
   

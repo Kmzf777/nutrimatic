@@ -111,7 +111,7 @@ export default function CriarClientePage() {
       };
 
       // URL do webhook principal (usar apenas o webhook de produção)
-      const webhookUrl = 'https://n8n-n8n.0dt1f5.easypanel.host/webhook/criar-cliente';
+      const webhookUrl = 'https://webhook.canastrainteligencia.com/webhook/criar-cliente';
 
       // Enviar webhook e aguardar resposta
       const response = await sendWebhookWithResponse(webhookUrl, webhookData);

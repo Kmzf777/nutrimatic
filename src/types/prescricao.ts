@@ -15,6 +15,13 @@ export interface Prescricao {
     numero: string;
     status: string;
   };
+  // Embed de relacionamento via clientes!cliente_id (compatibilidade)
+  clientes?: {
+    id: string;
+    nome?: string | null;
+    numero: string;
+    status: string;
+  };
 }
 
 export interface PrescricaoFormData {

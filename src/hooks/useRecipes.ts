@@ -33,7 +33,7 @@ export function useRecipes() {
     try {
       // Atualizar status da receita para approved
       const { error: updateError } = await supabase
-        .from('Teste-Tabela')
+        .from('prescricoes')
         .update({ status: 'approved' })
         .eq('id', recipeId)
         .eq('identificacao', user.id);
@@ -44,7 +44,7 @@ export function useRecipes() {
 
       // Recarregar receitas após aprovar
       const { data: updatedData } = await supabase
-        .from('Teste-Tabela')
+        .from('prescricoes')
         .select('*')
         .eq('identificacao', user.id)
         .order('created_at', { ascending: false });
@@ -69,7 +69,7 @@ export function useRecipes() {
     try {
       // Atualizar status da receita para rejected com observação
       const { error: updateError } = await supabase
-        .from('Teste-Tabela')
+        .from('prescricoes')
         .update({ 
           status: 'rejected',
           rejection_observation: observation
@@ -83,7 +83,7 @@ export function useRecipes() {
 
       // Recarregar receitas após rejeitar
       const { data: updatedData } = await supabase
-        .from('Teste-Tabela')
+        .from('prescricoes')
         .select('*')
         .eq('identificacao', user.id)
         .order('created_at', { ascending: false });
@@ -114,9 +114,9 @@ export function useRecipes() {
       try {
         console.log('🚀 Buscando receitas para usuário:', userId);
 
-        // Buscar receitas da tabela Teste-Tabela filtradas por usuário
+        // Buscar receitas da tabela prescricoes filtradas por usuário
         const { data, error: recipesError } = await supabase
-          .from('Teste-Tabela')
+          .from('prescricoes')
           .select('*')
           .eq('identificacao', userId)
           .order('created_at', { ascending: false });
@@ -183,7 +183,7 @@ export function useRecipes() {
     
     try {
       const { data, error: recipesError } = await supabase
-        .from('Teste-Tabela')
+        .from('prescricoes')
         .select('*')
         .eq('identificacao', userId)
         .order('created_at', { ascending: false });
@@ -211,4 +211,4 @@ export function useRecipes() {
     rejectRecipe,
     formatTimeAgo
   };
-} 
+}

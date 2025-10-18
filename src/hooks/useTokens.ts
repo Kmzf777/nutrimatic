@@ -38,7 +38,7 @@ export function usePrescriptions() {
       // Por enquanto, vamos simular o uso de prescrições baseado nas receitas
       // Em uma implementação real, você teria uma tabela separada para prescrições
       const { data: recipes, error: recipesError } = await supabase
-        .from('Teste-Tabela')
+        .from('prescricoes')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -137,7 +137,7 @@ export function usePrescriptions() {
         {
           event: '*',
           schema: 'public',
-          table: 'Teste-Tabela'
+          table: 'prescricoes'
         },
         (payload: any) => {
           console.log('Mudança detectada nas receitas (afetando prescrições):', payload);
@@ -184,4 +184,4 @@ export function usePrescriptions() {
     addPrescriptionUsage,
     monthlyPrescriptionLimit
   };
-} 
+}

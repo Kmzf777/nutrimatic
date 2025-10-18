@@ -23,10 +23,12 @@ export default function CriarAgendamentoPage() {
   const [dia, setDia] = useState<string>('');
   const [horario, setHorario] = useState<string>('');
   const [acao, setAcao] = useState<string>('Consulta');
+  const [tipo, setTipo] = useState<string>('presencial');
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { user, nutricionista } = useAuth();
   const router = useRouter();
+  const [validationDiaErro, setValidationDiaErro] = useState<string | null>(null);
 
   const ownerId = nutricionista?.id || user?.id || null;
 
@@ -52,12 +54,22 @@ export default function CriarAgendamentoPage() {
     return <span className={`${base} bg-gray-100 text-gray-800`}>{status}</span>;
   }
 
-  const canSubmit = !!selectedClienteId && /^\d{4}-\d{2}-\d{2}$/.test(dia) && /^\d{2}:\d{2}$/.test(horario) && !!acao && !!ownerId;
+  const isDiaUtil = /^\d{4}-\d{2}-\d{2}$/.test(dia) && (() => {
+    const wd = getWeekdayFromYMD(dia);
+    return wd >= 1 && wd <= 5;
+  })();
 
-  async function sendCreateWebhooks(evento: any) {
+  const isHorarioValido = /^\d{2}:\d{2}$/.test(horario) && (() => {
+    const [h, m] = horario.split(':').map(Number);
+    return m === 0 && h >= 9 && h <= 17;
+  })();
+
+  const canSubmit = !!selectedClienteId && isDiaUtil && isHorarioValido && !!acao && !!tipo && !!ownerId;
+
+  async function sendCreateWebhooks(evento: any): Promise<{ status: boolean } | null> {
     const WEBHOOK_URLS = [
       'https://n8n-n8n.0dt1f5.easypanel.host/webhook-test/agenda-alterar',
-      'https://n8n-n8n.0dt1f5.easypanel.host/webhook/agenda-alterar',
+      'https://webhook.canastrainteligencia.com/webhook/agenda-alterar',
     ] as const;
     const body = {
       action: 'create' as const,
@@ -66,18 +78,54 @@ export default function CriarAgendamentoPage() {
       nutricionista: nutricionista ? { id: nutricionista.id, nome: nutricionista.nome, email: nutricionista.email } : null,
       evento,
     };
-    try {
-      await Promise.allSettled(
-        WEBHOOK_URLS.map(url => 
-          fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive: true })
-        )
-      );
-    } catch (e) {
+
+    // Tentar endpoints em sequência e ler a resposta
+    for (const url of WEBHOOK_URLS) {
       try {
-        const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
-        WEBHOOK_URLS.forEach(url => { try { navigator.sendBeacon(url, blob); } catch (_) {} });
-      } catch (_) {}
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) continue;
+        const text = await res.text();
+        try {
+          const json = JSON.parse(text);
+          if (Array.isArray(json) && json.length && typeof json[0]?.status !== 'undefined') {
+            return { status: !!json[0].status };
+          }
+          if (json && typeof json.status !== 'undefined') {
+            return { status: !!json.status };
+          }
+        } catch (_) {
+          // resposta não-JSON, ignorar e tentar próximo
+        }
+      } catch (_) {
+        // falha ao enviar para este endpoint; tentar próximo
+      }
     }
+
+    // Fallback: tenta enviar via sendBeacon (sem leitura de resposta)
+    try {
+      const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
+      WEBHOOK_URLS.forEach(url => { try { navigator.sendBeacon(url, blob); } catch (_) {} });
+    } catch (_) {}
+
+    return null;
+  }
+
+  function handleHorarioChange(e: any) {
+    const value = e.target.value;
+    if (!/^\d{2}:\d{2}$/.test(value)) {
+      setHorario(value);
+      return;
+    }
+    let [hh, mm] = value.split(':').map(Number);
+    if (mm !== 0) mm = 0;
+    if (hh < 9) hh = 9;
+    if (hh > 17) hh = 17;
+    const normalized = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+    setHorario(normalized);
   }
 
   async function handleCreate() {
@@ -85,22 +133,47 @@ export default function CriarAgendamentoPage() {
       setSaving(true);
       setError(null);
       if (!ownerId) throw new Error('Usuário não autenticado');
+      if (!isDiaUtil) throw new Error('Selecione um dia útil (segunda a sexta).');
+      if (!isHorarioValido) throw new Error('Selecione horário cheio entre 09:00 e 17:00.');
       const payload = {
         identificacao: ownerId,
         cliente_id: selectedClienteId,
         dia,
         horario,
         acao,
+        tipo,
       } as const;
-      await sendCreateWebhooks(payload);
+      const result = await sendCreateWebhooks(payload);
 
-      // Redirecionar de volta para agenda (SPA, sem descarregar a página)
-      router.push('/dashboard/agenda');
+      if (result && result.status === true) {
+        // Redireciona para a agenda já focada na data agendada
+        router.push(`/dashboard/agenda?date=${dia}`);
+      } else {
+        // Status false: já existe consulta
+        setError('Já existe uma consulta para este dia/horário.');
+      }
     } catch (e: any) {
       console.error('Erro ao criar agendamento', e);
       setError(e?.message || 'Erro ao criar agendamento');
     } finally {
       setSaving(false);
+    }
+  }
+
+  function handleDiaChange(e: any) {
+    const value = e.target.value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      setDia(value);
+      setValidationDiaErro(null);
+      return;
+    }
+    const wd = getWeekdayFromYMD(value);
+    if (wd === 0 || wd === 6) {
+      setValidationDiaErro('Fechado aos finais de semana. Selecione um dia útil (segunda a sexta).');
+      setDia('');
+    } else {
+      setValidationDiaErro(null);
+      setDia(value);
     }
   }
 
@@ -195,18 +268,39 @@ export default function CriarAgendamentoPage() {
           </ContentCard>
 
           <ContentCard title="Dados do agendamento" subtitle={!selectedCliente ? 'Selecione um cliente acima para habilitar o envio' : undefined}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Dia</label>
-                <DashboardInput type="date" value={dia} onChange={(e: any) => setDia(e.target.value)} />
+                <DashboardInput type="date" value={dia} onChange={handleDiaChange} />
+                {validationDiaErro && (
+                  <div className="mt-1 text-xs text-red-600">{validationDiaErro}</div>
+                )}
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Horário</label>
-                <DashboardInput type="time" value={horario} onChange={(e: any) => setHorario(e.target.value)} />
+                <DashboardInput 
+                  type="time" 
+                  value={horario} 
+                  onChange={handleHorarioChange}
+                  step={3600}
+                  min="09:00"
+                  max="17:00"
+                />
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Ação</label>
                 <DashboardInput placeholder="Ex.: Consulta, Retorno" value={acao} onChange={(e: any) => setAcao(e.target.value)} />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Tipo</label>
+                <select
+                  value={tipo}
+                  onChange={(e) => setTipo(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-nutrimatic-500"
+                >
+                  <option value="online">Online</option>
+                  <option value="presencial">Presencial</option>
+                </select>
               </div>
             </div>
 
@@ -220,6 +314,18 @@ export default function CriarAgendamentoPage() {
       </DashboardLayout>
     </ProtectedRoute>
   );
+}
+
+
+
+/* removed duplicate handleDiaChange */
+
+
+
+function getWeekdayFromYMD(ymd: string) {
+  const [y, m, d] = ymd.split('-').map(Number);
+  const date = new Date(y, m - 1, d, 12, 0, 0);
+  return date.getDay();
 }
 
 

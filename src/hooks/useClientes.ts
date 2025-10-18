@@ -36,21 +36,25 @@ export function useClientes() {
       setClientes([]);
       return;
     }
-    const ownerId = nutricionista?.id || user?.id;
-    if (!ownerId) {
+    const ids = Array.from(new Set([nutricionista?.id, user?.id].filter(Boolean))) as string[];
+    if (ids.length === 0) {
       // Sem contexto de dono ainda: evita erro de RLS e aguarda auth
       setClientes([]);
       return;
     }
 
-    const { data, error } = await supabase
-      .from('clientes')
-      .select('*')
-      .eq('identificacao', ownerId)
-      .order('created_at', { ascending: false })
+    let query = supabase.from('clientes').select('*');
+    if (ids.length === 1) {
+      query = query.eq('nutricionista_id', ids[0]);
+    } else {
+      query = query.in('nutricionista_id', ids);
+    }
+
+    const { data, error } = await query
+      .order('id', { ascending: false })
       .range(0, 199);
     if (error) throw error;
-    console.log('Clientes carregados:', { ownerId, total: data?.length ?? 0 });
+    console.log('Clientes carregados:', { ids, total: data?.length ?? 0 });
     const normalized = (data || []).map((c: any) => {
       const normalizedStatus = c.status === 'pagamento' ? 'aguardando_pagamento' : c.status;
       return {

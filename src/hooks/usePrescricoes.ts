@@ -152,7 +152,7 @@ export function usePrescricoes() {
           .from('prescricoes')
           .select(`
             *,
-            cliente:clientes(
+            clientes!cliente_id(
               id,
               nome,
               numero,
@@ -199,7 +199,7 @@ export function usePrescricoes() {
         .from('prescricoes')
         .select(`
           *,
-          cliente:clientes(
+          clientes!cliente_id(
             id,
             nome,
             numero,

@@ -26,14 +26,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchNutricionista = async (userId: string) => {
     try {
+      console.log('🔍 Buscando nutricionista para userId:', userId);
+      
       const { data, error } = await supabase
         .from('nutricionistas')
         .select('*')
         .eq('id', userId)
         .single();
 
+      console.log('📊 Resultado da busca:', { data, error });
+
       if (error) {
-        console.error('❌ Erro ao buscar nutricionista:', error);
+        console.error('❌ Erro ao buscar nutricionista:', error.message, error.code, error);
         // Se não encontrar nutricionista, criar um registro básico
         if (error.code === 'PGRST116') {
           console.log('🔧 Criando registro básico de nutricionista...');
@@ -53,6 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      console.log('✅ Nutricionista encontrado:', data);
       setNutricionista(data);
     } catch (error) {
       console.error('❌ Erro inesperado ao buscar nutricionista:', error);
@@ -314,4 +319,4 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-} 
+}

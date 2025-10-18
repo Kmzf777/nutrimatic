@@ -14,6 +14,15 @@ export default function ProtectedRoute({ children, requireActive = true }: Prote
   const { user, nutricionista, loading } = useAuth();
   const router = useRouter();
 
+  // Modo bypass para desenvolvimento: permite acessar com ?skipAuth=1
+  const isDevBypass = typeof window !== 'undefined'
+    && process.env.NODE_ENV !== 'production'
+    && new URLSearchParams(window.location.search).get('skipAuth') === '1';
+  if (isDevBypass) {
+    console.log('🧪 Bypass de autenticação ativado (dev)');
+    return <>{children}</>;
+  }
+
   useEffect(() => {
     // Aguardar até que o loading termine
     if (loading) {
@@ -83,4 +92,4 @@ export default function ProtectedRoute({ children, requireActive = true }: Prote
   }
 
   return <>{children}</>;
-} 
+}

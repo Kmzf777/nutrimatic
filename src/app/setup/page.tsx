@@ -8,19 +8,33 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Loader2, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
 export default function SetupPage() {
-  const { nutricionista, refreshNutricionista } = useAuth();
+  const { user, nutricionista, refreshNutricionista } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const supabase = createClient();
 
   const handleCompleteSetup = async () => {
     setIsLoading(true);
     try {
-      // Simular conclusão do setup
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Atualizar dados do nutricionista
+      // Ativar nutricionista no Supabase (cria/atualiza registro)
+      if (!user) throw new Error('Usuário não autenticado');
+
+      const payload = {
+        id: user.id,
+        nome: nutricionista?.nome || user.email?.split('@')[0] || 'Usuário',
+        email: nutricionista?.email || user.email || '',
+        telefone: nutricionista?.telefone || '',
+        active: true,
+        presc_max: nutricionista?.presc_max ?? 50,
+        presc_geradas: nutricionista?.presc_geradas ?? 0,
+      } as any;
+
+      const { error } = await supabase.from('nutricionistas').upsert(payload, { onConflict: 'id' });
+      if (error) throw error;
+
+      // Atualizar dados do contexto
       await refreshNutricionista();
-      
+
       // Redirecionar para dashboard
       router.push('/dashboard');
     } catch (error) {
@@ -126,4 +140,4 @@ export default function SetupPage() {
       </div>
     </ProtectedRoute>
   );
-} 
+}

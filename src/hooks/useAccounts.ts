@@ -35,7 +35,7 @@ export function useAccounts() {
     
     try {
       const { data, error } = await supabase
-        .from('accounts')
+        .from('instancias')
         .select('*');
 
       if (error) throw error;
@@ -66,7 +66,7 @@ export function useAccounts() {
       
       // Recarregar lista de contas
       const { data: updatedData } = await supabase
-        .from('accounts')
+        .from('instancias')
         .select('*');
       setAccounts(updatedData || []);
       
@@ -86,7 +86,7 @@ export function useAccounts() {
     
     try {
       const { data, error } = await supabase
-        .from('accounts')
+        .from('instancias')
         .update(updates)
         .eq('id', id)
         .select()
@@ -96,7 +96,7 @@ export function useAccounts() {
       
       // Recarregar lista de contas
       const { data: updatedData } = await supabase
-        .from('accounts')
+        .from('instancias')
         .select('*');
       setAccounts(updatedData || []);
       
@@ -113,7 +113,7 @@ export function useAccounts() {
   const getAccountByHash = async (hash: string) => {
     try {
       const { data, error } = await supabase
-        .from('accounts')
+        .from('instancias')
         .select('*')
         .eq('hash_unique', hash)
         .single();
@@ -132,7 +132,7 @@ export function useAccounts() {
     try {
       // Retorna a primeira conta disponível para demonstração
       const { data, error } = await supabase
-        .from('accounts')
+        .from('instancias')
         .select('*')
         .limit(1)
         .single();
@@ -154,7 +154,7 @@ export function useAccounts() {
       
       try {
         const { data, error } = await supabase
-          .from('accounts')
+          .from('instancias')
           .select('*');
 
         if (error) throw error;
@@ -180,4 +180,4 @@ export function useAccounts() {
     getAccountByHash,
     getCurrentAccount
   };
-} 
+}

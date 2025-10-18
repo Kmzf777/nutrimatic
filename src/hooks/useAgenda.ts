@@ -12,6 +12,8 @@ export interface CalendarEvent {
   action?: string;
   number?: string;
   color?: string;
+  tipo?: string;
+  status?: string;
 }
 
 function toISODate(d: Date) {
@@ -54,28 +56,49 @@ export function useAgenda(monthStart: Date, monthEnd: Date) {
     }
     const startISO = toISODate(monthStart);
     const endISO = toISODate(monthEnd);
+    // 1) Buscar eventos da agenda do nutricionista
     const { data, error } = await supabase
-      .from('agenda_eventos')
-      .select(`
-        id, identificacao, dia, horario, acao,
-        cliente:clientes ( id, nome, numero )
-      `)
-      .eq('identificacao', ownerId)
+      .from('agenda')
+      .select('id, dia, horario, acao, cliente_id, tipo, status')
+      .eq('nutricionista_id', ownerId)
       .gte('dia', startISO)
       .lte('dia', endISO)
       .order('dia', { ascending: true })
       .order('horario', { ascending: true })
       .range(0, 999);
     if (error) throw error;
-    const mapped: CalendarEvent[] = (data || []).map((r: any) => ({
-      id: r.id,
-      date: r.dia,
-      time: hhmm(r.horario),
-      title: r?.cliente?.nome || r.acao || 'Evento',
-      action: r.acao || undefined,
-      number: r?.cliente?.numero || undefined,
-      color: colorForAction(r.acao)
-    }));
+
+    const eventos = data || [];
+
+    // 2) Carregar clientes separadamente para evitar ambiguidade de relacionamento
+    const clienteIds = Array.from(new Set(eventos.map((r: any) => r.cliente_id).filter((id: any) => !!id)));
+    let clienteMap: Record<string, { id: string; nome: string | null; numero: string | null }> = {};
+    if (clienteIds.length > 0) {
+      const { data: clientesData, error: clientesError } = await supabase
+        .from('clientes')
+        .select('id, nome, numero')
+        .in('id', clienteIds);
+      if (clientesError) throw clientesError;
+      (clientesData || []).forEach((c: any) => {
+        clienteMap[c.id] = { id: c.id, nome: c.nome || null, numero: c.numero || null };
+      });
+    }
+
+    // 3) Mapear eventos com dados do cliente
+    const mapped: CalendarEvent[] = eventos.map((r: any) => {
+      const cliente = r.cliente_id ? clienteMap[r.cliente_id] : undefined;
+      return {
+        id: r.id,
+        date: r.dia,
+        time: hhmm(r.horario),
+        title: (cliente?.nome || r.acao || 'Evento'),
+        action: r.acao || undefined,
+        number: cliente?.numero || undefined,
+        color: colorForAction(r.acao),
+        tipo: r.tipo || undefined,
+        status: r.status || undefined
+      };
+    });
     setEvents(mapped);
   };
 

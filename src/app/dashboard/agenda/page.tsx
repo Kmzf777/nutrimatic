@@ -10,6 +10,7 @@ import { useAgenda } from '@/hooks/useAgenda';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 interface CalendarEvent {
   id: string;
@@ -17,6 +18,10 @@ interface CalendarEvent {
   date: string; // ISO date string (yyyy-MM-dd)
   time?: string; // e.g. '14:00'
   color?: string; // tailwind color class suffix, e.g. 'green', 'blue'
+  action?: string;
+  tipo?: string;
+  status?: string;
+  number?: string;
 }
 
 function formatMonthYear(date: Date) {
@@ -44,10 +49,22 @@ export default function AgendaPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const supabase = createClient();
   const { user, nutricionista } = useAuth();
+  const searchParams = useSearchParams();
+
+  // Se houver ?date=YYYY-MM-DD, posicionar seleção e mês
+  useEffect(() => {
+    const p = searchParams.get('date');
+    if (p && /^\d{4}-\d{2}-\d{2}$/.test(p)) {
+      const [y, m, d] = p.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      setSelectedDate(dt);
+      setCurrentMonth(dt);
+    }
+  }, [searchParams]);
 
   const WEBHOOK_URLS = [
     'https://n8n-n8n.0dt1f5.easypanel.host/webhook-test/agenda-alterar',
-    'https://n8n-n8n.0dt1f5.easypanel.host/webhook/agenda-alterar',
+    'https://webhook.canastrainteligencia.com/webhook/agenda-alterar',
   ] as const;
 
   async function sendWebhooks(action: 'update' | 'remove', evento: any) {
@@ -248,102 +265,128 @@ export default function AgendaPage() {
               <ContentCard title={formatLongDate(selectedDate)} subtitle={selectedEvents.length ? undefined : 'Sem eventos para este dia'}>
                 <div className="space-y-3">
                   {selectedEvents.map((ev) => {
-                    const contactNumber = ev.number ? ev.number.replace(/\D/g, '') : '';
+                    const contactNumber = ev.number ? ev.number.split('').filter(c => c >= '0' && c <= '9').join('') : '';
                     const contactUrl = contactNumber ? `https://wa.me/${contactNumber}` : undefined;
+                    const tipoLabel = ev.tipo ? ev.tipo.charAt(0).toUpperCase() + ev.tipo.slice(1) : undefined;
+                    const statusText = (ev.status || 'agendado');
+                    const statusLabel = statusText.charAt(0).toUpperCase() + statusText.slice(1);
+                    const statusClass = (() => {
+                      const s = statusText.toLowerCase();
+                      if (s === 'aguardando') return 'bg-amber-50 text-amber-700 border-amber-200';
+                      if (s === 'agendado') return 'bg-green-50 text-green-700 border-green-200';
+                      if (s === 'confirmado') return 'bg-blue-50 text-blue-700 border-blue-200';
+                      if (s === 'cancelado') return 'bg-red-50 text-red-700 border-red-200';
+                      if (s === 'realizado') return 'bg-gray-50 text-gray-700 border-gray-200';
+                      return 'bg-gray-50 text-gray-700 border-gray-200';
+                    })();
+                    const tipoClass = (() => {
+                      const t = (ev.tipo || '').toLowerCase();
+                      if (t === 'online') return 'bg-blue-50 text-blue-700 border-blue-200';
+                      if (t === 'presencial') return 'bg-green-50 text-green-700 border-green-200';
+                      return 'bg-gray-50 text-gray-700 border-gray-200';
+                    })();
                     return (
-                    <div key={ev.id} className="flex items-center gap-3 p-3 rounded-lg border bg-white/80">
-                      <div
-                        className={`w-2 h-2 mt-1.5 rounded-full ${
-                          ev.color === 'green' ? 'bg-green-500' :
-                          ev.color === 'blue' ? 'bg-blue-500' :
-                          ev.color === 'purple' ? 'bg-purple-500' :
-                          ev.color === 'yellow' ? 'bg-yellow-500' : 'bg-gray-400'
-                        }`}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          {ev.time && <span className="text-sm font-semibold text-gray-900">{ev.time}</span>}
-                          <span className="text-sm text-gray-700 truncate">{ev.title}</span>
-                          {ev.action && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">{ev.action}</span>
-                          )}
+                      <div key={ev.id} className="p-4 rounded-xl border bg-white shadow-sm hover:shadow-md transition">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-3 min-w-0">
+                            <div
+                              className={`w-2 h-2 mt-1.5 rounded-full ${
+                                ev.color === 'green' ? 'bg-green-500' :
+                                ev.color === 'blue' ? 'bg-blue-500' :
+                                ev.color === 'purple' ? 'bg-purple-500' :
+                                ev.color === 'yellow' ? 'bg-yellow-500' : 'bg-gray-400'
+                              }`}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                {ev.time && <span className="text-sm font-semibold text-gray-900">{ev.time}</span>}
+                                <span className="text-sm text-gray-900 truncate">{ev.title}</span>
+                              </div>
+                              <div className="mt-2 flex flex-wrap items-center gap-2">
+                                {ev.action && (
+                                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">{ev.action}</span>
+                                )}
+                                {tipoLabel && (
+                                  <span className={`text-xs px-2 py-0.5 rounded-full border ${tipoClass}`}>{tipoLabel}</span>
+                                )}
+                                <span className={`text-xs px-2 py-0.5 rounded-full border ${statusClass}`}>{statusLabel}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="relative flex items-center gap-2 flex-shrink-0">
+                            <DashboardButton
+                              variant="outline"
+                              size="sm"
+                              onClick={() => { if (contactUrl) window.open(contactUrl, '_blank'); }}
+                              disabled={!contactUrl}
+                              title={contactUrl ? `Abrir contato: ${contactNumber}` : 'Número indisponível'}
+                            >
+                              Entrar em contato
+                            </DashboardButton>
+                            <DashboardButton
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setEditEventId(ev.id);
+                                setEditDate(ev.date);
+                                setEditTime(ev.time || '09:00');
+                              }}
+                              title="Editar evento"
+                            >
+                              Editar
+                            </DashboardButton>
+                            <button
+                              className="p-2 rounded-md hover:bg-gray-100 border border-gray-200"
+                              onClick={() => setMenuOpenForId(menuOpenForId === ev.id ? null : ev.id)}
+                              aria-haspopup="menu"
+                              aria-expanded={menuOpenForId === ev.id}
+                              title="Mais ações"
+                            >
+                              <MoreVertical className="w-4 h-4 text-gray-600" />
+                            </button>
+                            {menuOpenForId === ev.id && (
+                              <div className="absolute top-10 right-0 z-10 bg-white border border-gray-200 rounded-lg shadow-lg">
+                                <button
+                                  className={`flex items-center gap-2 px-3 py-2 w-full ${deletingId === ev.id ? 'text-gray-400' : 'text-red-600 hover:bg-red-50'}`}
+                                  onClick={async () => {
+                                    if (deletingId) return;
+                                    if (!confirm('Confirmar remoção do agendamento?')) return;
+                                    try {
+                                      setDeletingId(ev.id);
+                                      const { data: beforeData } = await supabase
+                                        .from('agenda')
+                                        .select('*')
+                                        .eq('id', ev.id)
+                                        .single();
+                                      const { error } = await supabase
+                                        .from('agenda')
+                                        .delete()
+                                        .eq('id', ev.id);
+                                      if (error) throw error;
+                                      setMenuOpenForId(null);
+                                      await sendWebhooks('remove', beforeData || { id: ev.id, date: ev.date, time: ev.time, action: ev.action, number: ev.number, title: ev.title });
+                                      await refetch();
+                                    } catch (e) {
+                                      console.error('Erro ao remover evento', e);
+                                      alert('Erro ao remover evento');
+                                    } finally {
+                                      setDeletingId(null);
+                                    }
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  Remover agendamento
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <div className="relative flex items-center gap-2 flex-shrink-0">
-                        <DashboardButton
-                          variant="outline"
-                          size="sm"
-                          onClick={() => { if (contactUrl) window.open(contactUrl, '_blank'); }}
-                          disabled={!contactUrl}
-                          title={contactUrl ? `Abrir contato: ${contactNumber}` : 'Número indisponível'}
-                        >
-                          Entrar em contato
-                        </DashboardButton>
-                        <DashboardButton
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setEditEventId(ev.id);
-                            setEditDate(ev.date);
-                            setEditTime(ev.time || '09:00');
-                          }}
-                          title="Editar evento"
-                        >
-                          Editar
-                        </DashboardButton>
-                        <button
-                          className="p-2 rounded-md hover:bg-gray-100 border border-gray-200"
-                          onClick={() => setMenuOpenForId(menuOpenForId === ev.id ? null : ev.id)}
-                          aria-haspopup="menu"
-                          aria-expanded={menuOpenForId === ev.id}
-                          title="Mais ações"
-                        >
-                          <MoreVertical className="w-4 h-4 text-gray-600" />
-                        </button>
-                        {menuOpenForId === ev.id && (
-                          <div className="absolute top-10 right-0 z-10 bg-white border border-gray-200 rounded-lg shadow-lg">
-                            <button
-                              className={`flex items-center gap-2 px-3 py-2 w-full ${deletingId === ev.id ? 'text-gray-400' : 'text-red-600 hover:bg-red-50'}`}
-                              onClick={async () => {
-                                if (deletingId) return;
-                                if (!confirm('Confirmar remoção do agendamento?')) return;
-                                try {
-                                  setDeletingId(ev.id);
-                                  // Buscar dados completos do evento para enviar no webhook
-                                  const { data: beforeData } = await supabase
-                                    .from('agenda_eventos')
-                                    .select('*')
-                                    .eq('id', ev.id)
-                                    .single();
-                                  const { error } = await supabase
-                                    .from('agenda_eventos')
-                                    .delete()
-                                    .eq('id', ev.id);
-                                  if (error) throw error;
-                                  setMenuOpenForId(null);
-                                  // Disparar webhooks com o evento removido
-                                  await sendWebhooks('remove', beforeData || { id: ev.id, date: ev.date, time: ev.time, action: ev.action, number: ev.number, title: ev.title });
-                                  await refetch();
-                                } catch (e) {
-                                  console.error('Erro ao remover evento', e);
-                                  alert('Erro ao remover evento');
-                                } finally {
-                                  setDeletingId(null);
-                                }
-                              }}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                              Remover agendamento
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )})}
-                  {selectedEvents.length === 0 && (
-                    <div className="text-sm text-gray-500">Você não possui agendamentos neste dia.</div>
-                  )}
-                </div>
+                    )})}
+                    {selectedEvents.length === 0 && (
+                      <div className="text-sm text-gray-500">Você não possui agendamentos neste dia.</div>
+                    )}
+                  </div>
               </ContentCard>
             </>
           ) : (
@@ -439,48 +482,80 @@ export default function AgendaPage() {
             <ContentCard title={formatLongDate(selectedDate)} subtitle={selectedEvents.length ? undefined : 'Sem eventos para este dia'}>
               <div className="space-y-3">
                 {selectedEvents.map((ev) => {
-                  const contactNumber = ev.number ? ev.number.replace(/\D/g, '') : '';
+                  const contactNumber = ev.number ? ev.number.split('').filter(c => c >= '0' && c <= '9').join('') : '';
                   const contactUrl = contactNumber ? `https://wa.me/${contactNumber}` : undefined;
+                  const tipoLabel = ev.tipo ? ev.tipo.charAt(0).toUpperCase() + ev.tipo.slice(1) : undefined;
+                  const statusText = (ev.status || 'agendado');
+                  const statusLabel = statusText.charAt(0).toUpperCase() + statusText.slice(1);
+                  const statusClass = (() => {
+                    const s = statusText.toLowerCase();
+                    if (s === 'aguardando') return 'bg-amber-50 text-amber-700 border-amber-200';
+                    if (s === 'agendado') return 'bg-green-50 text-green-700 border-green-200';
+                    if (s === 'confirmado') return 'bg-blue-50 text-blue-700 border-blue-200';
+                    if (s === 'cancelado') return 'bg-red-50 text-red-700 border-red-200';
+                    if (s === 'realizado') return 'bg-gray-50 text-gray-700 border-gray-200';
+                    return 'bg-gray-50 text-gray-700 border-gray-200';
+                  })();
+                  const tipoClass = (() => {
+                    const t = (ev.tipo || '').toLowerCase();
+                    if (t === 'online') return 'bg-blue-50 text-blue-700 border-blue-200';
+                    if (t === 'presencial') return 'bg-green-50 text-green-700 border-green-200';
+                    return 'bg-gray-50 text-gray-700 border-gray-200';
+                  })();
                   return (
-                  <div key={ev.id} className="flex items-center gap-3 p-3 rounded-lg border bg-white/80">
-                    <div
-                      className={`w-2 h-2 mt-1.5 rounded-full ${
-                        ev.color === 'green' ? 'bg-green-500' :
-                        ev.color === 'blue' ? 'bg-blue-500' :
-                        ev.color === 'purple' ? 'bg-purple-500' :
-                        ev.color === 'yellow' ? 'bg-yellow-500' : 'bg-gray-400'
-                      }`}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        {ev.time && <span className="text-sm font-semibold text-gray-900">{ev.time}</span>}
-                        <span className="text-sm text-gray-700 truncate">{ev.title}</span>
+                    <div key={ev.id} className="p-4 rounded-xl border bg-white shadow-sm hover:shadow-md transition">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 min-w-0">
+                          <div
+                            className={`w-2 h-2 mt-1.5 rounded-full ${
+                              ev.color === 'green' ? 'bg-green-500' :
+                              ev.color === 'blue' ? 'bg-blue-500' :
+                              ev.color === 'purple' ? 'bg-purple-500' :
+                              ev.color === 'yellow' ? 'bg-yellow-500' : 'bg-gray-400'
+                            }`}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              {ev.time && <span className="text-sm font-semibold text-gray-900">{ev.time}</span>}
+                              <span className="text-sm text-gray-900 truncate">{ev.title}</span>
+                            </div>
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                              {ev.action && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">{ev.action}</span>
+                              )}
+                              {tipoLabel && (
+                                <span className={`text-xs px-2 py-0.5 rounded-full border ${tipoClass}`}>{tipoLabel}</span>
+                              )}
+                              <span className={`text-xs px-2 py-0.5 rounded-full border ${statusClass}`}>{statusLabel}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="relative flex items-center gap-2 flex-shrink-0">
+                          <DashboardButton
+                            variant="outline"
+                            size="sm"
+                            onClick={() => { if (contactUrl) window.open(contactUrl, '_blank'); }}
+                            disabled={!contactUrl}
+                            title={contactUrl ? `Abrir contato: ${contactNumber}` : 'Número indisponível'}
+                          >
+                            Entrar em contato
+                          </DashboardButton>
+                        </div>
                       </div>
                     </div>
-                    <div className="relative flex items-center gap-2 flex-shrink-0">
-                      <DashboardButton
-                        variant="outline"
-                        size="sm"
-                        onClick={() => { if (contactUrl) window.open(contactUrl, '_blank'); }}
-                        disabled={!contactUrl}
-                        title={contactUrl ? `Abrir contato: ${contactNumber}` : 'Número indisponível'}
-                      >
-                        Entrar em contato
-                      </DashboardButton>
-                    </div>
-                  </div>
-                )})}
+                  );
+                })}
                 {selectedEvents.length === 0 && (
                   <div className="text-sm text-gray-500">Você não possui agendamentos neste dia.</div>
                 )}
               </div>
-            </ContentCard>
+              </ContentCard>
             </>
-          )}
-        </DashboardPageLayout>
-      </DashboardLayout>
+           )}
+         </DashboardPageLayout>
+       </DashboardLayout>
 
-      {/* Modal de edição */}
+
       {editEventId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md border border-gray-200">
@@ -519,13 +594,13 @@ export default function AgendaPage() {
               <DashboardButton
                 variant="primary"
                 size="sm"
-                disabled={saving || !editDate || !/^\d{4}-\d{2}-\d{2}$/.test(editDate) || !/^\d{2}:\d{2}$/.test(editTime)}
+                disabled={saving || !editDate || !(new RegExp('^\\d{4}-\\d{2}-\\d{2}$')).test(editDate) || !(new RegExp('^\\d{2}:\\d{2}$')).test(editTime)}
                 onClick={async () => {
-                  if (!editDate || !/^\d{4}-\d{2}-\d{2}$/.test(editDate)) {
+                  if (!editDate || !(new RegExp('^\\d{4}-\\d{2}-\\d{2}$')).test(editDate)) {
                     alert('Informe uma data válida (YYYY-MM-DD).');
                     return;
                   }
-                  if (!editTime || !/^\d{2}:\d{2}$/.test(editTime)) {
+                  if (!editTime || !(new RegExp('^\\d{2}:\\d{2}$')).test(editTime)) {
                     alert('Informe um horário válido (HH:MM).');
                     return;
                   }
@@ -535,21 +610,21 @@ export default function AgendaPage() {
                     
                     // Buscar dados originais antes da edição
                     const { data: originalData } = await supabase
-                      .from('agenda_eventos')
+                      .from('agenda')
                       .select('*')
                       .eq('id', editEventId)
                       .single();
                     
                     // Fazer a atualização
                     const { error } = await supabase
-                      .from('agenda_eventos')
+                      .from('agenda')
                       .update({ dia: editDate, horario: editTime })
                       .eq('id', editEventId);
                     if (error) throw error;
                     
                     // Buscar dados atualizados
                     const { data: updatedData } = await supabase
-                      .from('agenda_eventos')
+                      .from('agenda')
                       .select('*')
                       .eq('id', editEventId)
                       .single();
@@ -587,5 +662,6 @@ export default function AgendaPage() {
     </ProtectedRoute>
   );
 }
+
 
 

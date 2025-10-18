@@ -36,13 +36,13 @@ export async function diagnoseClientes(supabase: SupabaseClient, ownerId?: strin
     result.table.error = tableCheck.error?.message ?? null;
     result.table.count = tableCheck.count ?? (tableCheck.data ? tableCheck.data.length : null);
 
-    // Filtro por identificacao (ownerId ou userId da sessão)
+    // Filtro por nutricionista_id (ownerId ou userId da sessão)
     const id = ownerId || result.auth.userId || undefined;
     if (id) {
       const filtered = await supabase
         .from('clientes')
-        .select('id,identificacao,nome,numero,status,created_at', { count: 'exact' })
-        .eq('identificacao', id)
+        .select('id,nutricionista_id,nome,numero,status,created_at', { count: 'exact' })
+        .eq('nutricionista_id', id)
         .order('created_at', { ascending: false })
         .limit(5);
       result.filtered.ok = !filtered.error;
