@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Search, CheckCircle, Users } from 'lucide-react';
+import { createClient } from '@/lib/supabase';
 
 interface ClienteOption {
   id: string;
@@ -29,6 +30,7 @@ export default function CriarAgendamentoPage() {
   const { user, nutricionista } = useAuth();
   const router = useRouter();
   const [validationDiaErro, setValidationDiaErro] = useState<string | null>(null);
+  const supabase = createClient();
 
   const ownerId = nutricionista?.id || user?.id || null;
 
@@ -79,7 +81,6 @@ export default function CriarAgendamentoPage() {
       evento,
     };
 
-    // Tentar endpoints em sequência e ler a resposta
     for (const url of WEBHOOK_URLS) {
       try {
         const res = await fetch(url, {
@@ -97,18 +98,13 @@ export default function CriarAgendamentoPage() {
           if (json && typeof json.status !== 'undefined') {
             return { status: !!json.status };
           }
-        } catch (_) {
-          // resposta não-JSON, ignorar e tentar próximo
-        }
-      } catch (_) {
-        // falha ao enviar para este endpoint; tentar próximo
-      }
+        } catch (_) {}
+      } catch (_) {}
     }
 
-    // Fallback: tenta enviar via sendBeacon (sem leitura de resposta)
     try {
       const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
-      WEBHOOK_URLS.forEach(url => { try { navigator.sendBeacon(url, blob); } catch (_) {} });
+      ['https://n8n-n8n.0dt1f5.easypanel.host/webhook-test/agenda-alterar','https://webhook.canastrainteligencia.com/webhook/agenda-alterar'].forEach(url => { try { navigator.sendBeacon(url, blob); } catch (_) {} });
     } catch (_) {}
 
     return null;
@@ -116,10 +112,7 @@ export default function CriarAgendamentoPage() {
 
   function handleHorarioChange(e: any) {
     const value = e.target.value;
-    if (!/^\d{2}:\d{2}$/.test(value)) {
-      setHorario(value);
-      return;
-    }
+    if (!/^\d{2}:\d{2}$/.test(value)) { setHorario(value); return; }
     let [hh, mm] = value.split(':').map(Number);
     if (mm !== 0) mm = 0;
     if (hh < 9) hh = 9;
@@ -135,23 +128,51 @@ export default function CriarAgendamentoPage() {
       if (!ownerId) throw new Error('Usuário não autenticado');
       if (!isDiaUtil) throw new Error('Selecione um dia útil (segunda a sexta).');
       if (!isHorarioValido) throw new Error('Selecione horário cheio entre 09:00 e 17:00.');
-      const payload = {
-        identificacao: ownerId,
-        cliente_id: selectedClienteId,
-        dia,
-        horario,
-        acao,
-        tipo,
-      } as const;
-      const result = await sendCreateWebhooks(payload);
 
-      if (result && result.status === true) {
-        // Redireciona para a agenda já focada na data agendada
-        router.push(`/dashboard/agenda?date=${dia}`);
-      } else {
-        // Status false: já existe consulta
+      const start = new Date(`${dia}T${horario}:00`);
+      const end = new Date(start.getTime() + 60 * 60 * 1000);
+
+      // Verificar conflito rápido
+      const { data: conflict } = await supabase
+        .from('agenda')
+        .select('id')
+        .eq('identificacao', ownerId)
+        .gte('data_inicio', start.toISOString())
+        .lte('data_inicio', end.toISOString())
+        .limit(1);
+      if (conflict && conflict.length) {
         setError('Já existe uma consulta para este dia/horário.');
+        setSaving(false);
+        return;
       }
+
+      const insertPayload = {
+        identificacao: ownerId,
+        titulo: acao,
+        descricao: `Tipo: ${tipo}`,
+        data_inicio: start.toISOString(),
+        data_fim: end.toISOString(),
+        cliente_nome: selectedCliente?.nome || '',
+        cliente_telefone: selectedCliente?.numero || '',
+        status: 'agendado',
+        observacoes: ''
+      };
+
+      const { data: inserted, error: insertError } = await supabase
+        .from('agenda')
+        .insert(insertPayload)
+        .select('*')
+        .single();
+
+      if (insertError) {
+        throw new Error(insertError.message || 'Falha ao salvar no banco');
+      }
+
+      // Disparar webhooks com dados reais
+      await sendCreateWebhooks({ ...insertPayload, id: inserted?.id });
+
+      // Redirecionar para a agenda focada no dia criado
+      router.push(`/dashboard/agenda?date=${dia}`);
     } catch (e: any) {
       console.error('Erro ao criar agendamento', e);
       setError(e?.message || 'Erro ao criar agendamento');
@@ -162,19 +183,10 @@ export default function CriarAgendamentoPage() {
 
   function handleDiaChange(e: any) {
     const value = e.target.value;
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      setDia(value);
-      setValidationDiaErro(null);
-      return;
-    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) { setDia(value); setValidationDiaErro(null); return; }
     const wd = getWeekdayFromYMD(value);
-    if (wd === 0 || wd === 6) {
-      setValidationDiaErro('Fechado aos finais de semana. Selecione um dia útil (segunda a sexta).');
-      setDia('');
-    } else {
-      setValidationDiaErro(null);
-      setDia(value);
-    }
+    if (wd === 0 || wd === 6) { setValidationDiaErro('Fechado aos finais de semana. Selecione um dia útil (segunda a sexta).'); setDia(''); }
+    else { setValidationDiaErro(null); setDia(value); }
   }
 
   return (
@@ -199,12 +211,7 @@ export default function CriarAgendamentoPage() {
             <div className="space-y-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <DashboardInput
-                  placeholder="Buscar por nome ou número..."
-                  value={searchTerm}
-                  onChange={(e: any) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+                <DashboardInput placeholder="Buscar por nome ou número..." value={searchTerm} onChange={(e: any) => setSearchTerm(e.target.value)} className="pl-10" />
               </div>
 
               <div className="overflow-x-auto border rounded-xl">

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState, useCallback } from 'react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { ContentCard, DashboardButton } from '@/components/dashboard/DashboardPageLayout';
@@ -44,7 +44,7 @@ function SearchParamsInit({ onDate }: { onDate: (dt: Date) => void }) {
       const dt = new Date(y, m - 1, d);
       onDate(dt);
     }
-  }, [params, onDate]);
+  }, [params]);
   return null;
 }
 
@@ -123,6 +123,12 @@ export default function AgendaPage() {
     return result;
   }, [monthStart, monthEnd]);
 
+  // Memoized handler to avoid infinite update loops
+  const onSearchDate = useCallback((dt: Date) => {
+    setSelectedDate(dt);
+    setCurrentMonth(dt);
+  }, []);
+
   // Synchronize currentMonth with selectedDate when necessary
   useEffect(() => {
     const selectedMonth = selectedDate.getMonth();
@@ -134,7 +140,7 @@ export default function AgendaPage() {
     if (selectedMonth !== currentMonthValue || selectedYear !== currentYear) {
       setCurrentMonth(new Date(selectedYear, selectedMonth, 1));
     }
-  }, [selectedDate, currentMonth]);
+  }, [selectedDate]); // Removida dependência currentMonth para evitar loop infinito
 
   // Center selected day (or today on first render) within the visible window
   useEffect(() => {
@@ -174,7 +180,7 @@ export default function AgendaPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <Suspense fallback={null}>
-          <SearchParamsInit onDate={(dt) => { setSelectedDate(dt); setCurrentMonth(dt); }} />
+          <SearchParamsInit onDate={onSearchDate} />
         </Suspense>
         <DashboardPageLayout
           title="Agenda"
@@ -196,10 +202,10 @@ export default function AgendaPage() {
         >
           {viewMode === 'carousel' ? (
             <div>
-              {/* MOBILE DESIGN - Google Agenda Style */}
-              <div className="block md:hidden">
-                {/* Mobile Header with Month Navigation */}
-                <div className="bg-gradient-to-r from-nutrimatic-600 to-nutrimatic-700 rounded-2xl p-6 mb-6 text-white shadow-xl">
+              {/* RESPONSIVE DESIGN - Google Agenda Style */}
+              <div>
+                {/* Header with Month Navigation */}
+                <div className="bg-gradient-to-r from-nutrimatic-600 to-nutrimatic-700 rounded-2xl p-4 md:p-6 mb-6 text-white shadow-xl">
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h2 className="text-2xl font-bold">{formatMonthYear(currentMonth)}</h2>
@@ -235,7 +241,7 @@ export default function AgendaPage() {
                   </button>
                 </div>
 
-                {/* Mobile Calendar Grid */}
+                {/* Calendar Grid */}
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-6">
                   {/* Week Days Header */}
                   <div className="grid grid-cols-7 bg-gray-50 border-b border-gray-100">
@@ -261,7 +267,7 @@ export default function AgendaPage() {
                           key={key}
                           onClick={() => setSelectedDate(day)}
                           className={`
-                            relative aspect-square border-r border-b border-gray-100 p-2 transition-all duration-200
+                            relative aspect-square border-r border-b border-gray-100 p-2 md:p-3 transition-all duration-200
                             ${outsideMonth ? 'bg-gray-50 text-gray-400' : 'bg-white text-gray-900 hover:bg-nutrimatic-50'}
                             ${isSelected ? 'bg-nutrimatic-100 ring-2 ring-nutrimatic-500 ring-inset' : ''}
                             ${today && !isSelected ? 'bg-blue-50 text-blue-700 font-bold' : ''}
@@ -298,9 +304,9 @@ export default function AgendaPage() {
                   </div>
                 </div>
 
-                {/* Selected Date Events - Mobile */}
+                {/* Selected Date Events */}
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-4 md:px-6 py-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-lg font-bold text-gray-900">
@@ -317,25 +323,21 @@ export default function AgendaPage() {
                           }
                         </p>
                       </div>
-                      <Link href="/dashboard/criar-agendamento">
-                        <button className="bg-nutrimatic-600 hover:bg-nutrimatic-700 text-white p-3 rounded-full shadow-lg transition-colors">
-                          <Plus className="w-5 h-5" />
-                        </button>
+                      <Link href="/dashboard/criar-agendamento" className="bg-nutrimatic-600 hover:bg-nutrimatic-700 text-white p-3 rounded-full shadow-lg transition-colors" prefetch={false}>
+                        <Plus className="w-5 h-5" />
                       </Link>
                     </div>
                   </div>
 
-                  <div className="p-6">
+                  <div className="p-4 md:p-6">
                     {selectedEvents.length === 0 ? (
                       <div className="text-center py-12">
                         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                           <CalendarDays className="w-8 h-8 text-gray-400" />
                         </div>
                         <p className="text-gray-500 text-sm">Nenhum agendamento para este dia</p>
-                        <Link href="/dashboard/criar-agendamento">
-                          <button className="mt-4 bg-nutrimatic-600 hover:bg-nutrimatic-700 text-white px-6 py-2 rounded-full text-sm font-medium transition-colors">
-                            Criar agendamento
-                          </button>
+                        <Link href="/dashboard/criar-agendamento" className="mt-4 bg-nutrimatic-600 hover:bg-nutrimatic-700 text-white px-6 py-2 rounded-full text-sm font-medium transition-colors" prefetch={false}>
+                          Criar agendamento
                         </Link>
                       </div>
                     ) : (
@@ -368,7 +370,7 @@ export default function AgendaPage() {
                           return (
                             <div
                               key={ev.id}
-                              className={`border-l-4 ${eventColor} rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 bg-white`}
+                              className={`border-l-4 ${eventColor} rounded-2xl p-4 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 bg-white`}
                             >
                               {/* Header com horario e status */}
                               <div className="flex items-center justify-between mb-4">
@@ -387,10 +389,10 @@ export default function AgendaPage() {
                               <div className="mb-4">
                                 <h3 className="text-xl font-bold text-gray-900 mb-1 flex items-center">
                                   <User className="w-5 h-5 mr-3 text-nutrimatic-600" />
-                                  {ev.title}
+                                  {ev.clienteNome || ev.title}
                                 </h3>
-                                {ev.action && (
-                                  <p className="text-gray-600 ml-8 text-sm leading-relaxed">{ev.action}</p>
+                                {(ev.action || ev.title) && (
+                                  <p className="text-gray-600 ml-8 text-sm leading-relaxed">{ev.action || ev.title}</p>
                                 )}
                               </div>
                               
@@ -405,11 +407,11 @@ export default function AgendaPage() {
                               )}
                               
                               {/* Botoes de acao */}
-                              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+                              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-100">
                                 {contactUrl && (
                                   <button
-                                    onClick={() => window.open(contactUrl, '_blank')}
-                                    className="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg min-w-[120px]"
+                                      onClick={() => window.open(contactUrl, '_blank')}
+                                      className="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white px-4 md:px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg sm:min-w-[120px]"
                                     title="Contatar via WhatsApp"
                                   >
                                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -425,7 +427,7 @@ export default function AgendaPage() {
                                     setEditDate(ev.date);
                                     setEditTime(ev.time || '09:00');
                                   }}
-                                  className="flex items-center justify-center bg-nutrimatic-500 hover:bg-nutrimatic-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg min-w-[100px]"
+                                  className="flex items-center justify-center bg-nutrimatic-500 hover:bg-nutrimatic-600 text-white px-4 md:px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg sm:min-w-[100px]"
                                   title="Editar agendamento"
                                 >
                                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -436,7 +438,7 @@ export default function AgendaPage() {
                                 
                                 <button
                                   onClick={() => setMenuOpenForId(menuOpenForId === ev.id ? null : ev.id)}
-                                  className="flex items-center justify-center bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg relative min-w-[100px]"
+                                  className="flex items-center justify-center bg-red-500 hover:bg-red-600 text-white px-4 md:px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-lg relative sm:min-w-[100px]"
                                 >
                                   <Trash2 className="w-5 h-5 mr-2" />
                                   Excluir
