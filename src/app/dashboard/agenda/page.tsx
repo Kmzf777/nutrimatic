@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardPageLayout, { ContentCard, DashboardButton } from '@/components/dashboard/DashboardPageLayout';
@@ -35,6 +35,19 @@ function toISODate(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
+function SearchParamsInit({ onDate }: { onDate: (dt: Date) => void }) {
+  const params = useSearchParams();
+  useEffect(() => {
+    const p = params.get('date');
+    if (p && /^\d{4}-\d{2}-\d{2}$/.test(p)) {
+      const [y, m, d] = p.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      onDate(dt);
+    }
+  }, [params, onDate]);
+  return null;
+}
+
 export default function AgendaPage() {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -49,18 +62,7 @@ export default function AgendaPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const supabase = createClient();
   const { user, nutricionista } = useAuth();
-  const searchParams = useSearchParams();
-
-  // Se houver ?date=YYYY-MM-DD, posicionar seleção e mês
-  useEffect(() => {
-    const p = searchParams.get('date');
-    if (p && /^\d{4}-\d{2}-\d{2}$/.test(p)) {
-      const [y, m, d] = p.split('-').map(Number);
-      const dt = new Date(y, m - 1, d);
-      setSelectedDate(dt);
-      setCurrentMonth(dt);
-    }
-  }, [searchParams]);
+  // Search params handled via Suspense child component
 
   const WEBHOOK_URLS = [
     'https://n8n-n8n.0dt1f5.easypanel.host/webhook-test/agenda-alterar',
@@ -150,6 +152,9 @@ export default function AgendaPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
+        <Suspense fallback={null}>
+          <SearchParamsInit onDate={(dt) => { setSelectedDate(dt); setCurrentMonth(dt); }} />
+        </Suspense>
         <DashboardPageLayout
           title="Agenda"
           subtitle="Crie, edite e apague seus agendamentos"
