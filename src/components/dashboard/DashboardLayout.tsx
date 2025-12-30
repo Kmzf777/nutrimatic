@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bot, Users, CalendarDays, MessageCircle } from 'lucide-react';
+import { Bot, Users, CalendarDays, MessageCircle, FileText, LogOut } from 'lucide-react';
 import Tooltip from '../ui/Tooltip';
 import RippleButton from '../ui/RippleButton';
 import MobileBottomNavigation from './MobileBottomNavigation';
@@ -57,22 +57,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       href: '/dashboard/clientes'
     },
     {
+      name: 'Prescrições',
+      icon: (<FileText className="w-5 h-5" />),
+      href: '/dashboard/prescricoes'
+    },
+    {
       name: 'Agenda',
       icon: (<CalendarDays className="w-5 h-5" />),
       href: '/dashboard/agenda'
     },
     {
-      name: 'Conversas',
-      icon: (<MessageCircle className="w-5 h-5" />),
-      href: '/dashboard/conversas'
-    },
-    {
-      name: 'Agentes IA',
+      name: 'Agentes AI',
       icon: (
         <Bot className="w-5 h-5" />
       ),
       href: '/agentes',
-      badge: 'Novo'
     },
   ];
 
@@ -104,112 +103,70 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Sidebar - Desktop only */}
       {!isMobile && (
       <div
-        className={`sidebar-menu fixed z-50 h-full bg-white shadow-2xl border-r border-gray-200/50 backdrop-blur-xl transition-all duration-500 ease-out ${
-        isMenuVisible ? 'w-72 translate-x-0' : 'w-20 translate-x-0'
-        }`}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        className={`sidebar-menu fixed z-50 h-full bg-white shadow-xl border-r border-gray-100 transition-all duration-300 ease-out w-64 translate-x-0`}
       >
         {/* Header with Logo */}
-        <div className="h-16 lg:h-20 border-b border-gray-200/50 flex items-center px-4 lg:px-5 bg-gradient-to-r from-nutrimatic-50 to-white">
+        <div className="h-20 flex items-center px-6 border-b border-gray-50">
           <div className="flex items-center w-full">
-            {/* Logo - sempre fixo à esquerda */}
-            <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center flex-shrink-0">
+            {/* Logo */}
+            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
               <Image
                 src="/Nutrimatic Icon Vetor.png"
                 alt="Nutrimatic"
                 width={32}
                 height={32}
-                className="w-8 h-8 lg:w-10 lg:h-10"
+                className="w-8 h-8"
               />
             </div>
             
-            {/* Texto Nutrimatic - aparece quando menu abre */}
-            <div
-              className={`ml-2 lg:ml-3 overflow-hidden flex items-center h-8 lg:h-10 transition-all duration-500 ease-out ${
-                isMenuVisible ? 'w-auto opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-2'
-              }`}
-            >
-              <span className="text-xl lg:text-2xl font-bold text-nutrimatic-600 font-display whitespace-nowrap leading-8 lg:leading-10" title="Nutrimatic">
+            {/* Texto Nutrimatic */}
+            <div className="ml-3 flex items-center h-10">
+              <span className="text-xl font-bold text-gray-800 font-display whitespace-nowrap leading-10 tracking-tight">
                 Nutrimatic
               </span>
             </div>
           </div>
-          
-          {/* Toggle Button - Só visível no mobile */}
-          <RippleButton
-            onClick={handleMenuToggle}
-            className={`absolute right-4 p-2 rounded-lg bg-white/80 backdrop-blur-sm border border-gray-200/50 
-              hover:bg-nutrimatic-50 hover:border-nutrimatic-200 transition-all duration-300 lg:hidden
-              ${isMenuExpanded ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}
-            >
-            <svg 
-              className={`w-4 h-4 text-gray-600 transition-transform duration-300 ${isMenuExpanded ? 'rotate-180' : ''}`} 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </RippleButton>
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 px-4 lg:px-5 py-3 lg:py-4 pb-16 lg:pb-20 overflow-y-auto overflow-x-hidden">
-          <div className="flex flex-col gap-2">
+        <nav className="flex-1 px-4 py-6 overflow-y-auto overflow-x-hidden">
+          <div className="flex flex-col gap-1">
             {menuItems.map((item) => {
               const isActive = pathname === item.href;
-              const isVisible = isMenuVisible;
               
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={() => handleItemClick(item.href)}
-                  className={`group relative flex items-center h-10 lg:h-12 rounded-lg transition-all duration-300 touch-manipulation
+                  className={`group relative flex items-center h-11 px-3 rounded-lg transition-all duration-200
                     ${isActive 
-                      ? 'bg-nutrimatic-50 border border-nutrimatic-200' 
-                      : 'hover:bg-nutrimatic-50 hover:text-nutrimatic-700 active:bg-nutrimatic-100'
+                      ? 'bg-nutrimatic-50 text-nutrimatic-700 font-medium' 
+                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                     }
                   `}
                 >
-                  {/* Ícone - sempre centralizado no seu container */}
-                  <div className={`flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 rounded-lg transition-all duration-300 flex-shrink-0
-                    ${isActive ? 'bg-nutrimatic-500 text-white shadow-lg' : 'text-gray-500 group-hover:text-nutrimatic-600'}
+                  <div className={`flex items-center justify-center w-5 h-5 mr-3 transition-colors duration-200
+                    ${isActive ? 'text-nutrimatic-600' : 'text-gray-400 group-hover:text-gray-600'}
                   `}>
-                    {!isVisible ? (
-                      <Tooltip content={item.name} position="right" delay={200}>
-                        {item.icon}
-                      </Tooltip>
-                    ) : (
-                      item.icon
-                    )}
-                    </div>
+                    {item.icon}
+                  </div>
                   
-                                     {/* Texto - aparece quando menu abre */}
-                   <div
-                     className={`ml-2 lg:ml-3 overflow-hidden flex items-center flex-1 transition-all duration-500 ease-out ${
-                       isVisible ? 'w-auto opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-2'
-                     }`}
-                   >
-                     <div className="flex items-center min-w-0 flex-1">
-                       <span className={`font-medium text-sm lg:text-base whitespace-nowrap flex-1 ${isActive ? 'text-nutrimatic-700' : 'text-gray-700'}`} title={item.name}>
-                         {item.name}
-                       </span>
-                       
-                       {/* Badge */}
-                       {item.badge && (
-                         <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full flex-shrink-0
-                           ${isActive 
-                             ? 'bg-nutrimatic-200 text-nutrimatic-800' 
-                             : 'bg-nutrimatic-100 text-nutrimatic-700 group-hover:bg-nutrimatic-200'
-                           }
-                         `}>
-                           {item.badge}
-                         </span>
-                       )}
-                     </div>
-                   </div>
+                  <span className="text-sm truncate flex-1">
+                    {item.name}
+                  </span>
+                  
+                  {/* Badge */}
+                  {item.badge && (
+                    <span className={`ml-auto px-2 py-0.5 text-[10px] font-bold uppercase rounded-full tracking-wide
+                      ${isActive 
+                        ? 'bg-nutrimatic-100 text-nutrimatic-700' 
+                        : 'bg-gray-100 text-gray-600'
+                      }
+                    `}>
+                      {item.badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -217,38 +174,33 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
 
         {/* User Profile Section */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200/50 bg-gradient-to-r from-gray-50 to-white">
-          <div className="flex items-center px-4 lg:px-5 py-2 lg:py-3">
-            <div className="w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-nutrimatic-400 via-nutrimatic-500 to-nutrimatic-700 rounded-full flex-shrink-0 shadow-lg ring-2 ring-nutrimatic-200/30"></div>
-            
-            <div
-              className={`ml-2 lg:ml-3 overflow-hidden flex flex-col justify-center transition-all duration-500 ease-out ${
-                isMenuVisible ? 'w-auto opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-2'
-              }`}
-            >
-              <div className="min-w-0">
-                <p className="text-xs lg:text-sm font-semibold text-gray-900 whitespace-nowrap">
-                  {nutricionista?.nome || user?.email?.split('@')[0] || 'Usuário'}
-                </p>
-                <p className="text-xs text-gray-500 whitespace-nowrap">
-                  {user?.email || 'usuario@nutrimatic.com'}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-50 bg-white">
+          <div className="flex items-center justify-between p-2">
+            <div className="flex items-center min-w-0">
+              <div className="w-8 h-8 bg-nutrimatic-100 rounded-full flex items-center justify-center text-nutrimatic-700 font-semibold text-xs flex-shrink-0">
+                {nutricionista?.nome?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+              </div>
+              
+              <div className="ml-2 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate max-w-[100px]">
+                  {nutricionista?.nome || 'Usuário'}
                 </p>
               </div>
             </div>
             
-            {/* Logout button */}
             <button
-              onClick={() => setShowLogoutModal(true)}
-              className={`ml-auto p-1.5 lg:p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all duration-300 touch-manipulation
-                ${isMenuVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowLogoutModal(true);
+              }}
+              className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all flex items-center gap-2"
+              title="Sair"
             >
-              <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
         </div>
-        </div>
+      </div>
       )}
 
       {/* Main Content - Full width */}
@@ -275,10 +227,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Main Content Area */}
-        <main className={`flex-1 overflow-y-auto overflow-x-hidden dashboard-content transition-all duration-500 ease-out ${
-          isMobile ? 'pl-0' : isMenuVisible ? 'lg:pl-72' : 'lg:pl-20'
+        <main className={`flex-1 overflow-y-auto overflow-x-hidden dashboard-content transition-all duration-300 ease-out ${
+          isMobile ? 'pl-0' : 'lg:pl-64'
         }`}>
-          <div className="animate-fade-in main-content p-4 lg:p-6 pb-20 lg:pb-6">
+          <div className="animate-fade-in main-content p-6 lg:p-8 pb-20 lg:pb-8 bg-gray-50 min-h-full">
             {children}
           </div>
         </main>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, Users, CalendarDays, MessageCircle, LayoutDashboard } from 'lucide-react';
+import { Bot, Users, CalendarDays, MessageCircle, LayoutDashboard, FileText } from 'lucide-react';
 
 interface NavigationItem {
   name: string;
@@ -26,20 +26,19 @@ export default function MobileBottomNavigation() {
       href: '/dashboard/clientes'
     },
     {
+      name: 'Prescrições',
+      icon: <FileText className="w-5 h-5" />,
+      href: '/dashboard/prescricoes'
+    },
+    {
       name: 'Agenda',
       icon: <CalendarDays className="w-5 h-5" />,
       href: '/dashboard/agenda'
     },
     {
-      name: 'Conversas',
-      icon: <MessageCircle className="w-5 h-5" />,
-      href: '/dashboard/conversas'
-    },
-    {
       name: 'Agentes',
       icon: <Bot className="w-5 h-5" />,
       href: '/agentes',
-      badge: 'Novo'
     },
   ];
 

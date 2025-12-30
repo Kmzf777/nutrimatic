@@ -28,11 +28,10 @@ export default function AgentesPage() {
         return;
       }
  
-      // Se o Supabase não estiver configurado, redirecionar para conectar instância
+      // Se o Supabase não estiver configurado
       if (!isSupabaseConfigured()) {
         setInstanceInfo({ number: null, status: null });
         setChecking(false);
-        router.replace('/connectinstance');
         return;
       }
 
@@ -47,7 +46,7 @@ export default function AgentesPage() {
 
         if (isCancelled) return;
 
-        // Em caso de erro na consulta, não redirecionar; permitir página carregar
+        // Em caso de erro na consulta
         if (error) {
           console.warn('Erro ao consultar instancias:', error);
           setInstanceInfo({ number: null, status: null });
@@ -55,11 +54,10 @@ export default function AgentesPage() {
           return;
         }
 
-        // Se não há instância, redirecionar para conectar instância
+        // Se não há instância
         if (!data) {
           setInstanceInfo({ number: null, status: null });
           setChecking(false);
-          router.replace('/connectinstance');
           return;
         }
 
@@ -67,14 +65,7 @@ export default function AgentesPage() {
         const numberValue = (data as any).number || null;
         setInstanceInfo({ number: numberValue, status: (data as any).status || null });
 
-        // Se não está conectado/ativo, redirecionar para conectar instância
-        if (statusValue !== 'conectado' && statusValue !== 'ativo') {
-          setChecking(false);
-          router.replace('/connectinstance');
-          return;
-        }
-
-        // Instância conectada, permanecer na página Agentes
+        // Instância verificada (conectada ou não) - Sem redirecionamento forçado
         setChecking(false);
       } catch (e) {
         if (!isCancelled) {
@@ -89,16 +80,7 @@ export default function AgentesPage() {
     return () => {
       isCancelled = true;
     };
-  }, [user, loading, supabase, router]);
-
-  // Redirecionamento robusto baseado em estado calculado
-  useEffect(() => {
-    if (checking) return;
-    const status = (instanceInfo?.status || '').toLowerCase();
-    if (!instanceInfo || (status !== 'conectado' && status !== 'ativo')) {
-      router.replace('/connectinstance');
-    }
-  }, [checking, instanceInfo, router]);
+  }, [user, loading, supabase]);
 
   return (
     <ProtectedRoute>
@@ -122,7 +104,7 @@ export default function AgentesPage() {
                       instanceInfo?.status === 'inativo' || instanceInfo?.status === 'desconectado' ? 'bg-red-100 text-red-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
-                      {instanceInfo?.status || '—'}
+                      {instanceInfo?.status || 'Não conectado'}
                     </span>
                   </div>
                 </div>
@@ -131,6 +113,7 @@ export default function AgentesPage() {
               <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[
                   { title: 'Agente Secretaria', href: '/agentes/secretaria', color: 'from-purple-500 to-purple-700', desc: 'Agenda, confirmações e atendimento básico.', icon: Headset },
+                  { title: 'Agente Prescrição', href: '/agentes/prescricao', color: 'from-blue-500 to-blue-700', desc: 'Desenvolvimento completo da prescrição do paciente', icon: FileText },
                 ].map((card) => {
                   const Icon = card.icon as any;
                   return (
@@ -162,5 +145,3 @@ export default function AgentesPage() {
     </ProtectedRoute>
   );
 }
-
-

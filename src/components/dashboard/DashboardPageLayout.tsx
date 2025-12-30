@@ -18,26 +18,26 @@ const DashboardPageLayout = memo(function DashboardPageLayout({
   className = "" 
 }: DashboardPageLayoutProps) {
   return (
-    <div className={`space-y-4 lg:space-y-6 ${className}`}>
-      {/* Header da Página - Responsivo */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-lg lg:rounded-xl shadow-lg border border-gray-200/50 p-4 lg:p-6">
+    <div className={`space-y-6 ${className}`}>
+      {/* Header da Página */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div className="flex flex-col space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
           <div className="min-w-0 flex-1">
-            <h1 className="text-xl lg:text-2xl font-bold text-gray-900 font-display truncate">{title}</h1>
+            <h1 className="text-xl lg:text-2xl font-bold text-gray-900 font-display truncate tracking-tight">{title}</h1>
             {subtitle && (
-              <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
+              <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
             )}
           </div>
           {actions && (
-            <div className="flex items-center space-x-2 lg:space-x-3 flex-shrink-0">
+            <div className="flex items-center space-x-3 flex-shrink-0">
               {actions}
             </div>
           )}
         </div>
       </div>
 
-      {/* Conteúdo da Página - Responsivo */}
-      <div className="space-y-4 lg:space-y-6">
+      {/* Conteúdo da Página */}
+      <div className="space-y-6">
         {children}
       </div>
     </div>
@@ -63,32 +63,30 @@ export const StatsCard = memo(function StatsCard({
   className?: string;
 }) {
   const colorClasses = {
-    nutrimatic: "bg-nutrimatic-100 text-nutrimatic-600",
-    yellow: "bg-yellow-100 text-yellow-600",
-    red: "bg-red-100 text-red-600",
-    purple: "bg-purple-100 text-purple-600",
-    green: "bg-green-100 text-green-600"
+    nutrimatic: "bg-nutrimatic-50 text-nutrimatic-600",
+    yellow: "bg-yellow-50 text-yellow-600",
+    red: "bg-red-50 text-red-600",
+    purple: "bg-purple-50 text-purple-600",
+    green: "bg-green-50 text-green-600"
   };
 
   return (
-    <div className={`bg-white/80 backdrop-blur-xl rounded-lg lg:rounded-xl shadow-lg border border-gray-200/50 p-4 lg:p-6 hover:shadow-xl transition-all duration-300 ${className}`}>
-      <div className="flex items-center">
-        <div className={`p-2 lg:p-3 rounded-lg lg:rounded-xl ${colorClasses[color]} flex-shrink-0`}>
-          <div className="w-5 h-5 lg:w-6 lg:h-6">
+    <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300 ${className}`}>
+      <div className="flex justify-between items-start">
+        <div className="flex items-center gap-2 text-gray-500 font-medium text-sm mb-4">
+          <div className={`p-1.5 rounded-md ${colorClasses[color]}`}>
             {icon}
           </div>
+          {title}
         </div>
-        <div className="ml-3 lg:ml-4 flex-1 min-w-0">
-          <p className="text-xs lg:text-sm font-medium text-gray-600 truncate">{title}</p>
-          <div className="flex items-center space-x-1 lg:space-x-2">
-            <p className="text-lg lg:text-2xl font-bold text-gray-900 truncate">{value}</p>
-            {trend && (
-              <span className={`text-xs lg:text-sm font-medium flex-shrink-0 ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                {trend.isPositive ? '+' : ''}{trend.value}%
-              </span>
-            )}
-          </div>
-        </div>
+      </div>
+      <div className="flex items-end gap-3">
+        <span className="text-3xl font-bold text-gray-900">{value}</span>
+        {trend && (
+          <span className={`text-xs font-bold px-2 py-1 rounded-full mb-1 flex items-center ${trend.isPositive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+            {trend.isPositive ? '+' : ''}{trend.value}%
+          </span>
+        )}
       </div>
     </div>
   );
@@ -109,23 +107,23 @@ export const ContentCard = memo(function ContentCard({
   className?: string;
 }) {
   return (
-    <div className={`bg-white/80 backdrop-blur-xl rounded-lg lg:rounded-xl shadow-lg border border-gray-200/50 ${className}`}>
+    <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 ${className}`}>
       {(title || actions) && (
-        <div className="p-4 lg:p-6 border-b border-gray-200/50">
+        <div className="p-6 border-b border-gray-100">
           <div className="flex flex-col space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
             <div className="min-w-0 flex-1">
-              {title && <h2 className="text-base lg:text-lg font-semibold text-gray-900 truncate">{title}</h2>}
-              {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
+              {title && <h2 className="text-lg font-bold text-gray-900 truncate">{title}</h2>}
+              {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
             </div>
             {actions && (
-              <div className="flex items-center space-x-2 lg:space-x-3 flex-shrink-0">
+              <div className="flex items-center space-x-3 flex-shrink-0">
                 {actions}
               </div>
             )}
           </div>
         </div>
       )}
-      <div className="p-4 lg:p-6">
+      <div className="p-6">
         {children}
       </div>
     </div>
@@ -146,19 +144,19 @@ export const DashboardButton = memo(function DashboardButton({
   className?: string;
   [key: string]: any;
 }) {
-  const baseClasses = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 touch-manipulation";
+  const baseClasses = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 touch-manipulation";
   
   const variants = {
-    primary: "bg-nutrimatic-600 text-white hover:bg-nutrimatic-700 focus:ring-nutrimatic-500 shadow-lg hover:shadow-xl active:bg-nutrimatic-800",
-    secondary: "bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500 active:bg-gray-300",
-    outline: "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500 active:bg-gray-100",
-    ghost: "text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-500 active:bg-gray-200"
+    primary: "bg-nutrimatic-600 text-white hover:bg-nutrimatic-700 shadow-sm hover:shadow active:bg-nutrimatic-800",
+    secondary: "bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300",
+    outline: "border border-gray-200 text-gray-700 hover:bg-gray-50 active:bg-gray-100",
+    ghost: "text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100"
   };
 
   const sizes = {
-    sm: "px-2 py-1.5 text-xs lg:px-3 lg:py-2 lg:text-sm",
-    md: "px-3 py-2 text-sm lg:px-4 lg:py-2 lg:text-sm",
-    lg: "px-4 py-2.5 text-sm lg:px-6 lg:py-3 lg:text-base"
+    sm: "px-3 py-1.5 text-xs lg:text-sm",
+    md: "px-4 py-2 text-sm",
+    lg: "px-6 py-2.5 text-base"
   };
 
   return (
@@ -181,7 +179,7 @@ export const DashboardInput = memo(function DashboardInput({
 }) {
   return (
     <input
-      className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-nutrimatic-500 focus:border-nutrimatic-500 transition-all duration-300 ${className}`}
+      className={`w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-nutrimatic-500/20 focus:border-nutrimatic-500 transition-all duration-200 ${className}`}
       {...props}
     />
   );
@@ -199,7 +197,7 @@ export const DashboardSelect = memo(function DashboardSelect({
 }) {
   return (
     <select
-      className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-nutrimatic-500 focus:border-nutrimatic-500 transition-all duration-300 ${className}`}
+      className={`w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-nutrimatic-500/20 focus:border-nutrimatic-500 transition-all duration-200 ${className}`}
       {...props}
     >
       {children}
@@ -216,11 +214,11 @@ export const StatusBadge = memo(function StatusBadge({
   className?: string;
 }) {
   const statusClasses = {
-    success: "bg-green-100 text-green-800",
-    warning: "bg-yellow-100 text-yellow-800",
-    error: "bg-red-100 text-red-800",
-    info: "bg-nutrimatic-100 text-nutrimatic-800",
-    pending: "bg-gray-100 text-gray-800"
+    success: "bg-green-50 text-green-700 border border-green-100",
+    warning: "bg-yellow-50 text-yellow-700 border border-yellow-100",
+    error: "bg-red-50 text-red-700 border border-red-100",
+    info: "bg-nutrimatic-50 text-nutrimatic-700 border border-nutrimatic-100",
+    pending: "bg-gray-50 text-gray-700 border border-gray-100"
   };
 
   const statusText = {
@@ -232,7 +230,7 @@ export const StatusBadge = memo(function StatusBadge({
   };
 
   return (
-    <span className={`px-3 py-1 text-xs font-medium rounded-full ${statusClasses[status]} ${className}`}>
+    <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${statusClasses[status]} ${className}`}>
       {statusText[status]}
     </span>
   );
